@@ -679,6 +679,155 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .empty { padding:80px 0; text-align:center; }
 .empty h3 { font-family:var(--serif); font-size:28px; font-weight:300; color:var(--charcoal); margin-bottom:10px; }
 .empty p { font-size:13px; color:var(--text-4); max-width:260px; margin:0 auto; line-height:1.7; }
+
+/* ── NAV ICON (desktop: hidden) ─────────── */
+.tm-icon { display:none; }
+
+/* ════════════════════════════════════════════
+   MOBILE  ≤ 768px
+   ════════════════════════════════════════════ */
+@media (max-width:768px) {
+
+  /* ── BOTTOM NAV ──────────────────────────── */
+  #topbar {
+    position:fixed; bottom:0; top:auto; left:0; right:0;
+    height:calc(58px + env(safe-area-inset-bottom));
+    padding:0 0 env(safe-area-inset-bottom);
+    border-top:1px solid rgba(0,0,0,.08); border-bottom:none;
+    justify-content:space-around; z-index:500;
+  }
+  #top-menu { width:100%; justify-content:space-around; }
+  .tm-item {
+    flex-direction:column; gap:3px; padding:0; flex:1;
+    height:58px; justify-content:center; align-items:center;
+    font-size:10px; letter-spacing:.01em; white-space:nowrap;
+  }
+  .tm-item.active::after { display:none; }
+  .tm-icon { display:block; }
+
+  /* ── MAIN CONTENT area leaves room for bottom nav ─ */
+  #main {
+    height:calc(100vh - 58px - env(safe-area-inset-bottom));
+    padding-bottom:0;
+  }
+
+  /* ── LANDING ─────────────────────────────── */
+  .landing-title { font-size:52px; }
+  .landing-sub { font-size:16px; max-width:300px; }
+  .landing-cta { padding:14px 36px; }
+
+  /* ── ARCHIVE HERO ────────────────────────── */
+  .archive-hero { height:170px; }
+  .ah-city { font-size:34px; }
+  .ah-change-btn { opacity:1; }
+
+  /* ── FILTER BAR ──────────────────────────── */
+  .afb {
+    overflow-x:auto; flex-wrap:nowrap;
+    justify-content:flex-start; padding:8px 4px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .afb::-webkit-scrollbar { display:none; }
+  .afb-pill { padding:6px 10px; font-size:12.5px; flex-shrink:0; }
+  .afb-search-inline { flex-shrink:0; }
+
+  /* ── ARCHIVE LIST ────────────────────────── */
+  .al-item { padding:10px 12px; }
+  .al-thumb { width:48px; height:48px; }
+  .al-name { font-size:15px; }
+  .al-stars { display:none; }
+  .al-city-header { font-size:18px; padding:0 12px 6px; }
+  .al-city-header:not(:first-child) { padding-top:22px; }
+
+  /* ── DETAIL PANEL → bottom sheet ────────── */
+  #detail-panel {
+    top:auto !important;
+    bottom:calc(58px + env(safe-area-inset-bottom));
+    left:0; right:0; width:100%;
+    height:78vh;
+    border-radius:20px 20px 0 0;
+    box-shadow:0 -6px 40px rgba(0,0,0,.14);
+    transform:translateY(110%) !important;
+  }
+  #detail-panel.open { transform:translateY(0) !important; }
+  .dp-body { padding:16px 18px 32px; }
+  .dp-name { font-size:20px; }
+  .dp-mini-map { height:110px; }
+
+  /* drag handle on panel */
+  #detail-panel::before {
+    content:''; display:block; width:36px; height:4px;
+    background:rgba(0,0,0,.13); border-radius:2px;
+    margin:12px auto 0; flex-shrink:0;
+  }
+
+  /* ── MAP MARKERS ─────────────────────────── */
+  .sq-pin { width:44px; height:44px; border-radius:12px; }
+  .sq-pin-wrap { width:72px; }
+  .sq-pin-label { font-size:10px; max-width:72px; }
+
+  /* ── MAP SIDEBAR → bottom drawer ────────── */
+  #map-list-sidebar {
+    top:auto; bottom:calc(58px + env(safe-area-inset-bottom));
+    left:0; right:0; width:100%; height:60vh;
+    border-right:none; border-top:1px solid rgba(0,0,0,.08);
+    border-radius:20px 20px 0 0;
+    transform:translateY(110%);
+  }
+  #map-list-sidebar.open { transform:translateX(0) translateY(0); }
+  #map-list-toggle.sidebar-open { left:14px; }
+
+  /* drag handle on sidebar */
+  #map-list-sidebar::before {
+    content:''; display:block; width:36px; height:4px;
+    background:rgba(0,0,0,.13); border-radius:2px;
+    margin:12px auto 4px;
+  }
+
+  /* ── MAP CARD ────────────────────────────── */
+  .mcs-outer { padding:0 10px calc(10px + env(safe-area-inset-bottom)); }
+  .mcs-name { font-size:24px; }
+
+  /* ── ADD PLACE MODAL → full screen ──────── */
+  #modal-backdrop { align-items:flex-end; }
+  #modal {
+    width:100%; max-width:100%; max-height:92vh;
+    border-radius:20px 20px 0 0;
+    transform:translateY(30px) scale(1) !important;
+  }
+  #modal-backdrop.open #modal { transform:translateY(0) scale(1) !important; }
+  .modal-head { padding:20px 18px 14px; }
+  .modal-title { font-size:18px; }
+  .modal-body { padding:0 14px 14px; gap:2px; }
+  .form-field { grid-template-columns:1fr; gap:4px; padding:12px 14px; }
+  .form-label-hint { display:none; }
+  .modal-foot { padding:12px 14px calc(16px + env(safe-area-inset-bottom)); }
+
+  /* ── NAME COLLECTION MODAL ───────────────── */
+  #name-coll-modal { width:92vw; }
+
+  /* ── PHOTO MODAL ─────────────────────────── */
+  #photo-modal { width:100%; max-width:100%; border-radius:20px 20px 0 0; }
+  #photo-modal-backdrop { align-items:flex-end; }
+
+  /* ── PLACE PICKER ────────────────────────── */
+  #place-picker-modal { width:100%; max-width:100%; border-radius:20px 20px 0 0; max-height:88vh; }
+  #place-picker { align-items:flex-end; }
+
+  /* ── COLLECTIONS ─────────────────────────── */
+  .colls-wrap { padding:24px 14px calc(80px + env(safe-area-inset-bottom)); }
+  .colls-page-title { font-size:38px; }
+  .colls-top { margin-bottom:20px; }
+
+  /* ── JOURNAL ─────────────────────────────── */
+  .journal-wrap { padding:24px 14px calc(80px + env(safe-area-inset-bottom)); max-width:100%; }
+  .journal-page-title { font-size:38px; }
+  .journal-year-ghost { font-size:72px; }
+  .journal-entry { padding:12px; gap:14px; }
+  .je-img { width:68px; height:68px; }
+  .je-name { font-size:18px; }
+  .je-day { font-size:28px; }
+}
 </style>
 </head>
 <body>
@@ -707,11 +856,26 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 <div id="app">
   <header id="topbar">
     <div id="top-menu">
-      <div class="tm-item" id="nav-map" onclick="showView('map')">Map</div>
-      <div class="tm-item" id="nav-archive" onclick="showView('archive')">Archive<span class="tm-count" id="archive-count"></span></div>
-      <div class="tm-item" id="nav-collections" onclick="showView('collections')">Collections</div>
-      <div class="tm-item" id="nav-journal" onclick="showView('journal')">Journal</div>
-      <div class="tm-item" id="nav-save" onclick="openModal()">Save Places</div>
+      <div class="tm-item" id="nav-map" onclick="showView('map')">
+        <svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Map
+      </div>
+      <div class="tm-item" id="nav-archive" onclick="showView('archive')">
+        <svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Archive<span class="tm-count" id="archive-count"></span>
+      </div>
+      <div class="tm-item" id="nav-save" onclick="openModal()">
+        <svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Save
+      </div>
+      <div class="tm-item" id="nav-collections" onclick="showView('collections')">
+        <svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Collections
+      </div>
+      <div class="tm-item" id="nav-journal" onclick="showView('journal')">
+        <svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Journal
+      </div>
     </div>
   </header>
 
