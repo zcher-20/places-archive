@@ -689,6 +689,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 /* ── MOBILE ARCHIVE HEADER (desktop: hidden) ─ */
 .mob-archive-head { display:none; }
 .dp-mobile-bar { display:none; }
+.dp-back-overlay { display:none; }
 
 /* ── MOBILE BACK BUTTON ─────────────────── */
 .dp-back-btn {
@@ -840,12 +841,20 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   #detail-panel.open { transform:translateX(0) !important; }
   #detail-panel::before { display:none; }
   .dp-close { display:none; }
-  .dp-mobile-bar {
-    display:flex; align-items:center;
-    padding:12px 16px 8px;
-    padding-top:calc(12px + env(safe-area-inset-top));
-    background:#fff; border-bottom:1px solid rgba(0,0,0,.06);
-    flex-shrink:0;
+  .dp-mobile-bar { display:none; }
+  .dp-back-overlay {
+    display:flex;
+    position:absolute;
+    top:calc(14px + env(safe-area-inset-top));
+    left:16px;
+    width:36px; height:36px;
+    border-radius:50%;
+    background:rgba(0,0,0,.38);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    border:none; color:#fff;
+    align-items:center; justify-content:center;
+    cursor:pointer; z-index:10;
   }
   .dp-body { padding:16px 18px calc(32px + env(safe-area-inset-bottom)); }
   .dp-name { font-size:20px; }
@@ -1151,6 +1160,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   </div>
   <div class="dp-hero">
     <img id="dp-img" src="" alt="">
+    <!-- mobile floating back button -->
+    <button class="dp-back-overlay" onclick="closePanel()" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
     <!-- photo change overlay -->
     <div class="dp-hero-overlay">
       <button class="dp-change-photo-btn" onclick="openPhotoModal('place')">
@@ -1793,12 +1806,50 @@ function openPlace(p){
   refreshPanelBtns();
   buildMiniMap(p.lat,p.lng);
   document.getElementById('detail-panel').classList.add('open');
+  if(window.innerWidth<=768){
+    document.querySelector('.dp-back-overlay').style.display='flex';
+    initSwipeBack();
+  }
   setTimeout(initNoteEditing,50);
 }
 function closePanel(){
-  document.getElementById('detail-panel').classList.remove('open');
+  const panel=document.getElementById('detail-panel');
+  panel.style.transition='';
+  panel.style.transform='';
+  panel.classList.remove('open');
   document.querySelectorAll('.place-card').forEach(c=>c.classList.remove('selected'));
   selectedPlace=null;
+}
+
+function initSwipeBack(){
+  const panel=document.getElementById('detail-panel');
+  if(panel._swipeInit)return;
+  panel._swipeInit=true;
+  let sx=0,sy=0,dragging=false;
+  panel.addEventListener('touchstart',e=>{
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; dragging=false;
+  },{passive:true});
+  panel.addEventListener('touchmove',e=>{
+    const dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+    if(!dragging){
+      if(Math.abs(dx)>Math.abs(dy)&&dx>8){ dragging=true; panel.style.transition='none'; }
+      else if(Math.abs(dy)>10) return;
+    }
+    if(dragging&&dx>0) panel.style.transform=`translateX(${dx}px)`;
+  },{passive:true});
+  panel.addEventListener('touchend',e=>{
+    if(!dragging)return; dragging=false;
+    const dx=e.changedTouches[0].clientX-sx;
+    if(dx>80){
+      panel.style.transition='transform .28s cubic-bezier(.4,0,.2,1)';
+      panel.style.transform='translateX(100%)';
+      setTimeout(closePanel,280);
+    } else {
+      panel.style.transition='transform .22s cubic-bezier(.4,0,.2,1)';
+      panel.style.transform='translateX(0)';
+      setTimeout(()=>panel.style.transition='',220);
+    }
+  },{passive:true});
 }
 function refreshPanelBtns(){
   if(!selectedPlace)return;
