@@ -757,14 +757,13 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .mob-archive-head {
     display:flex; flex-direction:column; gap:0;
     background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
-    flex-shrink:0;
+    flex-shrink:0; padding-top:env(safe-area-inset-top);
   }
   .archive-hero { display:none; }
   .afb { display:none; }
-  /* ── MOBILE ARCHIVE: redesigned header ─────── */
   .mah-row1 {
     display:flex; align-items:center; justify-content:space-between;
-    padding:20px 20px 16px;
+    padding:16px 20px 14px;
   }
   .mah-title {
     font-family:var(--sans); font-size:28px; font-weight:700;
@@ -902,13 +901,16 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   #place-picker-modal { width:100%; max-width:100%; border-radius:20px 20px 0 0; max-height:88vh; }
   #place-picker { align-items:flex-end; }
 
+  /* ── MAP: safe area top for status bar ────── */
+  #map-list-toggle { top:calc(14px + env(safe-area-inset-top)); }
+
   /* ── COLLECTIONS ─────────────────────────── */
-  .colls-wrap { padding:24px 14px calc(80px + env(safe-area-inset-bottom)); }
+  .colls-wrap { padding:calc(20px + env(safe-area-inset-top)) 14px calc(80px + env(safe-area-inset-bottom)); }
   .colls-page-title { font-size:38px; }
   .colls-top { margin-bottom:20px; }
 
   /* ── JOURNAL ─────────────────────────────── */
-  .journal-wrap { padding:24px 14px calc(80px + env(safe-area-inset-bottom)); max-width:100%; }
+  .journal-wrap { padding:calc(20px + env(safe-area-inset-top)) 14px calc(80px + env(safe-area-inset-bottom)); max-width:100%; }
   .journal-page-title { font-size:38px; }
   .journal-year-ghost { font-size:72px; }
   .journal-entry { padding:12px; gap:14px; }
@@ -1669,16 +1671,23 @@ function toggleCatFilter(){
 }
 function toggleMobCatFilter(btn){
   const drop=document.getElementById('afb-cat-drop');
-  if(!drop.classList.contains('open')){
-    const rect=btn.getBoundingClientRect();
-    drop.style.position='fixed';
-    drop.style.left=rect.left+'px';
-    drop.style.top=(rect.bottom+4)+'px';
-    drop.style.right='auto';
+  const afb=document.querySelector('.afb');
+  const rect=btn.getBoundingClientRect();
+  // Move out of hidden .afb parent so it can render
+  document.body.appendChild(drop);
+  drop.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.bottom+6}px;right:auto;z-index:9999;`;
+  const isOpen=drop.classList.toggle('open');
+  if(isOpen){
+    setTimeout(()=>document.addEventListener('click',function once(){
+      drop.classList.remove('open');
+      if(afb) afb.appendChild(drop);
+      drop.style.cssText='';
+      document.removeEventListener('click',once);
+    },{once:true}),50);
+  } else {
+    if(afb) afb.appendChild(drop);
+    drop.style.cssText='';
   }
-  drop.classList.toggle('open');
-  if(drop.classList.contains('open'))
-    document.addEventListener('click',closeCatOnOutside,{once:true});
 }
 function closeCatOnOutside(e){
   if(!e.target.closest('#afb-cat-drop')&&!e.target.closest('#afb-filter-btn'))
