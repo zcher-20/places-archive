@@ -871,11 +871,11 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     margin:12px auto 4px;
   }
 
-  /* ── MAP CARD: fixed so overflow:hidden can't clip it ── */
+  /* ── MAP CARD: fixed at bottom:0, padding lifts content above nav ── */
   #map-card-sheet {
     position:fixed;
-    bottom:calc(58px + env(safe-area-inset-bottom));
-    left:0; right:0; z-index:1001;
+    bottom:0; left:0; right:0; z-index:1001;
+    padding-bottom:calc(58px + env(safe-area-inset-bottom));
   }
   .mcs-outer { padding:0 10px 10px; }
   .mcs-name { font-size:24px; }
