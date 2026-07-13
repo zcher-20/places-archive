@@ -683,6 +683,17 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 /* ── NAV ICON (desktop: hidden) ─────────── */
 .tm-icon { display:none; }
 
+/* ── MOBILE ARCHIVE HEADER (desktop: hidden) ─ */
+.mob-archive-head { display:none; }
+.dp-mobile-bar { display:none; }
+
+/* ── MOBILE BACK BUTTON ─────────────────── */
+.dp-back-btn {
+  background:none; border:none; padding:0; cursor:pointer;
+  color:var(--charcoal); display:flex; align-items:center; gap:6px;
+  font-family:var(--sans); font-size:14px; font-weight:500;
+}
+
 /* ════════════════════════════════════════════
    MOBILE  ≤ 768px
    ════════════════════════════════════════════ */
@@ -739,27 +750,78 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .al-city-header { font-size:18px; padding:0 12px 6px; }
   .al-city-header:not(:first-child) { padding-top:22px; }
 
-  /* ── DETAIL PANEL → bottom sheet ────────── */
-  #detail-panel {
-    top:auto !important;
-    bottom:calc(58px + env(safe-area-inset-bottom));
-    left:0; right:0; width:100%;
-    height:78vh;
-    border-radius:20px 20px 0 0;
-    box-shadow:0 -6px 40px rgba(0,0,0,.14);
-    transform:translateY(110%) !important;
+  /* ── MOBILE ARCHIVE HEADER ──────────────── */
+  .mob-archive-head {
+    display:flex; flex-direction:column; gap:0;
+    background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
+    flex-shrink:0;
   }
-  #detail-panel.open { transform:translateY(0) !important; }
-  .dp-body { padding:16px 18px 32px; }
+  .archive-hero { display:none; }
+  .afb { display:none; }
+  .mah-row1 {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 16px 10px;
+  }
+  .mah-title {
+    font-family:var(--sans); font-size:22px; font-weight:700;
+    color:var(--charcoal); letter-spacing:-.02em;
+  }
+  .mah-count {
+    font-size:14px; font-weight:400; color:var(--text-3); margin-left:4px;
+  }
+  .mah-add-btn {
+    width:34px; height:34px; border-radius:50%; background:var(--charcoal);
+    border:none; color:#fff; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0;
+  }
+  .mah-search-row {
+    display:flex; align-items:center; gap:10px;
+    margin:0 14px 10px; padding:10px 14px;
+    background:var(--stone); border-radius:12px;
+    color:var(--text-3);
+  }
+  .mah-search-input {
+    flex:1; border:none; background:none; outline:none;
+    font-family:var(--sans); font-size:14px; color:var(--charcoal);
+  }
+  .mah-search-input::placeholder { color:var(--text-4); }
+  .mah-chips {
+    display:flex; gap:8px; padding:0 14px 12px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .mah-chips::-webkit-scrollbar { display:none; }
+  .mah-chip {
+    display:flex; align-items:center; gap:4px; flex-shrink:0;
+    padding:7px 14px; border-radius:100px;
+    border:1px solid rgba(0,0,0,.12); background:#fff;
+    font-family:var(--sans); font-size:13px; color:var(--text-2);
+    cursor:pointer; white-space:nowrap; transition:all .15s;
+  }
+  .mah-chip.active { background:var(--charcoal); color:#fff; border-color:var(--charcoal); }
+
+  /* ── DETAIL PANEL → full-screen push ────── */
+  #detail-panel {
+    top:0 !important; bottom:0 !important;
+    left:0 !important; right:0 !important;
+    width:100% !important; height:100% !important;
+    border-radius:0;
+    box-shadow:none;
+    transform:translateX(100%) !important;
+    z-index:600;
+  }
+  #detail-panel.open { transform:translateX(0) !important; }
+  #detail-panel::before { display:none; }
+  .dp-close { display:none; }
+  .dp-mobile-bar {
+    display:flex; align-items:center;
+    padding:12px 16px 8px;
+    padding-top:calc(12px + env(safe-area-inset-top));
+    background:#fff; border-bottom:1px solid rgba(0,0,0,.06);
+    flex-shrink:0;
+  }
+  .dp-body { padding:16px 18px calc(32px + env(safe-area-inset-bottom)); }
   .dp-name { font-size:20px; }
   .dp-mini-map { height:110px; }
-
-  /* drag handle on panel */
-  #detail-panel::before {
-    content:''; display:block; width:36px; height:4px;
-    background:rgba(0,0,0,.13); border-radius:2px;
-    margin:12px auto 0; flex-shrink:0;
-  }
 
   /* ── MAP MARKERS ─────────────────────────── */
   .sq-pin { width:44px; height:44px; border-radius:12px; }
@@ -785,7 +847,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   }
 
   /* ── MAP CARD ────────────────────────────── */
-  .mcs-outer { padding:0 10px calc(10px + env(safe-area-inset-bottom)); }
+  #map-card-sheet { bottom:calc(58px + env(safe-area-inset-bottom)); }
+  .mcs-outer { padding:0 10px 10px; }
   .mcs-name { font-size:24px; }
 
   /* ── ADD PLACE MODAL → full screen ──────── */
@@ -924,6 +987,32 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
     <!-- ARCHIVE -->
     <div class="view" id="view-archive">
+      <!-- mobile-only header -->
+      <div class="mob-archive-head" id="mob-archive-head">
+        <div class="mah-row1">
+          <span class="mah-title">Archive <span class="mah-count" id="mah-count"></span></span>
+          <button class="mah-add-btn" onclick="openModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <div class="mah-search-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="mah-search-input" id="mob-search-input" type="text" placeholder="Search places…" oninput="handleSearch(this.value)" onkeydown="if(event.key==='Escape'){this.value='';handleSearch('');this.blur();}">
+        </div>
+        <div class="mah-chips">
+          <button class="mah-chip" onclick="cycleSort(this)" id="mob-sort-btn">
+            <span id="mob-sort-label">Recent</span>
+          </button>
+          <button class="mah-chip" id="mob-visited-btn" onclick="cycleVisitedFilter(this)">
+            <span id="mob-visited-label">Status</span>
+          </button>
+          <button class="mah-chip" id="mob-cat-btn" onclick="toggleMobCatFilter(this)">
+            <span id="mob-filter-label">All</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+        <!-- reuse same category dropdown, positioned relative to this header -->
+      </div>
       <!-- hero -->
       <div class="archive-hero" id="archive-hero">
         <div class="ah-bg" id="ah-bg"></div>
@@ -1018,6 +1107,12 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 <!-- DETAIL PANEL -->
 <div id="panel-backdrop"></div>
 <aside id="detail-panel">
+  <!-- mobile back bar -->
+  <div class="dp-mobile-bar">
+    <button class="dp-back-btn" onclick="closePanel()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+  </div>
   <div class="dp-hero">
     <img id="dp-img" src="" alt="">
     <!-- photo change overlay -->
@@ -1397,7 +1492,7 @@ function cityPhoto(city){
 // ── BOOT ─────────────────────────────────────────────
 function enterApp(){
   document.getElementById('landing').classList.add('hidden');
-  document.getElementById('archive-count').textContent = places.length;
+  document.getElementById('archive-count').textContent = places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   showView('map');
 }
 function buildSidebar(){
@@ -1409,7 +1504,7 @@ function buildSidebar(){
     div.innerHTML=`<div class="sb-coll-dot"></div><span class="sb-coll-name">${c.name}</span><span class="sb-coll-count">${c.places.length}</span>`;
     el.appendChild(div);
   });
-  document.getElementById('archive-count').textContent=places.length;
+  document.getElementById('archive-count').textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
 }
 
 // ── ROUTING ──────────────────────────────────────────
@@ -1510,8 +1605,14 @@ function cycleVisitedFilter(btn){
   const states=['all','visited','want'];
   const labels={'all':'Status','visited':'Visited','want':'Want to go'};
   visitedFilter=states[(states.indexOf(visitedFilter)+1)%states.length];
-  document.getElementById('visited-label').textContent=labels[visitedFilter];
-  btn.classList.toggle('active',visitedFilter!=='all');
+  const label=labels[visitedFilter];
+  document.getElementById('visited-label').textContent=label;
+  const mobLabel=document.getElementById('mob-visited-label');
+  if(mobLabel) mobLabel.textContent=label;
+  const active=visitedFilter!=='all';
+  btn.classList.toggle('active',active);
+  const other=document.getElementById(btn.id==='afb-visited-btn'?'mob-visited-btn':'afb-visited-btn');
+  if(other) other.classList.toggle('active',active);
   renderArchive();
 }
 function setRating(placeId,stars,starEl){
@@ -1524,14 +1625,33 @@ function setRating(placeId,stars,starEl){
 }
 function cycleSort(btn){
   sortMode=sortMode==='recent'?'alpha':'recent';
-  document.getElementById('sort-label').textContent=sortLabels[sortMode];
-  btn.classList.toggle('active',sortMode!=='recent');
+  const label=sortLabels[sortMode];
+  document.getElementById('sort-label').textContent=label;
+  const mobLabel=document.getElementById('mob-sort-label');
+  if(mobLabel) mobLabel.textContent=label;
+  const active=sortMode!=='recent';
+  btn.classList.toggle('active',active);
+  const other=document.getElementById(btn.id==='mob-sort-btn'?'afb-sort-btn':'mob-sort-btn');
+  if(other) other.classList.toggle('active',active);
   renderArchive();
 }
 function toggleCatFilter(){
   const drop=document.getElementById('afb-cat-drop');
   drop.classList.toggle('open');
   document.getElementById('afb-filter-btn').classList.toggle('active',drop.classList.contains('open'));
+  if(drop.classList.contains('open'))
+    document.addEventListener('click',closeCatOnOutside,{once:true});
+}
+function toggleMobCatFilter(btn){
+  const drop=document.getElementById('afb-cat-drop');
+  if(!drop.classList.contains('open')){
+    const rect=btn.getBoundingClientRect();
+    drop.style.position='fixed';
+    drop.style.left=rect.left+'px';
+    drop.style.top=(rect.bottom+4)+'px';
+    drop.style.right='auto';
+  }
+  drop.classList.toggle('open');
   if(drop.classList.contains('open'))
     document.addEventListener('click',closeCatOnOutside,{once:true});
 }
@@ -1546,6 +1666,10 @@ function setCatFilter(cat,el){
   document.getElementById('filter-label').textContent=cat;
   document.getElementById('afb-filter-btn').classList.toggle('active',cat!=='All');
   document.getElementById('afb-cat-drop').classList.remove('open');
+  const mobLabel=document.getElementById('mob-filter-label');
+  if(mobLabel) mobLabel.textContent=cat;
+  const mobBtn=document.getElementById('mob-cat-btn');
+  if(mobBtn) mobBtn.classList.toggle('active',cat!=='All');
   renderArchive();
 }
 function setFilter(cat){ activeFilter=cat; renderArchive(); }
@@ -1597,7 +1721,7 @@ function ctxDelete(){
   if(selectedPlace?.id===id) closePanel();
   if(mapMarkers[id]){ leafletMap?.removeLayer(mapMarkers[id]); delete mapMarkers[id]; }
   if(mapCardPlaceId===id) closeMapCard();
-  deleteFromDB(id); document.getElementById('archive-count').textContent=places.length;
+  deleteFromDB(id); document.getElementById('archive-count').textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   renderArchive(); closeCtxMenu();
 }
 
@@ -2305,7 +2429,7 @@ function savePlace(){
     dateAdded:new Date().toISOString().split('T')[0],
     visited:!!document.getElementById('f-date').value, favorite:false
   };
-  places.unshift(p); upsertPlace(p); closeModal(); document.getElementById('archive-count').textContent=places.length;
+  places.unshift(p); upsertPlace(p); closeModal(); document.getElementById('archive-count').textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   if(p.lat||p.lng){
     showView('map'); // make container visible before Leaflet touches it
     setTimeout(()=>{
