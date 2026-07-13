@@ -760,24 +760,24 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .afb { display:none; }
   .mah-row1 {
     display:flex; align-items:center; justify-content:space-between;
-    padding:16px 16px 10px;
+    padding:14px 16px 8px;
   }
   .mah-title {
-    font-family:var(--sans); font-size:22px; font-weight:700;
+    font-family:var(--sans); font-size:20px; font-weight:700;
     color:var(--charcoal); letter-spacing:-.02em;
   }
   .mah-count {
-    font-size:14px; font-weight:400; color:var(--text-3); margin-left:4px;
+    font-size:13px; font-weight:400; color:var(--text-3); margin-left:4px;
   }
   .mah-add-btn {
-    width:34px; height:34px; border-radius:50%; background:var(--charcoal);
+    width:30px; height:30px; border-radius:50%; background:var(--charcoal);
     border:none; color:#fff; display:flex; align-items:center; justify-content:center;
     cursor:pointer; flex-shrink:0;
   }
   .mah-search-row {
-    display:flex; align-items:center; gap:10px;
-    margin:0 14px 10px; padding:10px 14px;
-    background:var(--stone); border-radius:12px;
+    display:flex; align-items:center; gap:9px;
+    margin:0 14px 8px; padding:9px 13px;
+    background:rgba(0,0,0,.055); border-radius:11px;
     color:var(--text-3);
   }
   .mah-search-input {
@@ -786,18 +786,22 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   }
   .mah-search-input::placeholder { color:var(--text-4); }
   .mah-chips {
-    display:flex; gap:8px; padding:0 14px 12px;
+    display:flex; gap:6px; padding:0 14px 10px;
     overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
   }
   .mah-chips::-webkit-scrollbar { display:none; }
   .mah-chip {
     display:flex; align-items:center; gap:4px; flex-shrink:0;
-    padding:7px 14px; border-radius:100px;
-    border:1px solid rgba(0,0,0,.12); background:#fff;
-    font-family:var(--sans); font-size:13px; color:var(--text-2);
+    padding:6px 13px; border-radius:100px;
+    border:1px solid rgba(0,0,0,.11); background:#fff;
+    font-family:var(--sans); font-size:12.5px; color:var(--text-2);
     cursor:pointer; white-space:nowrap; transition:all .15s;
   }
   .mah-chip.active { background:var(--charcoal); color:#fff; border-color:var(--charcoal); }
+
+  /* ── LEAFLET: push attribution above bottom nav ── */
+  .leaflet-bottom { bottom:calc(58px + env(safe-area-inset-bottom)) !important; }
+  .leaflet-control-attribution { display:none !important; }
 
   /* ── DETAIL PANEL → full-screen push ────── */
   #detail-panel {
