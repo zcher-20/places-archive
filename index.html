@@ -768,7 +768,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .mob-archive-head {
     display:flex; flex-direction:column; gap:0;
     background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
-    flex-shrink:0; padding-top:env(safe-area-inset-top);
+    flex-shrink:0; padding-top:calc(32px + env(safe-area-inset-top));
   }
   .archive-hero { display:none; }
   .afb { display:none; }
@@ -929,7 +929,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   #map-list-toggle { top:calc(14px + env(safe-area-inset-top)); }
 
   /* ── COLLECTIONS ─────────────────────────── */
-  .colls-wrap { padding:calc(16px + env(safe-area-inset-top)) 16px calc(80px + env(safe-area-inset-bottom)); }
+  .colls-wrap { padding:calc(32px + env(safe-area-inset-top)) 16px calc(80px + env(safe-area-inset-bottom)); }
   .colls-page-title { font-size:34px; }
   .colls-top { margin-bottom:20px; }
   .colls-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
@@ -955,7 +955,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .cdp-body { padding:16px 16px calc(80px + env(safe-area-inset-bottom)); }
 
   /* ── JOURNAL ─────────────────────────────── */
-  .journal-wrap { padding:calc(20px + env(safe-area-inset-top)) 14px calc(80px + env(safe-area-inset-bottom)); max-width:100%; }
+  .journal-wrap { padding:calc(32px + env(safe-area-inset-top)) 16px calc(80px + env(safe-area-inset-bottom)); max-width:100%; }
   .journal-page-title { font-size:38px; }
   .journal-year-ghost { font-size:72px; }
   .journal-entry { padding:12px; gap:14px; }
