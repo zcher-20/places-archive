@@ -111,6 +111,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .tm-count { display:none; }
 .sb-add-btn { display:none; }
 
+/* ── LEAFLET ATTRIBUTION (always hidden) ─── */
+.leaflet-control-attribution { display:none !important; visibility:hidden !important; opacity:0 !important; }
+
 /* ── LEAFLET ZOOM CONTROLS ────────────────── */
 .leaflet-control-zoom {
   border:none !important;
@@ -758,50 +761,72 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   }
   .archive-hero { display:none; }
   .afb { display:none; }
+  /* ── MOBILE ARCHIVE: redesigned header ─────── */
   .mah-row1 {
     display:flex; align-items:center; justify-content:space-between;
-    padding:14px 16px 8px;
+    padding:20px 20px 16px;
   }
   .mah-title {
-    font-family:var(--sans); font-size:20px; font-weight:700;
-    color:var(--charcoal); letter-spacing:-.02em;
+    font-family:var(--sans); font-size:28px; font-weight:700;
+    color:var(--charcoal); letter-spacing:-.03em; line-height:1;
   }
   .mah-count {
-    font-size:13px; font-weight:400; color:var(--text-3); margin-left:4px;
+    display:block; font-size:12px; font-weight:400;
+    color:var(--text-4); margin-top:3px; letter-spacing:.02em;
   }
   .mah-add-btn {
-    width:30px; height:30px; border-radius:50%; background:var(--charcoal);
+    width:38px; height:38px; border-radius:50%; background:var(--charcoal);
     border:none; color:#fff; display:flex; align-items:center; justify-content:center;
     cursor:pointer; flex-shrink:0;
+    box-shadow:0 2px 8px rgba(0,0,0,.18);
   }
   .mah-search-row {
-    display:flex; align-items:center; gap:9px;
-    margin:0 14px 8px; padding:9px 13px;
-    background:rgba(0,0,0,.055); border-radius:11px;
+    display:flex; align-items:center; gap:10px;
+    margin:0 20px 14px; padding:11px 14px;
+    background:rgba(0,0,0,.05); border-radius:13px;
     color:var(--text-3);
   }
   .mah-search-input {
     flex:1; border:none; background:none; outline:none;
-    font-family:var(--sans); font-size:14px; color:var(--charcoal);
+    font-family:var(--sans); font-size:15px; color:var(--charcoal);
   }
   .mah-search-input::placeholder { color:var(--text-4); }
   .mah-chips {
-    display:flex; gap:6px; padding:0 14px 10px;
+    display:flex; gap:0; padding:0 20px 16px;
     overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    border-bottom:1px solid rgba(0,0,0,.07);
   }
   .mah-chips::-webkit-scrollbar { display:none; }
   .mah-chip {
     display:flex; align-items:center; gap:4px; flex-shrink:0;
-    padding:6px 13px; border-radius:100px;
-    border:1px solid rgba(0,0,0,.11); background:#fff;
-    font-family:var(--sans); font-size:12.5px; color:var(--text-2);
-    cursor:pointer; white-space:nowrap; transition:all .15s;
+    padding:4px 0; margin-right:20px;
+    border:none; background:none;
+    font-family:var(--sans); font-size:13px; color:var(--text-3);
+    cursor:pointer; white-space:nowrap;
+    border-bottom:2px solid transparent;
+    transition:color .15s, border-color .15s;
   }
-  .mah-chip.active { background:var(--charcoal); color:#fff; border-color:var(--charcoal); }
+  .mah-chip.active { color:var(--charcoal); font-weight:600; border-bottom-color:var(--charcoal); }
 
-  /* ── LEAFLET: push attribution above bottom nav ── */
+  /* ── MOBILE LIST: cleaner items ────────────── */
+  .al-cat { display:none; }
+  .al-maps-link { display:none; }
+  .al-edit { display:none; }
+  .al-stars { display:none; }
+  .al-thumb { width:60px; height:60px; border-radius:12px; }
+  .al-name { font-size:16px; font-weight:600; }
+  .al-loc { font-size:13px; }
+  .al-item { padding:12px 20px; }
+  .al-item::after { left:100px; }
+  .al-city-header {
+    font-size:11px; font-weight:600; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--text-4);
+    padding:18px 20px 8px;
+  }
+  .al-city-header:not(:first-child) { padding-top:24px; }
+
+  /* ── LEAFLET: push zoom above bottom nav ─── */
   .leaflet-bottom { bottom:calc(58px + env(safe-area-inset-bottom)) !important; }
-  .leaflet-control-attribution { display:none !important; }
 
   /* ── DETAIL PANEL → full-screen push ────── */
   #detail-panel {
@@ -994,7 +1019,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       <!-- mobile-only header -->
       <div class="mob-archive-head" id="mob-archive-head">
         <div class="mah-row1">
-          <span class="mah-title">Archive <span class="mah-count" id="mah-count"></span></span>
+          <div class="mah-title">Archive<span class="mah-count" id="mah-count"></span></div>
           <button class="mah-add-btn" onclick="openModal()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
