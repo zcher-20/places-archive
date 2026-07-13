@@ -932,9 +932,11 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .colls-wrap { padding:calc(16px + env(safe-area-inset-top)) 16px calc(80px + env(safe-area-inset-bottom)); }
   .colls-page-title { font-size:34px; }
   .colls-top { margin-bottom:20px; }
-  .colls-grid { grid-template-columns:1fr; gap:14px; }
-  .coll-card { aspect-ratio:4/3; border-radius:16px; }
-  .coll-card-name { font-size:22px; }
+  .colls-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
+  .coll-card { aspect-ratio:3/4; border-radius:14px; }
+  .coll-card-name { font-size:16px; }
+  .coll-card-overlay { padding:16px 14px; }
+  .coll-card-sub { font-size:10px; margin-top:4px; }
 
   /* ── COLLECTION DETAIL PANEL (mobile) ────── */
   #coll-panel { width:100%; left:0; z-index:600; }
