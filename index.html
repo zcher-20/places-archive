@@ -2052,7 +2052,7 @@ function initMap(){
   places.forEach(p=>addMarkerToMap(p));
 
   // close card when clicking map background
-  leafletMap.on('click',()=>closeMapCard());
+  leafletMap.on('click',()=>{ closeMapCard(); if(mapSidebarOpen) toggleMapSidebar(); });
   setTimeout(()=>leafletMap.invalidateSize(),100);
 }
 
