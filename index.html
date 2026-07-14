@@ -899,7 +899,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     border-right:none; border-top:1px solid rgba(0,0,0,.08);
     border-radius:20px 20px 0 0;
     transform:translateY(110%);
+    display:flex; flex-direction:column; overflow:hidden;
   }
+  #mls-content { flex:1; overflow-y:auto; }
   #map-list-sidebar.open { transform:translateX(0) translateY(0); }
   #map-list-toggle.sidebar-open { left:14px; }
 
@@ -1064,6 +1066,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       <!-- archive sidebar -->
       <div id="map-list-sidebar">
         <div id="sidebar-drag-handle"></div>
+        <div id="mls-content"></div>
       </div>
     </div>
 
@@ -2183,7 +2186,8 @@ function renderMapSidebar(){
       </div>`).join('')}
   `).join('');
 
-  el.innerHTML = filterBar + (rows || '<div style="padding:20px 16px;font-size:13px;color:var(--text-3)">No places match.</div>');
+  const content = document.getElementById('mls-content') || el;
+  content.innerHTML = filterBar + (rows || '<div style="padding:20px 16px;font-size:13px;color:var(--text-3)">No places match.</div>');
 }
 function setMlsVisited(v){ mlsVisited=v; renderMapSidebar(); }
 function setMlsCategory(c){ mlsCategory=mlsCategory===c?'All':c; renderMapSidebar(); }
