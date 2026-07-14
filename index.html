@@ -663,7 +663,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #name-coll-input { width:100%; padding:11px 14px; border:1px solid #d1d5db; border-radius:9px; font-size:14.5px; font-family:var(--sans); color:var(--charcoal); outline:none; box-sizing:border-box; }
 #name-coll-input:focus { border-color:#7C1D3F; box-shadow:0 0 0 3px rgba(124,29,63,.12); }
 .name-coll-foot { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
-.name-coll-cancel { padding:9px 18px; border:1px solid rgba(0,0,0,.12); border-radius:9px; background:#fff; font-family:var(--sans); font-size:13.5px; cursor:pointer; }
+.name-coll-cancel { padding:9px 18px; border:1px solid rgba(0,0,0,.12); border-radius:9px; background:#fff; font-family:var(--sans); font-size:13.5px; cursor:pointer; color:var(--charcoal); }
 .name-coll-save { padding:9px 20px; border:none; border-radius:9px; background:#7C1D3F; color:#fff; font-family:var(--sans); font-size:13.5px; cursor:pointer; }
 .name-coll-save:hover { background:#661633; }
 
@@ -904,10 +904,17 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   #map-list-toggle.sidebar-open { left:14px; }
 
   /* drag handle on sidebar */
-  #map-list-sidebar::before {
+  #sidebar-drag-handle {
+    width:100%; padding:14px 0 8px; flex-shrink:0;
+    display:flex; justify-content:center; align-items:center;
+    cursor:ns-resize; touch-action:none;
+  }
+  #sidebar-drag-handle::after {
     content:''; display:block; width:36px; height:4px;
     background:rgba(0,0,0,.13); border-radius:2px;
-    margin:12px auto 4px;
+  }
+  #map-list-sidebar::before {
+    display:none;
   }
 
   /* ── MAP CARD: fixed at bottom:0, padding lifts content above pill ── */
@@ -1055,7 +1062,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       </button>
       <!-- archive sidebar -->
-      <div id="map-list-sidebar"></div>
+      <div id="map-list-sidebar">
+        <div id="sidebar-drag-handle"></div>
+      </div>
     </div>
 
     <!-- ARCHIVE -->
@@ -2096,12 +2105,40 @@ function mlsFilteredPlaces(){
   return list;
 }
 
+function initSidebarDrag(){
+  if(window.innerWidth>768)return;
+  const handle=document.getElementById('sidebar-drag-handle');
+  const sidebar=document.getElementById('map-list-sidebar');
+  if(!handle||handle._dragInit)return;
+  handle._dragInit=true;
+  const SNAPS=[30,60,85];
+  let startY=0,startH=0;
+  handle.addEventListener('touchstart',e=>{
+    startY=e.touches[0].clientY;
+    startH=sidebar.getBoundingClientRect().height;
+    sidebar.style.transition='none';
+  },{passive:true});
+  handle.addEventListener('touchmove',e=>{
+    const dy=startY-e.touches[0].clientY;
+    const newVh=Math.min(85,Math.max(20,(startH+dy)/window.innerHeight*100));
+    sidebar.style.height=newVh+'vh';
+  },{passive:true});
+  handle.addEventListener('touchend',()=>{
+    const cur=sidebar.getBoundingClientRect().height/window.innerHeight*100;
+    const snap=SNAPS.reduce((a,b)=>Math.abs(b-cur)<Math.abs(a-cur)?b:a);
+    sidebar.style.transition='height .3s cubic-bezier(.4,0,.2,1)';
+    sidebar.style.height=snap+'vh';
+    setTimeout(()=>sidebar.style.transition='',300);
+  },{passive:true});
+}
+
 function toggleMapSidebar(){
   mapSidebarOpen = !mapSidebarOpen;
   const sidebar = document.getElementById('map-list-sidebar');
   const toggle  = document.getElementById('map-list-toggle');
   sidebar.classList.toggle('open', mapSidebarOpen);
   toggle.classList.toggle('sidebar-open', mapSidebarOpen);
+  if(mapSidebarOpen) initSidebarDrag();
   if(mapSidebarOpen) renderMapSidebar();
   setTimeout(()=>leafletMap?.invalidateSize(), 340);
 }
