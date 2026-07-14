@@ -918,16 +918,18 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .mcs-outer { padding:0 10px 10px; }
   .mcs-name { font-size:24px; }
 
-  /* ── ADD PLACE MODAL → full-height sheet above pill ── */
-  #modal-backdrop { align-items:flex-end; padding-bottom:calc(88px + env(safe-area-inset-bottom)); }
+  /* ── ADD PLACE MODAL → fixed sheet, safe-area top → above pill ── */
+  #modal-backdrop { align-items:flex-end; padding-bottom:0; }
   #modal {
-    width:100%; max-width:100%;
-    height:calc(100vh - 80px - env(safe-area-inset-top) - 88px - env(safe-area-inset-bottom));
-    max-height:none;
+    position:fixed;
+    left:0; right:0;
+    top:calc(env(safe-area-inset-top) + 16px);
+    bottom:calc(88px + env(safe-area-inset-bottom));
+    width:100%; height:auto; max-height:none;
     border-radius:20px 20px 0 0;
     display:flex; flex-direction:column;
     overflow:hidden;
-    transform:translateY(110%) !important;
+    transform:translateY(130%) !important;
   }
   #modal-backdrop.open #modal { transform:translateY(0) !important; }
   .modal-head { padding:16px 18px 12px; flex-shrink:0; }
@@ -985,7 +987,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   /* ── JOURNAL ─────────────────────────────── */
   .journal-wrap { padding:calc(48px + env(safe-area-inset-top)) 16px calc(80px + env(safe-area-inset-bottom)); max-width:100%; }
   .journal-page-title { font-size:34px; margin-bottom:2px; }
-  .journal-year-ghost { font-size:72px; margin-bottom:-16px; }
+  .journal-year-ghost { font-size:72px; margin-bottom:-28px; }
   .journal-entry { padding:12px; gap:14px; }
   .je-img { width:68px; height:68px; }
   .je-name { font-size:18px; }
