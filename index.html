@@ -918,17 +918,18 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .mcs-outer { padding:0 10px 10px; }
   .mcs-name { font-size:24px; }
 
-  /* ── ADD PLACE MODAL → bottom sheet above pill ── */
+  /* ── ADD PLACE MODAL → full-height sheet above pill ── */
   #modal-backdrop { align-items:flex-end; padding-bottom:calc(88px + env(safe-area-inset-bottom)); }
   #modal {
     width:100%; max-width:100%;
-    max-height:calc(100vh - 108px - env(safe-area-inset-bottom));
+    height:calc(100vh - 80px - env(safe-area-inset-top) - 88px - env(safe-area-inset-bottom));
+    max-height:none;
     border-radius:20px 20px 0 0;
     display:flex; flex-direction:column;
     overflow:hidden;
-    transform:translateY(40px) scale(1) !important;
+    transform:translateY(110%) !important;
   }
-  #modal-backdrop.open #modal { transform:translateY(0) scale(1) !important; }
+  #modal-backdrop.open #modal { transform:translateY(0) !important; }
   .modal-head { padding:16px 18px 12px; flex-shrink:0; }
   .modal-title { font-size:17px; }
   .modal-body { padding:0 12px 8px; gap:0; overflow-y:auto; flex:1; }
@@ -2174,6 +2175,7 @@ function toggleMapCardVisited(){
 function openFromMapCard(){
   if(!mapCardPlaceId)return;
   const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
+  closeMapCard();
   showView('archive'); setTimeout(()=>openPlace(p),120);
 }
 
@@ -2683,6 +2685,10 @@ function savePlace(){
 
 // ── BOOT ─────────────────────────────────────────────
 (async ()=>{
+  // Show map immediately with local cache so screen isn't blank during fetch
+  if(!new URLSearchParams(location.search).has('landing')){
+    showView('map');
+  }
   [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
   if(new URLSearchParams(location.search).has('landing')){
     document.getElementById('landing').classList.remove('hidden');
