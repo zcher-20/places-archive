@@ -712,29 +712,39 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
   /* ── BOTTOM NAV ──────────────────────────── */
   #topbar {
-    position:fixed; bottom:0; top:auto; left:0; right:0;
-    height:calc(58px + env(safe-area-inset-bottom));
-    padding:0 0 env(safe-area-inset-bottom);
-    border-top:1px solid rgba(0,0,0,.08); border-bottom:none;
-    justify-content:space-around; z-index:500;
+    position:fixed;
+    bottom:calc(20px + env(safe-area-inset-bottom));
+    left:50%; right:auto; top:auto;
+    transform:translateX(-50%);
+    width:auto; height:auto;
+    padding:5px;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+    border:none; border-top:none;
+    border-radius:100px;
+    box-shadow:0 8px 32px rgba(0,0,0,.13), 0 1px 4px rgba(0,0,0,.07);
+    justify-content:center;
+    z-index:500;
   }
-  #top-menu { width:100%; justify-content:space-around; }
+  #top-menu { width:auto; gap:2px; justify-content:center; }
   .tm-item {
-    flex-direction:column; gap:3px; padding:0; flex:1;
-    height:58px; justify-content:center; align-items:center;
-    font-size:10px; letter-spacing:.01em; white-space:nowrap;
+    width:48px; height:48px; border-radius:100px;
+    flex:none; padding:0; gap:0;
+    flex-direction:row;
+    justify-content:center; align-items:center;
+    font-size:0;
+    color:rgba(0,0,0,.38);
+    transition:background .15s, color .15s;
   }
+  .tm-item.active { background:var(--charcoal); color:#fff; }
   .tm-item.active::after { display:none; }
+  .tm-item:not(.active):hover { background:rgba(0,0,0,.06); color:rgba(0,0,0,.7); }
   .tm-icon { display:block; }
 
-  /* ── MAIN CONTENT area leaves room for bottom nav ─ */
-  #main {
-    flex:none;
-    height:calc(100vh - 58px - env(safe-area-inset-bottom));
-  }
-  .view {
-    padding-bottom:calc(58px + env(safe-area-inset-bottom));
-  }
+  /* ── MAIN fills full viewport; views get padding for pill ─ */
+  #main { flex:none; height:100vh; }
+  .view { padding-bottom:calc(90px + env(safe-area-inset-bottom)); }
 
   /* ── LANDING ─────────────────────────────── */
   .landing-title { font-size:52px; }
@@ -874,7 +884,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
   /* ── MAP SIDEBAR → bottom drawer ────────── */
   #map-list-sidebar {
-    top:auto; bottom:calc(58px + env(safe-area-inset-bottom));
+    top:auto; bottom:calc(88px + env(safe-area-inset-bottom));
     left:0; right:0; width:100%; height:60vh;
     border-right:none; border-top:1px solid rgba(0,0,0,.08);
     border-radius:20px 20px 0 0;
@@ -890,11 +900,11 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     margin:12px auto 4px;
   }
 
-  /* ── MAP CARD: fixed at bottom:0, padding lifts content above nav ── */
+  /* ── MAP CARD: fixed at bottom:0, padding lifts content above pill ── */
   #map-card-sheet {
     position:fixed;
     bottom:0; left:0; right:0; z-index:1001;
-    padding-bottom:calc(58px + env(safe-area-inset-bottom));
+    padding-bottom:calc(88px + env(safe-area-inset-bottom));
   }
   .mcs-outer { padding:0 10px 10px; }
   .mcs-name { font-size:24px; }
