@@ -785,7 +785,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   /* ── MOBILE ARCHIVE HEADER ──────────────── */
   .mob-archive-head {
     display:flex; flex-direction:column; gap:0;
-    background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
+    background:#fff; border-bottom:none;
     flex-shrink:0; padding-top:calc(32px + env(safe-area-inset-top));
   }
   .archive-hero { display:none; }
@@ -810,8 +810,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   }
   .mah-search-row {
     display:flex; align-items:center; gap:10px;
-    margin:0 20px 14px; padding:11px 14px;
-    background:rgba(0,0,0,.05); border-radius:13px;
+    margin:0 20px 14px; padding:8px 0;
+    background:transparent; border-radius:0;
+    border-bottom:1.5px solid rgba(0,0,0,.14);
     color:var(--text-3);
   }
   .mah-search-input {
@@ -822,7 +823,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .mah-chips {
     display:flex; gap:0; padding:0 20px 16px;
     overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
-    border-bottom:1px solid rgba(0,0,0,.07);
+    border-bottom:none;
   }
   .mah-chips::-webkit-scrollbar { display:none; }
   .mah-chip {
