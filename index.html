@@ -147,6 +147,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
 /* ── ARCHIVE HERO ────────────────────────── */
 .archive-hero {
+  display:none;
   position:relative; height:260px; flex-shrink:0; overflow:hidden;
   background:var(--stone);
 }
@@ -814,6 +815,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     flex-shrink:0; padding-top:calc(32px + env(safe-area-inset-top));
   }
   .archive-hero { display:none; }
+
   .afb { display:none; }
   .mah-row1 {
     display:flex; align-items:center; justify-content:space-between;
@@ -2133,6 +2135,7 @@ function initMap(){
 }
 
 function showMapCardById(id){
+  if(mapCardPlaceId===id){ closeMapCard(); return; }
   const p=places.find(x=>x.id===id); if(p) showMapCard(p);
 }
 function showMapCard(p){
@@ -2217,8 +2220,8 @@ function toggleMapSidebar(){
   const toggle  = document.getElementById('map-list-toggle');
   sidebar.classList.toggle('open', mapSidebarOpen);
   toggle.classList.toggle('sidebar-open', mapSidebarOpen);
-  if(mapSidebarOpen) initSidebarDrag();
-  if(mapSidebarOpen) renderMapSidebar();
+  if(mapSidebarOpen){ initSidebarDrag(); renderMapSidebar(); syncMapMarkerVisibility(); }
+  else { mlsVisited='all'; mlsCategory='All'; syncMapMarkerVisibility(); }
   setTimeout(()=>leafletMap?.invalidateSize(), 340);
 }
 function renderMapSidebar(){
@@ -2265,8 +2268,18 @@ function renderMapSidebar(){
   const content = document.getElementById('mls-content') || el;
   content.innerHTML = filterBar + (rows || '<div style="padding:20px 16px;font-size:13px;color:var(--text-3)">No places match.</div>');
 }
-function setMlsVisited(v){ mlsVisited=v; renderMapSidebar(); }
-function setMlsCategory(c){ mlsCategory=mlsCategory===c?'All':c; renderMapSidebar(); }
+function syncMapMarkerVisibility(){
+  if(!leafletMap) return;
+  const visible=new Set(mlsFilteredPlaces().map(p=>String(p.id)));
+  Object.keys(mapMarkers).forEach(id=>{
+    const m=mapMarkers[id];
+    const el=m.getElement();
+    if(!el) return;
+    el.style.display=visible.has(id)?'':'none';
+  });
+}
+function setMlsVisited(v){ mlsVisited=v; renderMapSidebar(); syncMapMarkerVisibility(); }
+function setMlsCategory(c){ mlsCategory=mlsCategory===c?'All':c; renderMapSidebar(); syncMapMarkerVisibility(); }
 function selectMapSidebarPlace(id){
   const p = places.find(x=>x.id===id); if(!p) return;
   if(p.lat||p.lng){
@@ -2297,7 +2310,11 @@ function openFromMapCard(){
   if(!mapCardPlaceId)return;
   const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
   closeMapCard();
-  showView('archive'); setTimeout(()=>openPlace(p),120);
+  if(window.innerWidth>768){
+    openPlace(p);
+  } else {
+    showView('archive'); setTimeout(()=>openPlace(p),120);
+  }
 }
 
 function jumpToPlace(id){
@@ -2400,7 +2417,16 @@ function renderCollMap(collPlaces){
   });
 
   const markers=geo.map(p=>{
-    const m=L.marker([p.lat,p.lng],{icon}).addTo(cdpMap);
+    const short=p.name.length>14?p.name.slice(0,13)+'…':p.name;
+    const pinIcon=L.divIcon({
+      className:'',
+      html:`<div class="sq-pin-wrap" style="cursor:pointer">
+              <div class="sq-pin ${p.visited?'':'want'}" style="background-image:url('${p.photo||''}');width:44px;height:44px;border-radius:12px"></div>
+              <div class="sq-pin-label" style="font-size:10px;max-width:72px">${short}</div>
+            </div>`,
+      iconSize:[72,64],iconAnchor:[36,22]
+    });
+    const m=L.marker([p.lat,p.lng],{icon:pinIcon}).addTo(cdpMap);
     const popup=`<div style="width:160px;font-family:var(--sans)">
       ${p.photo?`<img src="${p.photo}" style="width:100%;height:90px;object-fit:cover;border-radius:8px 8px 0 0;display:block;margin:-10px -10px 8px" loading="lazy">`:''}
       <div style="font-weight:600;font-size:13px;color:#1a1a1a;line-height:1.3">${p.name}</div>
