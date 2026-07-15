@@ -396,6 +396,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .mls-pill { padding:5px 10px; border-radius:0; border:none; background:transparent; font-size:12px; color:var(--text-3); cursor:pointer; font-family:var(--sans); transition:color .12s; white-space:nowrap; }
 .mls-pill:hover { color:var(--charcoal); background:transparent; }
 .mls-pill.active { color:var(--charcoal); font-weight:600; }
+.mls-cat-select { width:100%; padding:7px 10px; border:1px solid rgba(0,0,0,.12); border-radius:8px; font-family:var(--sans); font-size:12.5px; color:var(--charcoal); background:#fff; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; cursor:pointer; }
 .mls-city { font-size:13px; font-weight:700; color:var(--charcoal); padding:14px 14px 5px; letter-spacing:-.01em; }
 .mls-item {
   display:flex; align-items:center; gap:10px; padding:8px 14px;
@@ -1316,6 +1317,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <span id="fav-label">Favorite</span>
       </button>
+      <button class="dp-btn" id="btn-delete-place" onclick="deletePanelPlace()" style="margin-left:auto;color:#c0392b">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Delete
+      </button>
     </div>
     <div class="dp-meta-row">
       <div class="dp-meta-item" id="dp-meta-visited" style="display:none">
@@ -1907,6 +1912,19 @@ function ctxDelete(){
   renderArchive(); closeCtxMenu();
 }
 
+function deletePanelPlace(){
+  if(!selectedPlace) return;
+  const id=selectedPlace.id;
+  places=places.filter(x=>x.id!==id);
+  if(mapMarkers[id]){ leafletMap?.removeLayer(mapMarkers[id]); delete mapMarkers[id]; }
+  if(mapCardPlaceId===id) closeMapCard();
+  deleteFromDB(id);
+  const ac=document.getElementById('archive-count'); if(ac) ac.textContent=places.length;
+  const mc=document.getElementById('mah-count'); if(mc) mc.textContent=places.length;
+  renderArchive();
+  closePanel();
+}
+
 // ── DETAIL PANEL ─────────────────────────────────────
 function fmtDateLong(s){
   if(!s)return null;
@@ -2236,16 +2254,17 @@ function renderMapSidebar(){
   ];
 
   const filterBar = `
-    <div class="mls-filters-wrap">
+    <div class="mls-filters-wrap" style="padding-top:14px">
       <div class="mls-filters">
         ${visitedPills.map(({v,label})=>`
           <button class="mls-pill${mlsVisited===v?' active':''}" onclick="setMlsVisited('${v}')">${label}</button>
         `).join('')}
       </div>
-      <div class="mls-filters">
-        ${categories.map(c=>`
-          <button class="mls-pill${mlsCategory===c?' active':''}" onclick="setMlsCategory('${c}')">${c}</button>
-        `).join('')}
+      <div style="padding:6px 14px 8px">
+        <select class="mls-cat-select" onchange="setMlsCategory(this.value)">
+          <option value="All"${mlsCategory==='All'?' selected':''}>All categories</option>
+          ${categories.sort().map(c=>`<option value="${c}"${mlsCategory===c?' selected':''}>${c}</option>`).join('')}
+        </select>
       </div>
     </div>`;
 
@@ -2279,7 +2298,7 @@ function syncMapMarkerVisibility(){
   });
 }
 function setMlsVisited(v){ mlsVisited=v; renderMapSidebar(); syncMapMarkerVisibility(); }
-function setMlsCategory(c){ mlsCategory=mlsCategory===c?'All':c; renderMapSidebar(); syncMapMarkerVisibility(); }
+function setMlsCategory(c){ mlsCategory=c; renderMapSidebar(); syncMapMarkerVisibility(); }
 function selectMapSidebarPlace(id){
   const p = places.find(x=>x.id===id); if(!p) return;
   if(p.lat||p.lng){
