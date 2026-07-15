@@ -2100,7 +2100,7 @@ function addMarkerToMap(p){
 
 function initMap(){
   if(leafletMap)return;
-  leafletMap=L.map('map-container',{center:[40.7128,-74.0060],zoom:12,zoomControl:false});
+  leafletMap=L.map('map-container',{center:[40.748,-73.984],zoom:13,zoomControl:false});
   L.control.zoom({position:'bottomright'}).addTo(leafletMap);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
     attribution:'&copy; <a href="https://carto.com/">CartoDB</a>',maxZoom:19
