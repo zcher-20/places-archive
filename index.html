@@ -318,6 +318,29 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .leaflet-popup { display:none!important; }
 
 /* ── SQUARE MAP MARKERS ──────────────────── */
+.hb-pin-wrap {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  cursor:default; width:80px;
+}
+.hb-pin {
+  width:36px; height:36px; border-radius:50%;
+  background:#1a1a1a; border:2.5px solid #fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.28);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.hb-pin svg { display:block; }
+.hb-label {
+  font-family:var(--sans); font-size:10px; font-weight:600; color:#1a1a1a;
+  white-space:nowrap; text-align:center; line-height:1.2;
+  background:rgba(255,255,255,.88); border-radius:4px;
+  padding:2px 5px; box-shadow:0 1px 4px rgba(0,0,0,.14);
+}
+.hb-dist {
+  font-family:var(--sans); font-size:9.5px; color:#555;
+  white-space:nowrap; text-align:center;
+  background:rgba(255,255,255,.88); border-radius:4px;
+  padding:1px 5px; box-shadow:0 1px 4px rgba(0,0,0,.10);
+}
 .sq-pin-wrap {
   display:flex; flex-direction:column; align-items:center; gap:5px;
   cursor:pointer; width:90px;
@@ -1682,7 +1705,7 @@ const sortLabels = { recent:'Recent', alpha:'A → Z' };
 let ctxPlaceId = null;
 
 function filteredPlaces(){
-  let list=[...places];
+  let list=places.filter(p=>p.category!=='Homebase');
   if(activeCityFilter) list=list.filter(p=>p.city===activeCityFilter);
   if(activeFilter!=='All') list=list.filter(p=>p.category===activeFilter);
   if(visitedFilter==='visited') list=list.filter(p=>p.visited);
@@ -2027,9 +2050,37 @@ function syncMapMarkers(){
   places.forEach(p=>{ if((p.lat||p.lng) && !mapMarkers[p.id]) addMarkerToMap(p); });
 }
 
+function haversineMiles(lat1,lng1,lat2,lng2){
+  const R=3958.8, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function formatDist(miles){
+  if(miles<0.1) return Math.round(miles*5280)+'ft';
+  return miles.toFixed(1)+'mi';
+}
+
 function addMarkerToMap(p){
   if(!leafletMap||mapMarkers[p.id]) return;
   if(!p.lat && !p.lng) return;
+
+  if(p.category==='Homebase'){
+    const shortName=p.name.length>16?p.name.slice(0,15)+'…':p.name;
+    const icon=L.divIcon({
+      html:`<div class="hb-pin-wrap">
+              <div class="hb-pin">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="0"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+              </div>
+              <div class="hb-label">${shortName}</div>
+              <div class="hb-dist" id="hbdist-${p.id}"></div>
+            </div>`,
+      className:'', iconSize:[80,70], iconAnchor:[40,18]
+    });
+    const marker=L.marker([p.lat,p.lng],{icon,zIndexOffset:500}).addTo(leafletMap);
+    mapMarkers[p.id]=marker;
+    return;
+  }
+
   const shortName=p.name.length>14?p.name.slice(0,13)+'…':p.name;
   const icon=L.divIcon({
     html:`<div class="sq-pin-wrap" onclick="showMapCardById(${p.id});event.stopPropagation();">
@@ -2057,7 +2108,7 @@ function initMap(){
   leafletMap.on('click',()=>{ closeMapCard(); if(mapSidebarOpen) toggleMapSidebar(); });
   setTimeout(()=>leafletMap.invalidateSize(),100);
 
-  // current location marker
+  // current location marker + homebase distances
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(pos=>{
       const {latitude:lat,longitude:lng}=pos.coords;
@@ -2068,6 +2119,11 @@ function initMap(){
       });
       L.marker([lat,lng],{icon:pulse,zIndexOffset:1000}).addTo(leafletMap)
         .bindTooltip('You are here',{permanent:false,direction:'top',offset:[0,-10]});
+      // update distance labels on all homebase markers
+      places.filter(p=>p.category==='Homebase'&&p.lat&&p.lng).forEach(p=>{
+        const el=document.getElementById(`hbdist-${p.id}`);
+        if(el) el.textContent=formatDist(haversineMiles(lat,lng,p.lat,p.lng));
+      });
     },()=>{},{enableHighAccuracy:true,timeout:8000});
   }
 }
@@ -2117,7 +2173,7 @@ let mlsVisited = 'all';   // 'all' | 'visited' | 'want'
 let mlsCategory = 'All';
 
 function mlsFilteredPlaces(){
-  let list = [...places];
+  let list = places.filter(p=>p.category!=='Homebase');
   if(mlsVisited==='visited') list=list.filter(p=>p.visited);
   if(mlsVisited==='want')    list=list.filter(p=>!p.visited);
   if(mlsCategory!=='All')    list=list.filter(p=>p.category===mlsCategory);
