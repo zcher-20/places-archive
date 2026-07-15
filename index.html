@@ -1534,7 +1534,7 @@ async function deleteFromDB(id){
 }
 async function loadCollections(){
   try{
-    const {data,error}=await db.from('collections').select('*').order('id',{ascending:true});
+    const {data,error}=await db.from('collections').select('*').order('id',{ascending:false});
     if(error) throw error;
     return (data||[]).map(r=>({id:Number(r.id),name:r.name,placeIds:r.place_ids||[]}));
   }catch(e){ console.warn('Collections load failed:',e); return []; }
@@ -2268,7 +2268,8 @@ function renderCollections(){
     return;
   }
   const grid=document.createElement('div'); grid.className='colls-grid';
-  collections.forEach(c=>{
+  const sorted=[...collections].sort((a,b)=>b.id-a.id);
+  sorted.forEach(c=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
     const cover=collPlaces.find(p=>p.photo)?.photo||'';
     const count=collPlaces.length;
