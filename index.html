@@ -1250,6 +1250,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 </div>
 
 <!-- COLLECTION DETAIL PANEL -->
+<div id="coll-panel-backdrop" onclick="closeCollectionPanel()" style="display:none;position:fixed;inset:0;z-index:499"></div>
 <div id="coll-panel">
   <div class="cdp-hero">
     <div class="cdp-bg" id="cdp-bg"></div>
@@ -1696,6 +1697,9 @@ function showView(v){
   document.querySelectorAll('.tm-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.getElementById('nav-'+v)?.classList.add('active');
+  // close all panels on tab switch
+  closePanel();
+  closeCollectionPanel();
   if(v==='map'){ initMap(); syncMapMarkers(); }
   else if(mapSidebarOpen){
     mapSidebarOpen=false;
@@ -2425,6 +2429,7 @@ function openCollectionPanel(id){
   renderCollPanelPlaces(collPlaces,id);
   renderCollMap(collPlaces);
   document.getElementById('coll-panel').classList.add('open');
+  if(window.innerWidth>768) document.getElementById('coll-panel-backdrop').style.display='block';
   if(window.innerWidth<=768) initCollPanelSwipe();
 }
 let cdpMap=null;
@@ -2482,6 +2487,7 @@ function closeCollectionPanel(){
   const panel=document.getElementById('coll-panel');
   panel.style.transition=''; panel.style.transform='';
   panel.classList.remove('open');
+  document.getElementById('coll-panel-backdrop').style.display='none';
   activeCollId=null;
   if(cdpMap){ cdpMap.remove(); cdpMap=null; }
 }
@@ -2512,8 +2518,11 @@ function removePlaceFromCollPanel(collId,placeId){
   c.placeIds=c.placeIds.filter(id=>String(id)!==String(placeId));
   upsertCollection(c);
   const collPlaces=c.placeIds.map(pid=>places.find(p=>p.id===pid||String(p.id)===String(pid))).filter(Boolean);
+  const cover=collPlaces.find(p=>p.photo)?.photo||'';
+  document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
   document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
   renderCollPanelPlaces(collPlaces,collId);
+  renderCollMap(collPlaces);
   renderCollections();
 }
 function openPlacePickerForPanel(){
@@ -2617,6 +2626,7 @@ function savePlacePicker(){
     document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
     document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
     renderCollPanelPlaces(collPlaces,pickerCollId);
+    renderCollMap(collPlaces);
   }
 }
 function closePlacePicker(){
