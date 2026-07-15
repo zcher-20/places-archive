@@ -506,6 +506,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .cdp-place-remove { margin-left:auto; width:28px; height:28px; border:none; background:transparent; border-radius:50%; color:var(--text-4); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s,color .15s; }
 .cdp-place-remove:hover { background:rgba(192,57,43,.08); color:#c0392b; }
 .cdp-empty { text-align:center; padding:48px 20px; color:var(--text-3); font-size:13.5px; line-height:1.7; }
+#cdp-map { width:100%; height:220px; border-radius:14px; overflow:hidden; margin-bottom:20px; display:none; }
 .btn-add-places { padding:7px 14px; border:1px solid rgba(0,0,0,.12); border-radius:100px; background:#fff; font-size:12.5px; font-family:var(--sans); color:var(--charcoal); cursor:pointer; display:flex; align-items:center; gap:5px; }
 .btn-add-places:hover { background:var(--stone); }
 .btn-del-coll { padding:7px 14px; border:none; background:transparent; font-size:12.5px; font-family:var(--sans); color:#c0392b; cursor:pointer; }
@@ -1244,6 +1245,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       </button>
       <button class="cdp-del-btn" onclick="confirmDeleteCollectionFromPanel()">Delete collection</button>
     </div>
+    <div id="cdp-map"></div>
     <div id="cdp-places"></div>
   </div>
 </div>
@@ -2298,14 +2300,53 @@ function openCollectionPanel(id){
   document.getElementById('cdp-name').textContent=c.name;
   document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
   renderCollPanelPlaces(collPlaces,id);
+  renderCollMap(collPlaces);
   document.getElementById('coll-panel').classList.add('open');
   if(window.innerWidth<=768) initCollPanelSwipe();
 }
+let cdpMap=null;
+function renderCollMap(collPlaces){
+  const el=document.getElementById('cdp-map');
+  const geo=collPlaces.filter(p=>p.lat&&p.lng);
+  if(!geo.length){ el.style.display='none'; return; }
+  el.style.display='block';
+
+  if(cdpMap){ cdpMap.remove(); cdpMap=null; }
+  el.innerHTML='';
+
+  cdpMap=L.map(el,{zoomControl:false,scrollWheelZoom:false,dragging:true,touchZoom:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    attribution:'',maxZoom:19
+  }).addTo(cdpMap);
+
+  const icon=L.divIcon({
+    className:'',
+    html:`<div style="width:10px;height:10px;background:#7C1D3F;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,
+    iconSize:[10,10],iconAnchor:[5,5]
+  });
+
+  const markers=geo.map(p=>{
+    const m=L.marker([p.lat,p.lng],{icon}).addTo(cdpMap);
+    m.bindTooltip(p.name,{permanent:false,direction:'top',offset:[0,-8]});
+    return m;
+  });
+
+  if(geo.length===1){
+    cdpMap.setView([geo[0].lat,geo[0].lng],14);
+  } else {
+    const group=L.featureGroup(markers);
+    cdpMap.fitBounds(group.getBounds().pad(0.25));
+  }
+
+  setTimeout(()=>cdpMap.invalidateSize(),120);
+}
+
 function closeCollectionPanel(){
   const panel=document.getElementById('coll-panel');
   panel.style.transition=''; panel.style.transform='';
   panel.classList.remove('open');
   activeCollId=null;
+  if(cdpMap){ cdpMap.remove(); cdpMap=null; }
 }
 function renderCollPanelPlaces(collPlaces,collId){
   const el=document.getElementById('cdp-places');
