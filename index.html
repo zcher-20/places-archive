@@ -473,7 +473,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .journal-page-sub { font-size:13px; color:var(--text-4); }
 .journal-year-block { margin-bottom:64px; }
 .journal-year-ghost { font-family:var(--serif); font-size:120px; font-weight:300; color:var(--charcoal); opacity:.05; line-height:1; user-select:none; pointer-events:none; margin-bottom:-28px; }
-.journal-entry { display:flex; gap:24px; padding:20px; border-radius:var(--r); cursor:pointer; transition:background var(--tr),box-shadow var(--tr); margin-bottom:8px; }
+.journal-entry { display:flex; gap:24px; padding:20px; border-radius:var(--r); transition:background var(--tr),box-shadow var(--tr); margin-bottom:8px; }
 .journal-entry:hover { background:var(--surface); box-shadow:var(--sh-card); }
 .je-date { flex-shrink:0; width:52px; text-align:center; padding-top:5px; }
 .je-day { font-family:var(--serif); font-size:36px; font-weight:300; color:var(--charcoal); line-height:1; }
@@ -482,7 +482,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .je-text { flex:1; }
 .je-name { font-family:var(--serif); font-size:21px; font-weight:400; color:var(--charcoal); margin-bottom:2px; line-height:1.2; }
 .je-loc { font-size:11.5px; color:var(--text-4); margin-bottom:8px; }
-.je-note { font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text-2); line-height:1.65; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.je-note { font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text-2); line-height:1.65; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; outline:none; border-radius:4px; cursor:text; }
+.je-note:focus { display:block; overflow:visible; box-shadow:0 0 0 2px rgba(124,29,63,.18); background:rgba(124,29,63,.03); padding:4px 6px; margin:-4px -6px; }
+.je-note-empty { color:var(--text-4); font-style:normal; font-family:var(--sans); font-size:13px; }
 
 /* ── COLLECTIONS ─────────────────────────── */
 .colls-wrap { padding:40px 48px 80px; }
@@ -2352,15 +2354,26 @@ function renderJournal(){
     block.innerHTML=`<div class="journal-year-ghost">${yr}</div>`;
     byYear[yr].forEach(p=>{
       const d=new Date(p.dateVisited);
-      const entry=document.createElement('div'); entry.className='journal-entry'; entry.onclick=()=>openPlace(p);
+      const entry=document.createElement('div'); entry.className='journal-entry';
       entry.innerHTML=`
         <div class="je-date"><div class="je-day">${d.getDate()}</div><div class="je-month">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div>
         <img class="je-img" src="${p.photo}" alt="${p.name}" loading="lazy">
         <div class="je-text">
           <div class="je-name">${p.name}</div>
           <div class="je-loc">${p.country?p.city+', '+p.country:p.city} · ${p.category}</div>
-          ${p.note?`<div class="je-note">${p.note}</div>`:'<div class="je-note" style="color:var(--text-4);font-style:normal;font-family:var(--sans);font-size:13px">No note</div>'}
+          <div class="je-note${p.note?'':' je-note-empty'}" data-pid="${p.id}" contenteditable="true" spellcheck="false" placeholder="Add a note…">${p.note||''}</div>
         </div>`;
+      const noteEl=entry.querySelector('.je-note');
+      noteEl.addEventListener('focus',()=>{ if(noteEl.classList.contains('je-note-empty')){ noteEl.textContent=''; noteEl.classList.remove('je-note-empty'); } });
+      noteEl.addEventListener('blur',()=>{
+        const val=noteEl.textContent.trim();
+        const place=places.find(x=>x.id===p.id); if(!place) return;
+        place.note=val||null;
+        if(!val){ noteEl.textContent=''; noteEl.classList.add('je-note-empty'); }
+        upsertPlace(place);
+        if(selectedPlace?.id===place.id){ selectedPlace=place; document.getElementById('dp-note').textContent=val; }
+      });
+      noteEl.addEventListener('keydown',e=>{ if(e.key==='Escape'){ noteEl.blur(); } });
       block.appendChild(entry);
     });
     el.appendChild(block);
