@@ -2072,15 +2072,17 @@ function syncMapMarkers(){
   Object.keys(mapMarkers).forEach(id=>{
     if(!live.has(id)){ leafletMap.removeLayer(mapMarkers[id]); delete mapMarkers[id]; }
   });
-  // rebuild any marker whose photo no longer matches (catches stale cache pins)
+  // always rebuild homebase markers
+  places.filter(p=>p.category==='Homebase').forEach(p=>{
+    if(mapMarkers[p.id]){ leafletMap.removeLayer(mapMarkers[p.id]); delete mapMarkers[p.id]; }
+  });
+  // patch photo + visited state on existing pins without rebuilding the marker
   places.forEach(p=>{
-    if(!mapMarkers[p.id]) return;
+    if(!mapMarkers[p.id]||p.category==='Homebase') return;
     const pin=document.getElementById('sqpin-'+p.id);
-    if(pin && p.photo && pin.style.backgroundImage!==`url("${p.photo}")`){
-      leafletMap.removeLayer(mapMarkers[p.id]); delete mapMarkers[p.id];
-    } else if(p.category==='Homebase'){
-      leafletMap.removeLayer(mapMarkers[p.id]); delete mapMarkers[p.id];
-    }
+    if(!pin) return;
+    if(p.photo) pin.style.backgroundImage=`url('${p.photo}')`;
+    pin.classList.toggle('want',!p.visited);
   });
   // add missing markers
   places.forEach(p=>{ if((p.lat||p.lng) && !mapMarkers[p.id]) addMarkerToMap(p); });
