@@ -2618,14 +2618,15 @@ function savePlacePicker(){
   const c=collections.find(x=>x.id===pickerCollId); if(!c)return;
   c.placeIds=Array.from(pickerSelected).map(Number);
   upsertCollection(c);
+  const savedCollId=pickerCollId;
   closePlacePicker();
   renderCollections();
-  if(activeCollId===pickerCollId){
+  if(activeCollId===savedCollId){
     const collPlaces=c.placeIds.map(pid=>places.find(p=>p.id===pid||String(p.id)===String(pid))).filter(Boolean);
     const cover=collPlaces.find(p=>p.photo)?.photo||'';
     document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
     document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
-    renderCollPanelPlaces(collPlaces,pickerCollId);
+    renderCollPanelPlaces(collPlaces,savedCollId);
     renderCollMap(collPlaces);
   }
 }
