@@ -2042,11 +2042,15 @@ function refreshMarkerPhoto(p){
 function syncMapMarkers(){
   if(!leafletMap) return;
   const live=new Set(places.map(p=>String(p.id)));
-  // remove markers for places no longer in the list
+  // remove stale markers
   Object.keys(mapMarkers).forEach(id=>{
     if(!live.has(id)){ leafletMap.removeLayer(mapMarkers[id]); delete mapMarkers[id]; }
   });
-  // add any missing markers
+  // always rebuild homebase markers so stale cached pins get replaced
+  places.filter(p=>p.category==='Homebase').forEach(p=>{
+    if(mapMarkers[p.id]){ leafletMap.removeLayer(mapMarkers[p.id]); delete mapMarkers[p.id]; }
+  });
+  // add missing markers
   places.forEach(p=>{ if((p.lat||p.lng) && !mapMarkers[p.id]) addMarkerToMap(p); });
 }
 
