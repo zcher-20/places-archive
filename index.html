@@ -1361,6 +1361,45 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
       <div class="form-field">
         <div class="form-field-label">
+          <div class="form-label">Google Maps</div>
+          <div class="form-label-hint">Sets the pin location</div>
+        </div>
+        <div>
+          <input class="form-input" id="f-maps" type="url" placeholder="Paste Google Maps URL…" oninput="handleMapsUrl(this.value)">
+          <div class="form-maps-hint" id="f-maps-hint"></div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <div class="form-field-label">
+          <div class="form-label">Cover photo</div>
+          <div class="form-label-hint">Upload or paste a URL</div>
+        </div>
+        <div>
+          <div class="form-upload-row">
+            <label class="form-upload-label">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload file
+              <input type="file" accept="image/*" onchange="handleModalFile(event)">
+            </label>
+            <span class="form-upload-sep">or</span>
+            <input class="form-input" id="f-photo" type="url" placeholder="Paste image URL…" oninput="handleModalUrl(this.value)" style="flex:1;min-width:0">
+          </div>
+          <div class="form-drop-zone" id="f-drop-zone"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handleModalDrop(event)"
+            onclick="document.getElementById('f-drop-file').click()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Drag photo here
+            <input type="file" id="f-drop-file" accept="image/*" style="display:none" onchange="handleModalFile(event)">
+          </div>
+          <img class="form-photo-preview" id="f-photo-preview" src="" alt="">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <div class="form-field-label">
           <div class="form-label">Location</div>
           <div class="form-label-hint">City and country</div>
         </div>
@@ -1404,45 +1443,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
           <div class="form-label-hint">What to remember</div>
         </div>
         <textarea class="form-textarea" id="f-note" placeholder="What do you want to remember about this place?"></textarea>
-      </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Google Maps</div>
-          <div class="form-label-hint">Sets the pin location</div>
-        </div>
-        <div>
-          <input class="form-input" id="f-maps" type="url" placeholder="Paste Google Maps URL…" oninput="handleMapsUrl(this.value)">
-          <div class="form-maps-hint" id="f-maps-hint"></div>
-        </div>
-      </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Cover photo</div>
-          <div class="form-label-hint">Upload or paste a URL</div>
-        </div>
-        <div>
-          <div class="form-upload-row">
-            <label class="form-upload-label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Upload file
-              <input type="file" accept="image/*" onchange="handleModalFile(event)">
-            </label>
-            <span class="form-upload-sep">or</span>
-            <input class="form-input" id="f-photo" type="url" placeholder="Paste image URL…" oninput="handleModalUrl(this.value)" style="flex:1;min-width:0">
-          </div>
-          <div class="form-drop-zone" id="f-drop-zone"
-            ondragover="event.preventDefault();this.classList.add('drag-over')"
-            ondragleave="this.classList.remove('drag-over')"
-            ondrop="handleModalDrop(event)"
-            onclick="document.getElementById('f-drop-file').click()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Drag photo here
-            <input type="file" id="f-drop-file" accept="image/*" style="display:none" onchange="handleModalFile(event)">
-          </div>
-          <img class="form-photo-preview" id="f-photo-preview" src="" alt="">
-        </div>
       </div>
 
     </div>
