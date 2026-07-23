@@ -2296,7 +2296,7 @@ function closeMapCard(){
 }
 
 let mapSidebarOpen = false;
-let mlsVisited = 'all';   // 'all' | 'visited' | 'want'
+let mlsVisited = 'want';   // 'all' | 'visited' | 'want'
 let mlsCategory = 'All';
 
 function mlsFilteredPlaces(){
@@ -2341,7 +2341,7 @@ function toggleMapSidebar(){
   sidebar.classList.toggle('open', mapSidebarOpen);
   toggle.classList.toggle('sidebar-open', mapSidebarOpen);
   if(mapSidebarOpen){ initSidebarDrag(); renderMapSidebar(); syncMapMarkerVisibility(); }
-  else { mlsVisited='all'; mlsCategory='All'; syncMapMarkerVisibility(); }
+  else { mlsVisited='want'; mlsCategory='All'; syncMapMarkerVisibility(); }
   setTimeout(()=>leafletMap?.invalidateSize(), 340);
 }
 function renderMapSidebar(){
