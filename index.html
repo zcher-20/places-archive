@@ -185,7 +185,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .ah-change-btn:hover { background:rgba(255,255,255,.28); }
 
 /* ── ARCHIVE LIST ─────────────────────────── */
-.desktop-archive-title { font-family:var(--sans); font-size:48px; font-weight:700; color:var(--charcoal); letter-spacing:-.03em; padding:40px 48px 0; line-height:1; }
+.desktop-archive-title { font-family:var(--sans); font-size:48px; font-weight:700; color:var(--charcoal); letter-spacing:-.03em; padding:40px 48px 0; line-height:1; text-align:center; }
 .afb {
   display:flex; align-items:center; justify-content:center; gap:0;
   padding:14px 14px;
@@ -1166,7 +1166,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
         </button>
       </div>
       <!-- desktop archive title -->
-      <div class="desktop-archive-title">Archive <span id="archive-count" style="font-size:13px;font-weight:400;color:var(--text-3);margin-left:6px"></span></div>
+      <div class="desktop-archive-title">Archive<span id="archive-count" style="display:none"></span></div>
       <!-- filter bar -->
       <div class="afb">
         <button class="afb-pill" onclick="openModal()" style="font-weight:500;color:var(--charcoal);">
