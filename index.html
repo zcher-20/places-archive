@@ -505,7 +505,25 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .colls-empty-title { font-family:var(--serif); font-size:22px; color:var(--text-2); }
 .colls-empty-sub { font-size:13px; color:var(--text-3); text-align:center; max-width:220px; line-height:1.65; }
 
-/* ── COLLECTION DETAIL PANEL ─────────────── */
+/* ── COLLECTION INLINE PANEL (desktop) ────── */
+#coll-inline { display:none; margin-top:28px; border-radius:20px; background:var(--surface); box-shadow:0 4px 32px rgba(0,0,0,.10); overflow:hidden; }
+#coll-inline.open { display:block; }
+.cip-header { display:flex; align-items:center; justify-content:space-between; padding:20px 28px 16px; border-bottom:1px solid rgba(0,0,0,.06); }
+.cip-title-row { display:flex; flex-direction:column; gap:3px; }
+.cip-name { font-family:var(--serif); font-size:26px; font-weight:400; color:var(--charcoal); }
+.cip-count { font-size:12px; color:var(--text-3); letter-spacing:.04em; text-transform:uppercase; }
+.cip-actions { display:flex; align-items:center; gap:10px; }
+.cip-body { display:grid; grid-template-columns:1fr 420px; min-height:400px; }
+.cip-places { overflow-y:auto; max-height:520px; padding:16px 0; border-right:1px solid rgba(0,0,0,.06); }
+.cip-map-wrap { position:relative; }
+#cip-map { width:100%; height:100%; min-height:400px; }
+.cip-zoom { position:absolute; bottom:12px; right:12px; z-index:1000; display:flex; flex-direction:column; gap:4px; }
+.cip-zoom button { width:30px; height:30px; border:none; border-radius:8px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.18); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--charcoal); transition:background .15s; }
+.cip-zoom button:hover { background:var(--stone); }
+.cip-close-btn { width:32px; height:32px; border:none; border-radius:50%; background:var(--stone); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-3); transition:background .15s; }
+.cip-close-btn:hover { background:var(--stone-2); color:var(--charcoal); }
+
+/* ── COLLECTION DETAIL PANEL (mobile) ─────── */
 #coll-panel { position:fixed; right:0; top:0; bottom:0; width:480px; z-index:500; overflow-y:auto; background:var(--surface); transform:translateX(100%); transition:transform .38s cubic-bezier(.4,0,.2,1); box-shadow:-4px 0 40px rgba(0,0,0,.12); display:flex; flex-direction:column; }
 #coll-panel.open { transform:translateX(0); }
 .cdp-hero { position:relative; height:300px; flex-shrink:0; overflow:hidden; background:var(--stone); }
@@ -524,7 +542,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .cdp-add-btn:hover { opacity:.8; }
 .cdp-del-btn { padding:8px 14px; border:none; background:transparent; font-size:12.5px; font-family:var(--sans); color:#c0392b; cursor:pointer; opacity:.7; }
 .cdp-del-btn:hover { opacity:1; text-decoration:underline; }
-.cdp-place-row { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(0,0,0,.05); cursor:pointer; }
+.cdp-place-row { display:flex; align-items:center; gap:14px; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,.05); cursor:pointer; }
 .cdp-place-row:last-child { border-bottom:none; }
 .cdp-place-row:hover { opacity:.75; }
 .cdp-place-thumb { width:54px; height:54px; border-radius:11px; object-fit:cover; flex-shrink:0; }
@@ -533,10 +551,15 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .cdp-place-remove { margin-left:auto; width:28px; height:28px; border:none; background:transparent; border-radius:50%; color:var(--text-4); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s,color .15s; }
 .cdp-place-remove:hover { background:rgba(192,57,43,.08); color:#c0392b; }
 .cdp-empty { text-align:center; padding:48px 20px; color:var(--text-3); font-size:13.5px; line-height:1.7; }
-#cdp-map { width:100%; height:220px; border-radius:14px; overflow:hidden; margin-bottom:20px; display:none; }
+#cdp-map { width:100%; height:220px; border-radius:14px; overflow:hidden; margin-bottom:20px; display:none; position:relative; }
+.cdp-map-zoom { position:absolute; bottom:10px; right:10px; z-index:1000; display:flex; flex-direction:column; gap:4px; }
+.cdp-map-zoom button { width:28px; height:28px; border:none; border-radius:7px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.18); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--charcoal); }
 .btn-add-places { padding:7px 14px; border:1px solid rgba(0,0,0,.12); border-radius:100px; background:#fff; font-size:12.5px; font-family:var(--sans); color:var(--charcoal); cursor:pointer; display:flex; align-items:center; gap:5px; }
 .btn-add-places:hover { background:var(--stone); }
 .btn-del-coll { padding:7px 14px; border:none; background:transparent; font-size:12.5px; font-family:var(--sans); color:#c0392b; cursor:pointer; }
+/* place picker filters */
+.pp-filters { padding:10px 14px 6px; border-bottom:1px solid rgba(0,0,0,.06); display:flex; flex-direction:column; gap:6px; }
+.pp-city-header { font-size:11px; font-weight:700; color:var(--text-3); letter-spacing:.08em; text-transform:uppercase; padding:10px 22px 4px; }
 .btn-del-coll:hover { text-decoration:underline; }
 
 /* place picker overlay */
@@ -1212,6 +1235,34 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
           </button>
         </div>
         <div id="colls-list"></div>
+        <div id="coll-inline">
+          <div class="cip-header">
+            <div class="cip-title-row">
+              <div class="cip-name" id="cip-name"></div>
+              <div class="cip-count" id="cip-count"></div>
+            </div>
+            <div class="cip-actions">
+              <button class="cdp-add-btn" onclick="openPlacePickerForPanel()">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add places
+              </button>
+              <button class="cdp-del-btn" onclick="confirmDeleteCollectionFromPanel()">Delete</button>
+              <button class="cip-close-btn" onclick="closeCollectionPanel()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="cip-body">
+            <div class="cip-places" id="cip-places"></div>
+            <div class="cip-map-wrap">
+              <div id="cip-map"></div>
+              <div class="cip-zoom">
+                <button onclick="cipMap?.zoomIn()" title="Zoom in">+</button>
+                <button onclick="cipMap?.zoomOut()" title="Zoom out">−</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -1274,7 +1325,13 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       </button>
       <button class="cdp-del-btn" onclick="confirmDeleteCollectionFromPanel()">Delete collection</button>
     </div>
-    <div id="cdp-map"></div>
+    <div style="position:relative;margin-bottom:20px;display:none" id="cdp-map-wrap">
+      <div id="cdp-map" style="margin-bottom:0"></div>
+      <div class="cdp-map-zoom">
+        <button onclick="cdpMap?.zoomIn()" title="Zoom in">+</button>
+        <button onclick="cdpMap?.zoomOut()" title="Zoom out">−</button>
+      </div>
+    </div>
     <div id="cdp-places"></div>
   </div>
 </div>
@@ -1478,6 +1535,18 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       <button class="pp-close" onclick="closePlacePicker()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
+    </div>
+    <div class="pp-filters" id="pp-filters">
+      <div class="mls-filters" style="justify-content:flex-start;padding:0 0 2px">
+        <button class="mls-pill active" id="ppv-all"   onclick="setPpVisited('all')">All</button>
+        <button class="mls-pill"        id="ppv-vis"   onclick="setPpVisited('visited')">Visited</button>
+        <button class="mls-pill"        id="ppv-want"  onclick="setPpVisited('want')">Want to go</button>
+      </div>
+      <div style="padding:0 0 4px">
+        <select class="mls-cat-select" id="pp-cat-select" onchange="setPpCategory(this.value)">
+          <option value="All">All categories</option>
+        </select>
+      </div>
     </div>
     <div class="pp-list" id="pp-list"></div>
     <div class="pp-foot">
@@ -1699,7 +1768,7 @@ function showView(v){
   document.getElementById('nav-'+v)?.classList.add('active');
   // close all panels on tab switch
   closePanel();
-  closeCollectionPanel();
+  if(v!=='collections') closeCollectionPanel();
   if(v==='map'){ initMap(); syncMapMarkers(); }
   else if(mapSidebarOpen){
     mapSidebarOpen=false;
@@ -2426,26 +2495,58 @@ function renderCollections(){
 }
 
 let activeCollId=null;
+let cipMap=null;
 function openCollectionPanel(id){
   activeCollId=id;
   const c=collections.find(x=>x.id===id); if(!c)return;
   const collPlaces=c.placeIds.map(pid=>places.find(p=>p.id===pid||String(p.id)===String(pid))).filter(Boolean);
-  const cover=collPlaces.find(p=>p.photo)?.photo||'';
-  document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
-  document.getElementById('cdp-name').textContent=c.name;
-  document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
-  renderCollPanelPlaces(collPlaces,id);
-  renderCollMap(collPlaces);
-  document.getElementById('coll-panel').classList.add('open');
-  if(window.innerWidth>768) document.getElementById('coll-panel-backdrop').style.display='block';
-  if(window.innerWidth<=768) initCollPanelSwipe();
+  if(window.innerWidth>768){
+    // desktop: inline panel below the grid
+    document.getElementById('cip-name').textContent=c.name;
+    document.getElementById('cip-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
+    renderCollPanelPlaces(collPlaces,id,'cip-places');
+    document.getElementById('coll-inline').classList.add('open');
+    document.getElementById('coll-inline').scrollIntoView({behavior:'smooth',block:'nearest'});
+    renderCipMap(collPlaces);
+  } else {
+    // mobile: slide-in panel
+    const cover=collPlaces.find(p=>p.photo)?.photo||'';
+    document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
+    document.getElementById('cdp-name').textContent=c.name;
+    document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
+    renderCollPanelPlaces(collPlaces,id,'cdp-places');
+    renderCollMap(collPlaces);
+    document.getElementById('coll-panel').classList.add('open');
+    initCollPanelSwipe();
+  }
+}
+function renderCipMap(collPlaces){
+  const el=document.getElementById('cip-map');
+  const geo=collPlaces.filter(p=>p.lat&&p.lng);
+  if(cipMap){ cipMap.remove(); cipMap=null; }
+  if(!geo.length) return;
+  cipMap=L.map(el,{zoomControl:false,scrollWheelZoom:false,dragging:true,touchZoom:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cipMap);
+  const icon=L.divIcon({className:'',html:`<div style="width:10px;height:10px;background:#7C1D3F;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,iconSize:[10,10],iconAnchor:[5,5]});
+  const markers=geo.map(p=>{
+    const m=L.marker([p.lat,p.lng],{icon}).addTo(cipMap);
+    const short=p.name.length>14?p.name.slice(0,13)+'…':p.name;
+    m.bindPopup(`<div style="width:160px;font-family:var(--sans)">${p.photo?`<img src="${p.photo}" style="width:100%;height:90px;object-fit:cover;border-radius:8px 8px 0 0;display:block;margin:-10px -10px 8px" loading="lazy">`:''}
+      <div style="font-weight:600;font-size:13px;color:#1a1a1a">${p.name}</div>
+      ${p.address||p.city?`<div style="font-size:11px;color:#777;margin-top:3px">${p.address||p.city}</div>`:''}</div>`,{maxWidth:180,offset:[0,-4]});
+    return m;
+  });
+  if(geo.length===1) cipMap.setView([geo[0].lat,geo[0].lng],14);
+  else { const g=L.featureGroup(markers); cipMap.fitBounds(g.getBounds().pad(0.25)); }
+  setTimeout(()=>cipMap.invalidateSize(),150);
 }
 let cdpMap=null;
 function renderCollMap(collPlaces){
+  const wrap=document.getElementById('cdp-map-wrap');
   const el=document.getElementById('cdp-map');
   const geo=collPlaces.filter(p=>p.lat&&p.lng);
-  if(!geo.length){ el.style.display='none'; return; }
-  el.style.display='block';
+  if(!geo.length){ if(wrap) wrap.style.display='none'; return; }
+  if(wrap) wrap.style.display='block';
 
   if(cdpMap){ cdpMap.remove(); cdpMap=null; }
   el.innerHTML='';
@@ -2496,13 +2597,15 @@ function closeCollectionPanel(){
   panel.style.transition=''; panel.style.transform='';
   panel.classList.remove('open');
   document.getElementById('coll-panel-backdrop').style.display='none';
+  document.getElementById('coll-inline').classList.remove('open');
   activeCollId=null;
   if(cdpMap){ cdpMap.remove(); cdpMap=null; }
+  if(cipMap){ cipMap.remove(); cipMap=null; }
 }
-function renderCollPanelPlaces(collPlaces,collId){
-  const el=document.getElementById('cdp-places');
+function renderCollPanelPlaces(collPlaces,collId,targetId='cdp-places'){
+  const el=document.getElementById(targetId);
   if(!collPlaces.length){
-    el.innerHTML='<div class="cdp-empty">No places yet.<br>Tap "Add places" to start building this collection.</div>';
+    el.innerHTML='<div class="cdp-empty">No places yet.<br>Click "Add places" to start building this collection.</div>';
     return;
   }
   el.innerHTML=collPlaces.map(p=>`
@@ -2526,11 +2629,17 @@ function removePlaceFromCollPanel(collId,placeId){
   c.placeIds=c.placeIds.filter(id=>String(id)!==String(placeId));
   upsertCollection(c);
   const collPlaces=c.placeIds.map(pid=>places.find(p=>p.id===pid||String(p.id)===String(pid))).filter(Boolean);
-  const cover=collPlaces.find(p=>p.photo)?.photo||'';
-  document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
-  document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
-  renderCollPanelPlaces(collPlaces,collId);
-  renderCollMap(collPlaces);
+  if(window.innerWidth>768){
+    document.getElementById('cip-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
+    renderCollPanelPlaces(collPlaces,collId,'cip-places');
+    renderCipMap(collPlaces);
+  } else {
+    const cover=collPlaces.find(p=>p.photo)?.photo||'';
+    document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
+    document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
+    renderCollPanelPlaces(collPlaces,collId,'cdp-places');
+    renderCollMap(collPlaces);
+  }
   renderCollections();
 }
 function openPlacePickerForPanel(){
@@ -2596,25 +2705,53 @@ function removePlaceFromCollection(collId,placeId){
 // ── PLACE PICKER ─────────────────────────────────────
 let pickerCollId=null;
 let pickerSelected=new Set();
+let ppVisited='all', ppCategory='All';
+function setPpVisited(v){
+  ppVisited=v;
+  ['all','vis','want'].forEach(k=>document.getElementById('ppv-'+k)?.classList.remove('active'));
+  const map={all:'all',visited:'vis',want:'want'};
+  document.getElementById('ppv-'+(map[v]||'all'))?.classList.add('active');
+  renderPickerList();
+}
+function setPpCategory(c){ ppCategory=c; renderPickerList(); }
+function renderPickerList(){
+  const list=document.getElementById('pp-list'); list.innerHTML='';
+  const checkSvg='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  let filtered=places.filter(p=>p.category!=='Homebase');
+  if(ppVisited==='visited') filtered=filtered.filter(p=>p.visited);
+  if(ppVisited==='want') filtered=filtered.filter(p=>!p.visited);
+  if(ppCategory!=='All') filtered=filtered.filter(p=>p.category===ppCategory);
+  const byCity={};
+  filtered.forEach(p=>{ (byCity[p.city]=byCity[p.city]||[]).push(p); });
+  const cities=Object.keys(byCity).sort();
+  if(!cities.length){ list.innerHTML='<div style="padding:32px;text-align:center;color:var(--text-3);font-size:13px">No places match</div>'; return; }
+  cities.forEach(city=>{
+    const h=document.createElement('div'); h.className='pp-city-header'; h.textContent=city; list.appendChild(h);
+    byCity[city].forEach(p=>{
+      const sel=pickerSelected.has(String(p.id));
+      const row=document.createElement('div'); row.className='pp-item'+(sel?' selected':''); row.id='pp-row-'+p.id;
+      row.innerHTML=`
+        <img class="pp-thumb" src="${p.photo}" alt="${p.name}" loading="lazy">
+        <div><div class="pp-name">${p.name}</div><div class="pp-sub">${p.address||p.city}</div></div>
+        <div class="pp-check">${sel?checkSvg:''}</div>`;
+      row.onclick=()=>togglePickerRow(p.id,row);
+      list.appendChild(row);
+    });
+  });
+}
 function openPlacePicker(collId){
   const c=collections.find(x=>x.id===collId); if(!c)return;
   pickerCollId=collId;
   pickerSelected=new Set(c.placeIds.map(String));
+  ppVisited='all'; ppCategory='All';
   document.getElementById('pp-title').textContent=`Add to "${c.name}"`;
-  const list=document.getElementById('pp-list'); list.innerHTML='';
-  places.forEach(p=>{
-    const sel=pickerSelected.has(String(p.id));
-    const row=document.createElement('div'); row.className='pp-item'+(sel?' selected':''); row.id='pp-row-'+p.id;
-    row.innerHTML=`
-      <img class="pp-thumb" src="${p.photo}" alt="${p.name}" loading="lazy">
-      <div>
-        <div class="pp-name">${p.name}</div>
-        <div class="pp-sub">${p.address||p.city}</div>
-      </div>
-      <div class="pp-check">${sel?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>`;
-    row.onclick=()=>togglePickerRow(p.id, row);
-    list.appendChild(row);
-  });
+  ['all','vis','want'].forEach(k=>document.getElementById('ppv-'+k)?.classList.remove('active'));
+  document.getElementById('ppv-all')?.classList.add('active');
+  // populate category dropdown
+  const sel=document.getElementById('pp-cat-select');
+  const cats=[...new Set(places.filter(p=>p.category!=='Homebase').map(p=>p.category))].filter(Boolean).sort();
+  sel.innerHTML='<option value="All">All categories</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  renderPickerList();
   document.getElementById('place-picker').classList.add('open');
 }
 function togglePickerRow(id, row){
@@ -2631,11 +2768,17 @@ function savePlacePicker(){
   renderCollections();
   if(activeCollId===savedCollId){
     const collPlaces=c.placeIds.map(pid=>places.find(p=>p.id===pid||String(p.id)===String(pid))).filter(Boolean);
-    const cover=collPlaces.find(p=>p.photo)?.photo||'';
-    document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
-    document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
-    renderCollPanelPlaces(collPlaces,savedCollId);
-    renderCollMap(collPlaces);
+    if(window.innerWidth>768){
+      document.getElementById('cip-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
+      renderCollPanelPlaces(collPlaces,savedCollId,'cip-places');
+      renderCipMap(collPlaces);
+    } else {
+      const cover=collPlaces.find(p=>p.photo)?.photo||'';
+      document.getElementById('cdp-bg').style.backgroundImage=cover?`url(${cover})`:'';
+      document.getElementById('cdp-count').textContent=`${collPlaces.length} place${collPlaces.length!==1?'s':''}`;
+      renderCollPanelPlaces(collPlaces,savedCollId,'cdp-places');
+      renderCollMap(collPlaces);
+    }
   }
 }
 function closePlacePicker(){
