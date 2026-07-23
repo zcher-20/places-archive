@@ -2525,15 +2525,24 @@ function renderCipMap(collPlaces){
   const geo=collPlaces.filter(p=>p.lat&&p.lng);
   if(cipMap){ cipMap.remove(); cipMap=null; }
   if(!geo.length) return;
-  cipMap=L.map(el,{zoomControl:false,scrollWheelZoom:false,dragging:true,touchZoom:true});
+  cipMap=L.map(el,{zoomControl:false,scrollWheelZoom:true,dragging:true,touchZoom:true});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cipMap);
-  const icon=L.divIcon({className:'',html:`<div style="width:10px;height:10px;background:#7C1D3F;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,iconSize:[10,10],iconAnchor:[5,5]});
   const markers=geo.map(p=>{
-    const m=L.marker([p.lat,p.lng],{icon}).addTo(cipMap);
     const short=p.name.length>14?p.name.slice(0,13)+'…':p.name;
-    m.bindPopup(`<div style="width:160px;font-family:var(--sans)">${p.photo?`<img src="${p.photo}" style="width:100%;height:90px;object-fit:cover;border-radius:8px 8px 0 0;display:block;margin:-10px -10px 8px" loading="lazy">`:''}
-      <div style="font-weight:600;font-size:13px;color:#1a1a1a">${p.name}</div>
-      ${p.address||p.city?`<div style="font-size:11px;color:#777;margin-top:3px">${p.address||p.city}</div>`:''}</div>`,{maxWidth:180,offset:[0,-4]});
+    const icon=L.divIcon({
+      className:'',
+      html:`<div class="sq-pin-wrap">
+              <div class="sq-pin ${p.visited?'':'want'}" id="cippin-${p.id}" style="background-image:url('${p.photo||''}')"></div>
+              <div class="sq-pin-label">${short}</div>
+            </div>`,
+      iconSize:[64,58],iconAnchor:[32,20]
+    });
+    const m=L.marker([p.lat,p.lng],{icon}).addTo(cipMap);
+    const popup=`<div style="width:160px;font-family:var(--sans)">
+      ${p.photo?`<img src="${p.photo}" style="width:100%;height:90px;object-fit:cover;border-radius:8px 8px 0 0;display:block;margin:-10px -10px 8px" loading="lazy">`:''}
+      <div style="font-weight:600;font-size:13px;color:#1a1a1a;line-height:1.3">${p.name}</div>
+      ${p.address||p.city?`<div style="font-size:11px;color:#777;margin-top:3px">${p.address||p.city}</div>`:''}</div>`;
+    m.bindPopup(popup,{maxWidth:180,offset:[0,-4]});
     return m;
   });
   if(geo.length===1) cipMap.setView([geo[0].lat,geo[0].lng],14);
@@ -2555,12 +2564,6 @@ function renderCollMap(collPlaces){
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
     attribution:'',maxZoom:19
   }).addTo(cdpMap);
-
-  const icon=L.divIcon({
-    className:'',
-    html:`<div style="width:10px;height:10px;background:#7C1D3F;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,
-    iconSize:[10,10],iconAnchor:[5,5]
-  });
 
   const markers=geo.map(p=>{
     const short=p.name.length>14?p.name.slice(0,13)+'…':p.name;
