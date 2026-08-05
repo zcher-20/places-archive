@@ -697,48 +697,53 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #detail-panel.archive-bottom .dp-body {
   flex:1; display:grid;
   grid-template-columns:1fr 300px;
-  grid-template-rows:auto auto auto auto 1fr;
+  grid-template-rows:auto auto auto 1fr auto;
   overflow:hidden; padding:0;
 }
 
 /* info column */
 #detail-panel.archive-bottom .dp-name {
   grid-column:1; grid-row:1;
-  padding:26px 32px 5px; margin:0;
-  font-size:22px; line-height:1.2;
+  padding:24px 24px 4px; margin:0;
+  font-size:26px; font-weight:700; line-height:1.15;
+  text-align:center;
 }
 #detail-panel.archive-bottom .dp-location {
   grid-column:1; grid-row:2;
-  padding:0 32px 16px; margin:0;
+  padding:0 24px 14px; margin:0;
+  justify-content:center;
 }
 #detail-panel.archive-bottom .dp-actions {
   grid-column:1; grid-row:3;
-  padding:0 32px 14px; margin:0;
-  gap:16px; justify-content:flex-start;
+  padding:0 24px 12px; margin:0;
+  gap:20px; justify-content:center;
 }
 #detail-panel.archive-bottom #btn-delete-place { margin-left:0; }
-#detail-panel.archive-bottom .dp-meta-row {
-  grid-column:1; grid-row:4;
-  padding:0 32px 14px; margin:0; gap:5px;
-}
 #detail-panel.archive-bottom .dp-mini-map {
-  grid-column:1; grid-row:5;
-  margin:0 32px 20px; height:auto; min-height:0;
+  grid-column:1; grid-row:4 / 6;
+  margin:0 24px 0; height:auto; min-height:0;
   border-radius:6px; align-self:stretch;
+}
+#detail-panel.archive-bottom .dp-meta-row {
+  grid-column:1; grid-row:6;
+  padding:8px 24px 12px; margin:0; gap:4px;
+  flex-direction:column; align-items:center;
+}
+#detail-panel.archive-bottom .dp-meta-item {
+  justify-content:center;
 }
 
 /* note column */
 #detail-panel.archive-bottom .dp-note-section {
   grid-column:2; grid-row:1 / -1;
-  border-top:none; padding:26px 24px 20px;
+  border-top:none; padding:24px 24px 20px;
   margin:0; display:flex; flex-direction:column;
   border-left:1px solid rgba(0,0,0,.07);
   background:#faf9f7; overflow:hidden;
 }
 #detail-panel.archive-bottom .dp-note-title {
-  font-size:13px; font-family:var(--sans); font-weight:600;
-  letter-spacing:.06em; text-transform:uppercase;
-  color:var(--text-3); margin-bottom:12px;
+  font-family:var(--serif); font-size:26px; font-weight:700;
+  color:var(--charcoal); margin-bottom:12px;
 }
 #detail-panel.archive-bottom .dp-note {
   flex:1; overflow-y:auto; min-height:0; resize:none;
@@ -2240,7 +2245,7 @@ function openPlace(p){
   else { visitedRow.style.display='none'; }
   document.getElementById('dp-date-added').textContent='Added '+fmtDateLong(p.dateAdded);
   refreshPanelBtns();
-  buildMiniMap(p.lat,p.lng);
+  buildMiniMap(p.lat,p.lng,p.photo);
   const panel=document.getElementById('detail-panel');
   if(window.innerWidth>768 && currentView==='archive'){
     panel.classList.add('archive-bottom');
@@ -2346,14 +2351,16 @@ function editNote(){
 }
 
 // ── MINI MAP ─────────────────────────────────────────
-function buildMiniMap(lat,lng){
+function buildMiniMap(lat,lng,photo){
   const container=document.getElementById('dp-mini-map');
   if(miniMap){miniMap.remove();miniMap=null;} container.innerHTML='';
   if(!lat&&!lng)return;
   miniMap=L.map(container,{center:[lat,lng],zoom:14,zoomControl:false,scrollWheelZoom:false,dragging:false,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(miniMap);
-  const dot=L.divIcon({html:`<div style="width:12px;height:12px;background:#8A7A6A;border-radius:50%;border:2.5px solid white;box-shadow:0 0 0 3px rgba(138,122,106,.25)"></div>`,className:'',iconSize:[12,12],iconAnchor:[6,6]});
-  L.marker([lat,lng],{icon:dot}).addTo(miniMap);
+  const icon=photo
+    ? L.divIcon({html:`<div class="sq-pin" style="width:40px;height:40px;border-radius:10px;background-image:url('${photo}')"></div>`,className:'',iconSize:[40,40],iconAnchor:[20,20]})
+    : L.divIcon({html:`<div style="width:12px;height:12px;background:#8A7A6A;border-radius:50%;border:2.5px solid white;box-shadow:0 0 0 3px rgba(138,122,106,.25)"></div>`,className:'',iconSize:[12,12],iconAnchor:[6,6]});
+  L.marker([lat,lng],{icon}).addTo(miniMap);
   setTimeout(()=>miniMap.invalidateSize(),80);
 }
 
