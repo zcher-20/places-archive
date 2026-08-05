@@ -697,41 +697,42 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #detail-panel.archive-bottom .dp-body {
   flex:1; display:grid;
   grid-template-columns:1fr 300px;
-  grid-template-rows:auto auto auto 1fr auto;
+  grid-template-rows:auto auto auto auto;
   overflow:hidden; padding:0;
+  position:relative;
 }
 
-/* info column */
+/* map fills the entire left column behind text */
+#detail-panel.archive-bottom .dp-mini-map {
+  position:absolute; top:0; left:0; bottom:0; right:300px;
+  z-index:0; margin:0; border-radius:0; height:auto;
+}
+
+/* text floats on top of the map */
 #detail-panel.archive-bottom .dp-name {
   grid-column:1; grid-row:1;
   padding:24px 24px 4px; margin:0;
   font-family:var(--sans); font-size:26px; font-weight:600; line-height:1.15;
-  text-align:center;
+  text-align:center; background:none; position:relative; z-index:1;
 }
 #detail-panel.archive-bottom .dp-location {
   grid-column:1; grid-row:2;
   padding:0 24px 14px; margin:0;
-  justify-content:center;
+  justify-content:center; background:none; position:relative; z-index:1;
 }
 #detail-panel.archive-bottom .dp-actions {
   grid-column:1; grid-row:3;
   padding:0 24px 12px; margin:0;
-  gap:20px; justify-content:center;
+  gap:20px; justify-content:center; background:none; position:relative; z-index:1;
 }
 #detail-panel.archive-bottom #btn-delete-place { margin-left:0; }
-#detail-panel.archive-bottom .dp-mini-map {
-  grid-column:1; grid-row:4 / 6;
-  margin:0 24px 0; height:auto; min-height:0;
-  border-radius:6px; align-self:stretch;
-}
 #detail-panel.archive-bottom .dp-meta-row {
-  grid-column:1; grid-row:6;
-  padding:8px 24px 12px; margin:0; gap:4px;
+  grid-column:1; grid-row:4;
+  padding:0 24px 12px; margin:0; gap:4px;
   flex-direction:column; align-items:center;
+  background:none; position:relative; z-index:1;
 }
-#detail-panel.archive-bottom .dp-meta-item {
-  justify-content:center;
-}
+#detail-panel.archive-bottom .dp-meta-item { justify-content:center; }
 
 /* note column */
 #detail-panel.archive-bottom .dp-note-section {
@@ -2266,6 +2267,7 @@ function openPlace(p){
     initSwipeBack();
   }
   setTimeout(initNoteEditing,50);
+  setTimeout(()=>{ if(miniMap) miniMap.invalidateSize(); },420);
 }
 function closePanel(){
   const panel=document.getElementById('detail-panel');
