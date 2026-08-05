@@ -84,11 +84,20 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
 /* ── TOPBAR ──────────────────────────────── */
 #topbar {
-  display:flex; align-items:center; justify-content:flex-start;
+  display:flex; align-items:center; justify-content:space-between;
   padding:0 20px; height:50px; flex-shrink:0;
   background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
   position:relative; z-index:200;
 }
+#topbar-maps-link {
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--sans); font-size:13px; font-weight:500;
+  color:var(--text-3); text-decoration:none;
+  padding:6px 12px; border-radius:8px;
+  transition:background .15s,color .15s;
+  white-space:nowrap;
+}
+#topbar-maps-link:hover { background:var(--stone); color:var(--charcoal); }
 
 /* Inline tab nav */
 #top-menu {
@@ -657,6 +666,58 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #detail-panel { position:fixed; right:0; top:50px; width:var(--pw); height:calc(100vh - 50px); overflow-y:auto; background:var(--surface); box-shadow:var(--sh-panel); transform:translateX(100%); transition:transform .38s cubic-bezier(.4,0,.2,1); z-index:40; }
 #detail-panel.open { transform:translateX(0); }
 
+/* ── ARCHIVE BOTTOM PANEL (desktop) ─────────────────────── */
+#detail-panel.archive-bottom {
+  top:auto; right:0; left:0; bottom:0;
+  width:100%; height:46vh; min-height:280px;
+  overflow:hidden;
+  transform:translateY(calc(100% + 2px));
+  border-radius:20px 20px 0 0;
+  border-top:1px solid rgba(0,0,0,.08);
+  box-shadow:0 -6px 40px rgba(0,0,0,.13);
+  display:flex; flex-direction:row;
+}
+#detail-panel.archive-bottom.open { transform:translateY(0); }
+#detail-panel.archive-bottom .dp-mobile-bar { display:none; }
+
+/* photo column */
+#detail-panel.archive-bottom .dp-hero {
+  width:260px; flex-shrink:0; height:100%;
+  border-radius:20px 0 0 0;
+  overflow:hidden;
+}
+#detail-panel.archive-bottom .dp-hero img {
+  width:100%; height:100%; object-fit:cover;
+}
+#detail-panel.archive-bottom .dp-close {
+  top:14px; right:14px;
+}
+
+/* body becomes a 2-col grid: info | note */
+#detail-panel.archive-bottom .dp-body {
+  flex:1; display:grid;
+  grid-template-columns:1fr 300px;
+  grid-template-rows:auto auto auto auto 1fr;
+  padding:0; overflow:hidden;
+}
+#detail-panel.archive-bottom .dp-name       { grid-column:1; padding:22px 24px 4px; margin:0; font-size:20px; }
+#detail-panel.archive-bottom .dp-location   { grid-column:1; padding:0 24px 12px; margin:0; }
+#detail-panel.archive-bottom .dp-actions    { grid-column:1; padding:0 24px 12px; margin:0; }
+#detail-panel.archive-bottom .dp-meta-row   { grid-column:1; padding:0 24px 10px; margin:0; }
+#detail-panel.archive-bottom .dp-mini-map   { display:none; }
+#detail-panel.archive-bottom .dp-note-section {
+  grid-column:2; grid-row:1 / -1;
+  border-top:none; padding:22px 24px;
+  margin:0; display:flex; flex-direction:column;
+  border-left:1px solid rgba(0,0,0,.07);
+  overflow:hidden;
+}
+#detail-panel.archive-bottom .dp-note-title { font-size:18px; margin-bottom:10px; }
+#detail-panel.archive-bottom .dp-note {
+  flex:1; overflow-y:auto; min-height:0;
+  resize:none;
+}
+
 .dp-hero { position:relative; background:var(--stone); flex-shrink:0; }
 .dp-hero img { width:100%; height:auto; display:block; }
 .dp-close { position:absolute; top:18px; right:18px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.88); backdrop-filter:blur(10px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--charcoal); box-shadow:0 2px 12px rgba(0,0,0,.14); transition:all var(--tr); }
@@ -831,6 +892,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 @media (max-width:768px) {
 
   /* ── BOTTOM NAV ──────────────────────────── */
+  #topbar-maps-link { display:none; }
   #topbar {
     position:fixed;
     bottom:calc(16px + env(safe-area-inset-bottom));
@@ -1174,6 +1236,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
         <span class="tm-label">Journal</span>
       </div>
     </div>
+    <a id="topbar-maps-link" href="https://www.google.com/maps" target="_blank" rel="noopener" title="Open Google Maps">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Google Maps
+    </a>
   </header>
 
   <main id="main" onclick="if(document.getElementById('detail-panel').classList.contains('open')&&!event.target.closest('#detail-panel'))closePanel()">
@@ -2147,7 +2213,15 @@ function openPlace(p){
   document.getElementById('dp-date-added').textContent='Added '+fmtDateLong(p.dateAdded);
   refreshPanelBtns();
   buildMiniMap(p.lat,p.lng);
-  document.getElementById('detail-panel').classList.add('open');
+  const panel=document.getElementById('detail-panel');
+  if(window.innerWidth>768 && currentView==='archive'){
+    panel.classList.add('archive-bottom');
+    document.getElementById('archive-list').style.paddingBottom='48vh';
+  } else {
+    panel.classList.remove('archive-bottom');
+    document.getElementById('archive-list').style.paddingBottom='';
+  }
+  panel.classList.add('open');
   if(window.innerWidth<=768){
     document.querySelector('.dp-back-overlay').style.display='flex';
     initSwipeBack();
@@ -2158,7 +2232,8 @@ function closePanel(){
   const panel=document.getElementById('detail-panel');
   panel.style.transition='';
   panel.style.transform='';
-  panel.classList.remove('open');
+  panel.classList.remove('open','archive-bottom');
+  document.getElementById('archive-list').style.paddingBottom='';
   document.querySelectorAll('.place-card').forEach(c=>c.classList.remove('selected'));
   selectedPlace=null;
 }
