@@ -727,14 +727,15 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 }
 #detail-panel.archive-bottom .dp-btn span { display:none; }
 #detail-panel.archive-bottom .dp-btn {
-  width:34px; height:34px; border-radius:50%;
-  background:rgba(255,255,255,.82); backdrop-filter:blur(8px);
+  width:28px; height:28px; border-radius:0;
+  background:none; backdrop-filter:none; box-shadow:none; padding:0;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.15); padding:0;
+  color:var(--charcoal);
 }
-#detail-panel.archive-bottom .dp-btn svg { width:14px; height:14px; }
-#detail-panel.archive-bottom #btn-delete-place { margin-left:0; color:var(--text-2); }
-#detail-panel.archive-bottom #btn-delete-place:hover { color:#c0392b; background:rgba(255,255,255,.95); }
+#detail-panel.archive-bottom .dp-btn svg { width:15px; height:15px; }
+#detail-panel.archive-bottom .dp-btn:hover { color:var(--accent); }
+#detail-panel.archive-bottom #btn-delete-place { margin-left:0; color:var(--charcoal); }
+#detail-panel.archive-bottom #btn-delete-place:hover { color:#c0392b; background:none; }
 
 /* date — bottom-right of map */
 #detail-panel.archive-bottom .dp-meta-row {
@@ -743,10 +744,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   gap:2px; margin:0; padding:0; background:none;
 }
 #detail-panel.archive-bottom .dp-meta-item {
-  background:rgba(255,255,255,.82); backdrop-filter:blur(8px);
-  border-radius:100px; padding:3px 10px;
-  font-size:11px; box-shadow:0 2px 8px rgba(0,0,0,.1);
-  justify-content:flex-end; gap:5px;
+  background:none; border-radius:0; padding:0;
+  font-size:11px; box-shadow:none;
+  justify-content:flex-end; gap:5px; color:var(--charcoal);
 }
 #detail-panel.archive-bottom .dp-meta-item svg { display:none; }
 
@@ -1605,7 +1605,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       </button>
       <button class="dp-btn" id="btn-delete-place" onclick="deletePanelPlace()" style="margin-left:auto;color:#c0392b">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        Delete
+        <span>Delete</span>
       </button>
     </div>
     <div class="dp-meta-row">
