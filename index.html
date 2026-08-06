@@ -2264,14 +2264,17 @@ function openPlace(p){
   refreshPanelBtns();
   const panel=document.getElementById('detail-panel');
   const isArchiveDesktop=window.innerWidth>768 && currentView==='archive';
+  const alreadyOpen=panel.classList.contains('open') && panel.classList.contains('archive-bottom');
   if(isArchiveDesktop){
     panel.classList.add('archive-bottom');
-    panel.style.transition='none';
-    panel.style.transform='translateY(calc(100% + 2px))';
-    panel.offsetHeight;
-    panel.style.transition='';
-    panel.style.transform='';
-    document.getElementById('archive-list').style.paddingBottom='48vh';
+    if(!alreadyOpen){
+      panel.style.transition='none';
+      panel.style.transform='translateY(calc(100% + 2px))';
+      panel.offsetHeight;
+      panel.style.transition='';
+      panel.style.transform='';
+      document.getElementById('archive-list').style.paddingBottom='48vh';
+    }
   } else {
     panel.classList.remove('archive-bottom');
     document.getElementById('archive-list').style.paddingBottom='';
@@ -2282,9 +2285,9 @@ function openPlace(p){
     initSwipeBack();
   }
   setTimeout(initNoteEditing,50);
-  // build mini-map after classes & animation so Leaflet gets correct container size
+  // build mini-map: if panel already open, update immediately; otherwise wait for animation
   const _lat=p.lat, _lng=p.lng, _photo=p.photo;
-  setTimeout(()=>buildMiniMap(_lat,_lng,_photo), isArchiveDesktop ? 420 : 50);
+  setTimeout(()=>buildMiniMap(_lat,_lng,_photo), (isArchiveDesktop && !alreadyOpen) ? 420 : 50);
 }
 function closePanel(){
   const panel=document.getElementById('detail-panel');
