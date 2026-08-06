@@ -697,7 +697,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #detail-panel.archive-bottom .dp-body {
   flex:1; display:grid;
   grid-template-columns:1fr 300px;
-  grid-template-rows:auto auto auto auto;
+  grid-template-rows:auto auto;
   overflow:hidden; padding:0;
   position:relative;
 }
@@ -720,19 +720,35 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   padding:0 24px 14px; margin:0;
   justify-content:center; background:none; position:relative; z-index:1;
 }
+/* actions — icon-only, bottom-left of map */
 #detail-panel.archive-bottom .dp-actions {
-  grid-column:1; grid-row:3;
-  padding:0 24px 12px; margin:0;
-  gap:20px; justify-content:center; background:none; position:relative; z-index:1;
+  position:absolute; bottom:16px; left:16px; z-index:2;
+  display:flex; flex-direction:row; gap:8px; margin:0; padding:0;
 }
-#detail-panel.archive-bottom #btn-delete-place { margin-left:0; }
+#detail-panel.archive-bottom .dp-btn span { display:none; }
+#detail-panel.archive-bottom .dp-btn {
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,.82); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.15); padding:0;
+}
+#detail-panel.archive-bottom .dp-btn svg { width:14px; height:14px; }
+#detail-panel.archive-bottom #btn-delete-place { margin-left:0; color:var(--text-2); }
+#detail-panel.archive-bottom #btn-delete-place:hover { color:#c0392b; background:rgba(255,255,255,.95); }
+
+/* date — bottom-right of map */
 #detail-panel.archive-bottom .dp-meta-row {
-  grid-column:1; grid-row:4;
-  padding:0 24px 12px; margin:0; gap:4px;
-  flex-direction:column; align-items:center;
-  background:none; position:relative; z-index:1;
+  position:absolute; bottom:16px; right:316px; z-index:2;
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:2px; margin:0; padding:0; background:none;
 }
-#detail-panel.archive-bottom .dp-meta-item { justify-content:center; }
+#detail-panel.archive-bottom .dp-meta-item {
+  background:rgba(255,255,255,.82); backdrop-filter:blur(8px);
+  border-radius:100px; padding:3px 10px;
+  font-size:11px; box-shadow:0 2px 8px rgba(0,0,0,.1);
+  justify-content:flex-end; gap:5px;
+}
+#detail-panel.archive-bottom .dp-meta-item svg { display:none; }
 
 /* note column */
 #detail-panel.archive-bottom .dp-note-section {
