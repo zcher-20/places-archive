@@ -2246,14 +2246,13 @@ function openPlace(p){
   else { visitedRow.style.display='none'; }
   document.getElementById('dp-date-added').textContent='Added '+fmtDateLong(p.dateAdded);
   refreshPanelBtns();
-  buildMiniMap(p.lat,p.lng,p.photo);
   const panel=document.getElementById('detail-panel');
-  if(window.innerWidth>768 && currentView==='archive'){
+  const isArchiveDesktop=window.innerWidth>768 && currentView==='archive';
+  if(isArchiveDesktop){
     panel.classList.add('archive-bottom');
-    // snap to below-screen position without animation, then slide up
     panel.style.transition='none';
     panel.style.transform='translateY(calc(100% + 2px))';
-    panel.offsetHeight; // force reflow
+    panel.offsetHeight;
     panel.style.transition='';
     panel.style.transform='';
     document.getElementById('archive-list').style.paddingBottom='48vh';
@@ -2267,7 +2266,9 @@ function openPlace(p){
     initSwipeBack();
   }
   setTimeout(initNoteEditing,50);
-  setTimeout(()=>{ if(miniMap) miniMap.invalidateSize(); },420);
+  // build mini-map after classes & animation so Leaflet gets correct container size
+  const _lat=p.lat, _lng=p.lng, _photo=p.photo;
+  setTimeout(()=>buildMiniMap(_lat,_lng,_photo), isArchiveDesktop ? 420 : 50);
 }
 function closePanel(){
   const panel=document.getElementById('detail-panel');
