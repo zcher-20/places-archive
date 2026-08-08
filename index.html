@@ -599,6 +599,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .journal-page-title { font-family:var(--sans); font-size:56px; font-weight:700; color:var(--charcoal); margin-bottom:8px; letter-spacing:-.03em; }
 .journal-page-sub { font-size:13px; color:var(--text-4); }
 .journal-year-block { margin-bottom:64px; }
+.journal-entries-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 16px; }
+@media (max-width:768px) { .journal-entries-grid { grid-template-columns:1fr; gap:0; } }
 .journal-year-ghost { font-family:var(--serif); font-size:120px; font-weight:300; color:var(--charcoal); opacity:.05; line-height:1; user-select:none; pointer-events:none; margin-bottom:-28px; }
 .journal-entry { display:flex; gap:24px; padding:20px; border-radius:var(--r); transition:background var(--tr),box-shadow var(--tr); margin-bottom:8px; }
 .journal-entry:hover { background:var(--surface); box-shadow:var(--sh-card); }
@@ -2884,6 +2886,7 @@ function renderJournal(){
   Object.keys(byYear).sort((a,b)=>b-a).forEach(yr=>{
     const block=document.createElement('div'); block.className='journal-year-block';
     block.innerHTML=`<div class="journal-year-ghost">${yr}</div>`;
+    const grid=document.createElement('div'); grid.className='journal-entries-grid';
     byYear[yr].forEach(p=>{
       const d=new Date(p.dateVisited);
       const entry=document.createElement('div'); entry.className='journal-entry';
@@ -2906,8 +2909,9 @@ function renderJournal(){
         if(selectedPlace?.id===place.id){ selectedPlace=place; document.getElementById('dp-note').textContent=val; }
       });
       noteEl.addEventListener('keydown',e=>{ if(e.key==='Escape'){ noteEl.blur(); } });
-      block.appendChild(entry);
+      grid.appendChild(entry);
     });
+    block.appendChild(grid);
     el.appendChild(block);
   });
 }
