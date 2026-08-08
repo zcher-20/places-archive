@@ -616,9 +616,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .je-note-empty { color:var(--text-4); font-style:normal; font-family:var(--sans); font-size:13px; }
 
 /* ── COLLECTIONS ─────────────────────────── */
-.colls-wrap { padding:40px 48px 80px; }
-.colls-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; }
-.colls-page-title { font-family:var(--sans); font-size:56px; font-weight:700; color:var(--charcoal); letter-spacing:-.03em; }
+.archive-colls-section { padding:0 28px 80px; }
+.archive-colls-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-top:48px; border-top:1px solid rgba(0,0,0,.07); }
+.archive-colls-title { font-family:var(--sans); font-size:22px; font-weight:700; color:var(--charcoal); letter-spacing:-.02em; }
 .btn-new-coll { width:36px; height:36px; padding:0; background:var(--charcoal); color:#fff; border:none; border-radius:50%; font-size:13px; font-family:var(--sans); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:opacity .15s; flex-shrink:0; }
 .btn-new-coll:hover { opacity:.8; }
 .colls-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
@@ -1250,10 +1250,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   /* ── MAP: safe area top for status bar ────── */
   #map-list-toggle { top:calc(14px + env(safe-area-inset-top)); }
 
-  /* ── COLLECTIONS ─────────────────────────── */
-  .colls-wrap { padding:calc(48px + env(safe-area-inset-top)) 16px calc(80px + env(safe-area-inset-bottom)); }
-  .colls-page-title { font-size:34px; }
-  .colls-top { margin-bottom:36px; }
+  /* ── COLLECTIONS (in archive) ─────────────── */
+  .archive-colls-section { padding:0 16px calc(80px + env(safe-area-inset-bottom)); }
+  .archive-colls-title { font-size:20px; }
   .colls-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
   .coll-card { aspect-ratio:1/1; border-radius:14px; }
   .coll-card-name { font-size:16px; }
@@ -1321,10 +1320,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       <div class="tm-item" id="nav-archive" onclick="showView('archive')">
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
         <span class="tm-label">Archive</span>
-      </div>
-      <div class="tm-item" id="nav-collections" onclick="showView('collections')">
-        <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
-        <span class="tm-label">Collections</span>
       </div>
       <div class="tm-item" id="nav-journal" onclick="showView('journal')">
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
@@ -1471,6 +1466,44 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
           </div>
         </div>
       </div>
+      <!-- collections section -->
+      <div class="archive-colls-section">
+        <div class="archive-colls-header">
+          <h2 class="archive-colls-title">Collections</h2>
+          <button class="btn-new-coll" onclick="newCollection()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <div id="colls-list"></div>
+        <div id="coll-inline">
+          <div class="cip-header">
+            <div class="cip-title-row">
+              <div class="cip-name" id="cip-name"></div>
+              <div class="cip-count" id="cip-count"></div>
+            </div>
+            <div class="cip-actions">
+              <button class="cdp-add-btn" onclick="openPlacePickerForPanel()">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add places
+              </button>
+              <button class="cdp-del-btn" onclick="confirmDeleteCollectionFromPanel()">Delete</button>
+              <button class="cip-close-btn" onclick="closeCollectionPanel()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="cip-body">
+            <div class="cip-places" id="cip-places"></div>
+            <div class="cip-map-wrap">
+              <div id="cip-map"></div>
+              <div class="cip-zoom">
+                <button onclick="cipMap?.zoomIn()" title="Zoom in">+</button>
+                <button onclick="cipMap?.zoomOut()" title="Zoom out">−</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- city picker modal -->
@@ -1526,45 +1559,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     </div>
 
     <!-- COLLECTIONS -->
-    <div class="view" id="view-collections">
-      <div class="colls-wrap">
-        <div class="colls-top">
-          <h1 class="colls-page-title">Collections</h1>
-          <button class="btn-new-coll" onclick="newCollection()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-        <div id="colls-list"></div>
-        <div id="coll-inline">
-          <div class="cip-header">
-            <div class="cip-title-row">
-              <div class="cip-name" id="cip-name"></div>
-              <div class="cip-count" id="cip-count"></div>
-            </div>
-            <div class="cip-actions">
-              <button class="cdp-add-btn" onclick="openPlacePickerForPanel()">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add places
-              </button>
-              <button class="cdp-del-btn" onclick="confirmDeleteCollectionFromPanel()">Delete</button>
-              <button class="cip-close-btn" onclick="closeCollectionPanel()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="cip-body">
-            <div class="cip-places" id="cip-places"></div>
-            <div class="cip-map-wrap">
-              <div id="cip-map"></div>
-              <div class="cip-zoom">
-                <button onclick="cipMap?.zoomIn()" title="Zoom in">+</button>
-                <button onclick="cipMap?.zoomOut()" title="Zoom out">−</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </main>
 </div>
 
@@ -1972,7 +1966,7 @@ let places = localCachePlaces(); // will be replaced async on boot
 let cityCoverPhotos = {};
 
 // ── STATE ─────────────────────────────────────────────
-let currentView     = 'map';
+let currentView     = localStorage.getItem('pa_view')||'map';
 let activeFilter    = 'All';
 let visitedFilter   = 'all'; // 'all' | 'visited' | 'want'
 let activeCityFilter= null;
@@ -2009,9 +2003,9 @@ function cityPhoto(city){
 function enterApp(){
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('archive-count').textContent = places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
-  // only snap to map on first load, not after data refreshes mid-session
-  if(currentView==='map') { initMap(); syncMapMarkers(); }
-  else renderArchive();
+  // redirect stale 'collections' view to archive
+  if(currentView==='collections') currentView='archive';
+  showView(currentView);
 }
 function buildSidebar(){
   const el=document.getElementById('sb-colls-list'); el.innerHTML='';
@@ -2029,13 +2023,14 @@ function buildSidebar(){
 
 function showView(v){
   currentView=v;
+  localStorage.setItem('pa_view',v);
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.tm-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.getElementById('nav-'+v)?.classList.add('active');
   // close all panels on tab switch
   closePanel();
-  if(v!=='collections') closeCollectionPanel();
+  closeCollectionPanel();
   if(v==='map'){ initMap(); syncMapMarkers(); }
   else if(mapSidebarOpen){
     mapSidebarOpen=false;
@@ -2043,7 +2038,7 @@ function showView(v){
     document.getElementById('map-list-toggle')?.classList.remove('sidebar-open');
   }
   if(v==='journal') renderJournal();
-  if(v==='collections') renderCollections();
+  if(v==='archive') renderCollections();
   if(v==='archive') renderArchive();
 }
 
