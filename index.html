@@ -2217,8 +2217,11 @@ function buildCityPanelMap(ps){
     return L.marker([p.lat,p.lng],{icon}).addTo(cityPanelMap);
   });
   const group=L.featureGroup(markers);
-  cityPanelMap.fitBounds(group.getBounds().pad(0.2));
-  setTimeout(()=>cityPanelMap?.invalidateSize(),80);
+  // invalidate first so Leaflet reads the real container size, then fit
+  setTimeout(()=>{
+    cityPanelMap?.invalidateSize();
+    cityPanelMap?.fitBounds(group.getBounds().pad(0.2));
+  }, 120);
 }
 
 function closeCityPanel(){
