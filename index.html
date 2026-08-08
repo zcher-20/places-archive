@@ -83,55 +83,48 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #app { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
 
 /* ── TOPBAR ──────────────────────────────── */
-/* ── LEFT SIDEBAR NAV (desktop) ─────────────── */
+/* ── FLOATING PILL NAV ───────────────────────── */
 #topbar {
-  position:fixed; left:0; top:0; bottom:0; z-index:300;
-  width:52px; display:flex; flex-direction:column;
-  background:#fff; border-right:1px solid rgba(0,0,0,.07);
-  transition:width .28s cubic-bezier(.4,0,.2,1);
-  overflow:hidden; flex-shrink:0;
+  position:fixed; bottom:20px;
+  left:50%; transform:translateX(-50%);
+  width:auto; height:auto; top:auto; right:auto;
+  display:flex; flex-direction:row; align-items:center;
+  padding:8px 8px;
+  background:rgba(255,255,255,.35);
+  backdrop-filter:blur(28px) saturate(1.4);
+  -webkit-backdrop-filter:blur(28px) saturate(1.4);
+  border:none; border-radius:26px;
+  box-shadow:0 4px 20px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+  z-index:500; overflow:visible;
 }
-#topbar.expanded { width:200px; }
-#topbar-toggle {
-  display:flex; align-items:center; justify-content:center;
-  width:52px; height:52px; flex-shrink:0; cursor:pointer;
-  background:none; border:none; color:var(--text-3);
-  transition:color .15s;
-}
-#topbar-toggle:hover { color:var(--charcoal); }
-#top-menu {
-  display:flex; flex-direction:column; flex:1; padding:4px 0;
-}
+#topbar-toggle { display:none; }
+#topbar-maps-link { display:none; }
+#top-menu { display:flex; flex-direction:row; gap:0; flex:none; padding:0; }
 .tm-item {
-  position:relative; height:44px; min-width:52px;
-  display:flex; align-items:center; gap:14px;
-  padding:0 16px;
-  font-size:13.5px; color:var(--text-3); font-weight:400;
+  position:relative; height:auto; min-width:unset;
+  flex-direction:column; gap:4px; padding:4px 10px 2px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0; color:rgba(0,0,0,.42);
   cursor:pointer; font-family:var(--sans);
-  transition:color .15s,background .15s; white-space:nowrap;
-  background:transparent; border:none; text-align:left;
-  border-radius:0;
+  transition:color .15s; white-space:nowrap;
+  background:transparent; border:none; text-align:center;
+  -webkit-tap-highlight-color:transparent;
 }
-.tm-item:hover { color:var(--charcoal); background:var(--stone); }
-.tm-item.active { color:var(--charcoal); font-weight:600; background:var(--stone); }
+.tm-item:hover { color:rgba(0,0,0,.88); background:none; }
+.tm-item.active { color:rgba(0,0,0,.88); font-weight:normal; background:none; }
 .tm-item.active::after { display:none; }
-.tm-icon-wrap { width:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-.tm-label { opacity:0; transition:opacity .18s; white-space:nowrap; }
-#topbar.expanded .tm-label { opacity:1; }
-
-/* Google Maps link at bottom of sidebar */
-#topbar-maps-link {
-  display:flex; align-items:center; gap:14px;
-  padding:14px 16px; font-family:var(--sans); font-size:13px;
-  font-weight:500; color:var(--text-3); text-decoration:none;
-  transition:color .15s,background .15s; white-space:nowrap;
-  border-top:1px solid rgba(0,0,0,.07);
+.tm-icon-wrap {
+  width:42px; height:34px; border-radius:17px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s;
 }
-#topbar-maps-link:hover { background:var(--stone); color:var(--charcoal); }
-#topbar-maps-link .tm-label { opacity:0; transition:opacity .18s; }
-#topbar.expanded #topbar-maps-link .tm-label { opacity:1; }
-#topbar-maps-link svg { width:20px; height:20px; flex-shrink:0; }
-
+.tm-item.active .tm-icon-wrap { background:rgba(0,0,0,.10); }
+.tm-label {
+  display:block; font-size:10px; letter-spacing:.01em;
+  font-family:var(--sans); line-height:1; opacity:1;
+  white-space:nowrap;
+}
+.tm-item.active .tm-label { font-weight:600; }
 .tm-count { display:none; }
 .sb-add-btn { display:none; }
 
@@ -166,10 +159,14 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
 /* ── MAIN ────────────────────────────────── */
 #app { display:flex; flex-direction:row; height:100%; }
-#main { flex:1; overflow:hidden; display:flex; flex-direction:column; margin-left:52px; transition:margin-left .28s cubic-bezier(.4,0,.2,1); }
-#topbar.expanded~#main, body.sidebar-open #main { margin-left:200px; }
+#main { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 .view { flex:1; overflow-y:auto; overflow-x:hidden; display:none; }
 .view.active { display:flex; flex-direction:column; }
+/* pill clearance on desktop */
+@media (min-width:769px) {
+  .view { padding-bottom:90px; }
+  .view#view-map { padding-bottom:0; }
+}
 
 /* ── ARCHIVE HERO ────────────────────────── */
 .archive-hero {
@@ -303,8 +300,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 @media (min-width:769px) {
   .archive-hero { display:none !important; }
   .desktop-archive-title { display:none !important; }
-  #view-archive { overflow:hidden; display:flex; flex-direction:column; }
-  .archive-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; display:block; }
+  #view-archive.active { overflow:hidden; }
+  .archive-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; }
   #archive-list { flex:none; overflow:visible; }
 }
 .al-city-header {
@@ -977,51 +974,19 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
    ════════════════════════════════════════════ */
 @media (max-width:768px) {
 
-  /* ── BOTTOM NAV ──────────────────────────── */
-  #topbar-maps-link { display:none; }
+  /* ── BOTTOM NAV (mobile overrides) ──────── */
   #topbar {
-    position:fixed;
     bottom:calc(16px + env(safe-area-inset-bottom));
-    left:12px; right:12px; top:auto;
-    transform:none; width:auto; height:auto;
-    padding:8px 6px; flex-direction:row;
-    background:rgba(255,255,255,.35);
-    backdrop-filter:blur(28px) saturate(1.4);
-    -webkit-backdrop-filter:blur(28px) saturate(1.4);
-    border:none; border-top:none;
-    border-radius:26px;
-    box-shadow:0 4px 20px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+    left:12px; right:12px;
+    transform:none; padding:8px 6px;
     justify-content:space-around;
-    z-index:500;
   }
-  #top-menu { width:100%; gap:0; justify-content:space-around; }
-  .tm-item {
-    flex:1; flex-direction:column; gap:4px; padding:4px 2px 2px;
-    height:auto; justify-content:center; align-items:center;
-    font-size:0; color:rgba(0,0,0,.42);
-    transition:color .15s;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .tm-icon-wrap {
-    width:42px; height:34px; border-radius:17px;
-    display:flex; align-items:center; justify-content:center;
-    transition:background .15s;
-  }
-  .tm-item.active .tm-icon-wrap { background:rgba(0,0,0,.10); }
-  .tm-label {
-    display:block; font-size:10px; letter-spacing:.01em;
-    font-family:var(--sans); line-height:1;
-  }
-  .tm-item.active { color:rgba(0,0,0,.88); }
-  .tm-item.active .tm-label { font-weight:600; }
-  .tm-item.active::after { display:none; }
-  .tm-icon { display:block; }
+  #top-menu { width:100%; justify-content:space-around; }
+  .tm-item { flex:1; padding:4px 2px 2px; }
 
   /* ── MAIN fills full viewport; views get padding for bar ─ */
-  #main { flex:none; height:100vh; margin-left:0 !important; }
-  .view { padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
-  #topbar-toggle { display:none; }
-  .tm-label { opacity:1 !important; }
+  #main { flex:none; height:100vh; }
+  .view { padding-bottom:calc(96px + env(safe-area-inset-bottom)) !important; }
 
   /* ── LANDING ─────────────────────────────── */
   .landing-title { font-size:52px; }
@@ -1307,9 +1272,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 <!-- APP -->
 <div id="app">
   <header id="topbar">
-    <button id="topbar-toggle" onclick="toggleSidebar()" title="Menu">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
     <div id="top-menu">
       <div class="tm-item" id="nav-map" onclick="showView('map')">
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
@@ -2057,11 +2019,7 @@ function buildSidebar(){
 }
 
 // ── ROUTING ──────────────────────────────────────────
-function toggleSidebar(){
-  const sb=document.getElementById('topbar');
-  sb.classList.toggle('expanded');
-  document.getElementById('main').style.marginLeft=sb.classList.contains('expanded')?'200px':'52px';
-}
+
 function showView(v){
   currentView=v;
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
