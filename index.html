@@ -301,9 +301,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .archive-hero { display:none !important; }
   .desktop-archive-title {
     display:block !important;
-    font-family:var(--sans); font-size:56px; font-weight:800;
-    color:var(--charcoal); letter-spacing:-.04em;
-    padding:48px 28px 28px; line-height:1; text-align:center;
+    font-family:var(--sans); font-size:36px; font-weight:800;
+    color:var(--charcoal); letter-spacing:-.03em;
+    padding:32px 28px 16px; line-height:1; text-align:center;
   }
   #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; }
   .archive-scroll { padding:24px 28px 40px; overflow:visible; }
@@ -621,15 +621,15 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .colls-page-title { font-family:var(--sans); font-size:56px; font-weight:700; color:var(--charcoal); letter-spacing:-.03em; }
 .btn-new-coll { width:36px; height:36px; padding:0; background:var(--charcoal); color:#fff; border:none; border-radius:50%; font-size:13px; font-family:var(--sans); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:opacity .15s; flex-shrink:0; }
 .btn-new-coll:hover { opacity:.8; }
-.colls-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
-.coll-card { border-radius:18px; overflow:hidden; cursor:pointer; aspect-ratio:1/1; position:relative; box-shadow:0 4px 24px rgba(0,0,0,.1); transition:transform .22s ease,box-shadow .22s ease; background:var(--stone); }
-.coll-card:hover { transform:translateY(-5px); box-shadow:0 14px 44px rgba(0,0,0,.16); }
+.colls-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+.coll-card { border-radius:14px; overflow:hidden; cursor:pointer; aspect-ratio:1/1; position:relative; box-shadow:0 4px 24px rgba(0,0,0,.1); transition:transform .22s ease,box-shadow .22s ease; background:var(--stone); }
+.coll-card:hover { transform:translateY(-4px); box-shadow:0 10px 32px rgba(0,0,0,.16); }
 .coll-card-img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .7s ease; }
 .coll-card:hover .coll-card-img { transform:scale(1.04); }
 .coll-card-placeholder { width:100%; height:100%; background:linear-gradient(145deg,#e8e3dc 0%,#d4cec6 100%); display:flex; align-items:center; justify-content:center; color:rgba(0,0,0,.18); }
-.coll-card-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,0) 55%); display:flex; flex-direction:column; justify-content:flex-end; padding:26px 24px; }
-.coll-card-name { font-family:var(--serif); font-size:26px; font-weight:700; color:#F5EFE4; line-height:1.2; }
-.coll-card-sub { font-size:11.5px; color:rgba(245,239,228,.55); margin-top:6px; letter-spacing:.04em; text-transform:uppercase; }
+.coll-card-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,0) 55%); display:flex; flex-direction:column; justify-content:flex-end; padding:16px; }
+.coll-card-name { font-family:var(--serif); font-size:18px; font-weight:700; color:#F5EFE4; line-height:1.2; }
+.coll-card-sub { font-size:10.5px; color:rgba(245,239,228,.55); margin-top:4px; letter-spacing:.04em; text-transform:uppercase; }
 .colls-empty { display:flex; flex-direction:column; align-items:center; padding:80px 20px; gap:10px; }
 .colls-empty-title { font-family:var(--serif); font-size:22px; color:var(--text-2); }
 .colls-empty-sub { font-size:13px; color:var(--text-3); text-align:center; max-width:220px; line-height:1.65; }
