@@ -861,65 +861,78 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 /* ── MODAL ───────────────────────────────── */
 #modal-backdrop { position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,.32); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:all .22s ease; }
 #modal-backdrop.open { opacity:1; visibility:visible; }
-#modal { background:#f4f5f7; border-radius:16px; width:620px; max-width:95vw; max-height:90vh; overflow-y:auto; box-shadow:0 24px 80px rgba(0,0,0,.18), 0 4px 16px rgba(0,0,0,.08); transform:translateY(20px) scale(.98); transition:transform .25s ease; }
+#modal { background:#fff; border-radius:20px; width:740px; max-width:96vw; max-height:92vh; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,.22); transform:translateY(20px) scale(.98); transition:transform .25s ease; display:flex; flex-direction:column; }
 #modal-backdrop.open #modal { transform:translateY(0) scale(1); }
 
-.modal-head { padding:28px 32px 20px; display:flex; align-items:center; justify-content:space-between; }
-.modal-title { font-family:var(--sans); font-size:22px; font-weight:600; color:var(--charcoal); line-height:1; letter-spacing:-.02em; }
-.modal-close { width:28px; height:28px; border-radius:50%; background:rgba(0,0,0,.08); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-2); transition:background .15s ease; flex-shrink:0; }
-.modal-close:hover { background:rgba(0,0,0,.14); }
+/* modal layout: photo left, fields right */
+.modal-body { display:grid; grid-template-columns:260px 1fr; flex:1; overflow:hidden; }
 
-.modal-body { padding:0 24px 24px; display:flex; flex-direction:column; gap:2px; }
-
-/* Two-column field rows */
-.form-field {
-  display:grid; grid-template-columns:160px 1fr;
-  align-items:start; gap:16px;
-  background:#fff; padding:16px 20px;
-  border-radius:10px;
+/* left — photo zone */
+.modal-photo-col {
+  position:relative; background:var(--stone); cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; color:var(--text-3); font-size:12.5px; font-family:var(--sans);
+  transition:background .18s;
+  overflow:hidden;
 }
-.form-field + .form-field { margin-top:2px; }
-.form-field-label { padding-top:2px; }
-.form-label { display:block; font-size:13.5px; font-weight:500; color:var(--charcoal); margin-bottom:2px; font-family:var(--sans); }
-.form-label-hint { font-size:12px; color:var(--text-3); font-family:var(--sans); }
+.modal-photo-col:hover { background:#e8e3dc; }
+.modal-photo-col input[type=file] { display:none; }
+.modal-photo-bg { position:absolute; inset:0; background-size:cover; background-position:center; transition:transform .4s ease; }
+.modal-photo-col:hover .modal-photo-bg { transform:scale(1.04); }
+.modal-photo-prompt { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.modal-photo-prompt svg { opacity:.4; }
+.modal-photo-prompt span { opacity:.6; }
+.modal-photo-col.has-photo .modal-photo-prompt { display:none; }
+.modal-photo-col.has-photo:hover::after {
+  content:'Change photo'; position:absolute; inset:0; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-family:var(--sans); color:#fff; font-weight:500;
+  background:rgba(0,0,0,.35);
+}
+
+/* right — fields */
+.modal-fields-col { display:flex; flex-direction:column; overflow-y:auto; }
+.modal-fields-top { padding:24px 28px 0; }
+.modal-close { position:absolute; top:16px; right:16px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,.07); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-2); transition:background .15s; z-index:10; }
+.modal-close:hover { background:rgba(0,0,0,.13); }
+.modal-head { display:none; }
+.modal-title-input {
+  width:100%; border:none; outline:none; background:none;
+  font-family:var(--sans); font-size:26px; font-weight:700;
+  color:var(--charcoal); letter-spacing:-.02em; line-height:1.2;
+  padding:0; margin-bottom:20px;
+}
+.modal-title-input::placeholder { color:#c4bdb5; }
+.form-field { display:flex; flex-direction:column; gap:4px; padding:10px 0; border-bottom:1px solid rgba(0,0,0,.06); }
+.form-field:last-of-type { border-bottom:none; }
+.form-field-label { display:none; }
+.form-label { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); font-family:var(--sans); }
+.form-label-hint { display:none; }
 .form-input,.form-select,.form-textarea {
-  width:100%; padding:9px 12px;
-  background:#fff; border:1px solid #d1d5db; border-radius:7px;
-  color:var(--charcoal); font-family:var(--sans); font-size:13.5px;
-  outline:none; transition:border-color .15s ease; -webkit-appearance:none;
+  width:100%; padding:6px 0; background:none;
+  border:none; border-radius:0;
+  color:var(--charcoal); font-family:var(--sans); font-size:14px;
+  outline:none; -webkit-appearance:none; box-sizing:border-box;
 }
-.form-input:focus,.form-select:focus,.form-textarea:focus { border-color:#7C1D3F; box-shadow:0 0 0 3px rgba(124,29,63,.12); }
-.form-input::placeholder,.form-textarea::placeholder { color:#9ca3af; }
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.form-textarea { resize:vertical; min-height:80px; line-height:1.6; font-family:var(--sans); font-size:13.5px; }
-.form-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:30px; }
-
-/* Upload row */
-.form-upload-row { display:flex; gap:8px; align-items:center; }
-.form-upload-label { display:flex; align-items:center; gap:6px; padding:9px 14px; background:#f4f5f7; border:1px solid #d1d5db; border-radius:7px; font-size:13px; color:var(--text-2); cursor:pointer; white-space:nowrap; transition:background .15s ease; flex-shrink:0; font-family:var(--sans); }
-.form-upload-label:hover { background:#e9eaec; }
-.form-upload-label input { display:none; }
-.form-upload-sep { font-size:11px; color:#9ca3af; flex-shrink:0; }
-.form-drop-zone {
-  margin-top:8px; border:1.5px dashed #d1d5db; border-radius:8px;
-  padding:28px 12px; text-align:center; font-size:12.5px; color:var(--text-3);
-  cursor:pointer; transition:border-color .15s ease, background .15s ease;
-  display:flex; align-items:center; justify-content:center; gap:7px;
-}
-.form-drop-zone:hover, .form-drop-zone.drag-over {
-  border-color:#7C1D3F; background:rgba(124,29,63,.04); color:var(--charcoal);
-}
-.form-photo-preview { width:100%; height:110px; border-radius:8px; object-fit:cover; margin-top:8px; display:none; }
-.form-photo-preview.visible { display:block; }
-.form-maps-hint { font-size:11px; margin-top:4px; min-height:15px; }
+.form-input::placeholder,.form-textarea::placeholder { color:#c4bdb5; }
+.form-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 4px center; padding-right:22px; cursor:pointer; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+.form-textarea { resize:none; min-height:64px; line-height:1.6; font-family:var(--sans); }
+.form-maps-hint { font-size:11px; min-height:14px; }
 .form-maps-hint.ok { color:#16a34a; }
 .form-maps-hint.err { color:#dc2626; }
+.modal-fields-body { padding:0 28px; flex:1; }
+.form-upload-row { display:none; }
+.form-upload-sep { display:none; }
+.form-drop-zone { display:none; }
+.form-photo-preview { display:none !important; }
 
-/* Footer */
-.modal-foot { padding:16px 24px 24px; border-top:1px solid rgba(0,0,0,.07); margin-top:4px; }
-.btn-save { width:100%; padding:13px; background:#7C1D3F; border:none; border-radius:10px; color:#fff; font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; transition:background .15s ease; display:flex; align-items:center; justify-content:center; gap:8px; }
-.btn-save:hover { background:#661633; }
-.btn-cancel { display:none; }
+/* footer */
+.modal-foot { padding:16px 28px 20px; border-top:1px solid rgba(0,0,0,.06); display:flex; align-items:center; justify-content:flex-end; gap:10px; }
+.btn-save { padding:10px 22px; background:var(--charcoal); border:none; border-radius:10px; color:#fff; font-family:var(--sans); font-size:13.5px; font-weight:500; cursor:pointer; transition:background .15s; }
+.btn-save:hover { background:#2a2520; }
+.btn-cancel { display:block; padding:10px 18px; background:none; border:1px solid rgba(0,0,0,.12); border-radius:10px; color:var(--text-2); font-family:var(--sans); font-size:13.5px; cursor:pointer; transition:background .15s; }
+.btn-cancel:hover { background:var(--stone); }
 
 /* photo change modal (reusable) */
 /* name collection modal */
@@ -1188,16 +1201,17 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     transform:translateY(130%) !important;
   }
   #modal-backdrop.open #modal { transform:translateY(0) !important; }
-  .modal-head { padding:16px 18px 12px; flex-shrink:0; }
-  .modal-title { font-size:17px; }
-  .modal-body { padding:0 12px 8px; gap:0; overflow-y:auto; flex:1; }
-  .form-field { grid-template-columns:1fr; gap:2px; padding:9px 12px; border-radius:8px; }
-  .form-field + .form-field { margin-top:2px; }
-  .form-label { font-size:12px; }
-  .form-label-hint { display:none; }
-  .form-input, .form-select, .form-textarea { padding:7px 10px; font-size:13px; }
-  .form-textarea { min-height:56px; }
-  .form-drop-zone { padding:12px; font-size:11.5px; }
+  .modal-body { display:flex; flex-direction:column; overflow-y:auto; flex:1; }
+  .modal-photo-col { height:180px; flex-shrink:0; border-radius:0; }
+  .modal-fields-col { display:flex; flex-direction:column; flex:1; overflow-y:auto; }
+  .modal-fields-top { padding:16px 18px 0; }
+  .modal-title-input { font-size:20px; margin-bottom:12px; }
+  .modal-fields-body { padding:0 18px; }
+  .form-field { padding:8px 0; }
+  .form-label { font-size:10px; }
+  .form-input, .form-select, .form-textarea { font-size:13px; }
+  .form-textarea { min-height:52px; }
+  .modal-foot { padding:12px 18px 16px; }
   .modal-foot { padding:10px 12px calc(14px + env(safe-area-inset-bottom)); flex-shrink:0; }
 
   /* ── NAME COLLECTION MODAL ───────────────── */
@@ -1286,10 +1300,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
         <span class="tm-label">Archive</span>
       </div>
-      <div class="tm-item" id="nav-save" onclick="openModal()">
-        <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
-        <span class="tm-label">Save</span>
-      </div>
       <div class="tm-item" id="nav-collections" onclick="showView('collections')">
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
         <span class="tm-label">Collections</span>
@@ -1297,6 +1307,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       <div class="tm-item" id="nav-journal" onclick="showView('journal')">
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
         <span class="tm-label">Journal</span>
+      </div>
+      <div class="tm-item" id="nav-save" onclick="openModal()">
+        <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+        <span class="tm-label">Save</span>
       </div>
     </div>
     <a id="topbar-maps-link" href="https://www.google.com/maps" target="_blank" rel="noopener" title="Open Google Maps">
@@ -1667,112 +1681,71 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 <!-- ADD PLACE MODAL -->
 <div id="modal-backdrop" onclick="backdropClick(event)">
   <div id="modal">
-    <div class="modal-head">
-      <h2 class="modal-title">Add a Place</h2>
-      <button class="modal-close" onclick="closeModal()">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
+    <button class="modal-close" onclick="closeModal()">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
     <div class="modal-body">
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Place name</div>
-          <div class="form-label-hint">The name of the place</div>
+      <!-- left: photo -->
+      <div class="modal-photo-col" id="modal-photo-col"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="this.classList.remove('drag-over');handleModalDrop(event)"
+        onclick="document.getElementById('f-file-hidden').click()">
+        <div class="modal-photo-bg" id="modal-photo-bg"></div>
+        <div class="modal-photo-prompt">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>Drop photo or click</span>
         </div>
-        <input class="form-input" id="f-name" type="text" placeholder="e.g. The Smile">
+        <input type="file" id="f-file-hidden" accept="image/*" onchange="handleModalFile(event)">
+        <!-- hidden URL input kept for JS compatibility -->
+        <input type="hidden" id="f-photo">
+        <img style="display:none" id="f-photo-preview">
+        <input type="file" id="f-drop-file" accept="image/*" style="display:none" onchange="handleModalFile(event)">
       </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Google Maps</div>
-          <div class="form-label-hint">Sets the pin location</div>
+      <!-- right: fields -->
+      <div class="modal-fields-col">
+        <div class="modal-fields-top">
+          <input class="modal-title-input" id="f-name" type="text" placeholder="Place name…" autocomplete="off">
         </div>
-        <div>
-          <input class="form-input" id="f-maps" type="url" placeholder="Paste Google Maps URL…" oninput="handleMapsUrl(this.value)">
-          <div class="form-maps-hint" id="f-maps-hint"></div>
-        </div>
-      </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Cover photo</div>
-          <div class="form-label-hint">Upload or paste a URL</div>
-        </div>
-        <div>
-          <div class="form-upload-row">
-            <label class="form-upload-label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Upload file
-              <input type="file" accept="image/*" onchange="handleModalFile(event)">
-            </label>
-            <span class="form-upload-sep">or</span>
-            <input class="form-input" id="f-photo" type="url" placeholder="Paste image URL…" oninput="handleModalUrl(this.value)" style="flex:1;min-width:0">
+        <div class="modal-fields-body">
+          <div class="form-field">
+            <div class="form-label">Google Maps</div>
+            <input class="form-input" id="f-maps" type="url" placeholder="Paste Maps URL to auto-fill location" oninput="handleMapsUrl(this.value)">
+            <div class="form-maps-hint" id="f-maps-hint"></div>
           </div>
-          <div class="form-drop-zone" id="f-drop-zone"
-            ondragover="event.preventDefault();this.classList.add('drag-over')"
-            ondragleave="this.classList.remove('drag-over')"
-            ondrop="handleModalDrop(event)"
-            onclick="document.getElementById('f-drop-file').click()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Drag photo here
-            <input type="file" id="f-drop-file" accept="image/*" style="display:none" onchange="handleModalFile(event)">
+          <div class="form-field">
+            <div class="form-label">City &amp; Country</div>
+            <div class="form-row">
+              <input class="form-input" id="f-city" type="text" placeholder="City" value="New York City">
+              <input class="form-input" id="f-country" type="text" placeholder="Country">
+            </div>
           </div>
-          <img class="form-photo-preview" id="f-photo-preview" src="" alt="">
+          <div class="form-field">
+            <div class="form-label">Address</div>
+            <input class="form-input" id="f-address" type="text" placeholder="Street address">
+          </div>
+          <div class="form-field">
+            <div class="form-label">Category</div>
+            <select class="form-select" id="f-cat">
+              <option>Café</option><option>Restaurant</option><option>Bar</option>
+              <option>Hotel</option><option>Store</option><option>Museum</option>
+              <option>Garden</option><option>Bookshop</option><option>Neighbourhood</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <div class="form-label">Date visited</div>
+            <input class="form-input" id="f-date" type="date">
+          </div>
+          <div class="form-field">
+            <div class="form-label">Note</div>
+            <textarea class="form-textarea" id="f-note" placeholder="What do you want to remember…"></textarea>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+          <button class="btn-save" onclick="savePlace()">Save to Archive</button>
         </div>
       </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Location</div>
-          <div class="form-label-hint">City and country</div>
-        </div>
-        <div class="form-row">
-          <input class="form-input" id="f-city" type="text" placeholder="City" value="New York City">
-          <input class="form-input" id="f-country" type="text" placeholder="Country">
-        </div>
-      </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Address</div>
-          <div class="form-label-hint">Street address</div>
-        </div>
-        <input class="form-input" id="f-address" type="text" placeholder="e.g. 26 Bond St">
-      </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Category</div>
-          <div class="form-label-hint">Type of place</div>
-        </div>
-        <select class="form-select" id="f-cat">
-          <option>Café</option><option>Restaurant</option><option>Bar</option>
-          <option>Hotel</option><option>Store</option><option>Museum</option>
-          <option>Garden</option><option>Bookshop</option><option>Neighbourhood</option><option>Other</option>
-        </select>
-      </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Date visited</div>
-          <div class="form-label-hint">Leave blank if not yet visited</div>
-        </div>
-        <input class="form-input" id="f-date" type="date">
-      </div>
-
-      <div class="form-field">
-        <div class="form-field-label">
-          <div class="form-label">Note</div>
-          <div class="form-label-hint">What to remember</div>
-        </div>
-        <textarea class="form-textarea" id="f-note" placeholder="What do you want to remember about this place?"></textarea>
-      </div>
-
-    </div>
-    <div class="modal-foot">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="savePlace()">Save to Archive →</button>
     </div>
   </div>
 </div>
@@ -3291,13 +3264,20 @@ function savePhotoModal(){
 // ── ADD PLACE MODAL ──────────────────────────────────
 let editingPlaceId = null;
 
+function setModalPhoto(url){
+  const col=document.getElementById('modal-photo-col');
+  const bg=document.getElementById('modal-photo-bg');
+  if(url){ bg.style.backgroundImage=`url('${url}')`; col.classList.add('has-photo'); }
+  else { bg.style.backgroundImage=''; col.classList.remove('has-photo'); }
+}
 function openModal(id=null){
   editingPlaceId=id;
-  const title=document.querySelector('.modal-title');
   const saveBtn=document.querySelector('.btn-save');
+  // clear photo state
+  setModalPhoto('');
+  document.getElementById('f-photo-preview').dataset={}||'';
   if(id){
     const p=places.find(x=>x.id===id); if(!p)return;
-    title.textContent='Edit Place';
     saveBtn.textContent='Save Changes';
     document.getElementById('f-name').value=p.name||'';
     document.getElementById('f-city').value=p.city||'';
@@ -3309,13 +3289,12 @@ function openModal(id=null){
     document.getElementById('f-maps').value=p.googleMapsUrl||'';
     document.getElementById('f-maps-hint').textContent='';
     document.getElementById('f-maps-hint').className='form-maps-hint';
-    const prev=document.getElementById('f-photo-preview');
-    if(p.photo){ prev.src=p.photo; prev.classList.add('visible'); prev.dataset.blobUrl=''; }
+    if(p.photo) setModalPhoto(p.photo);
   } else {
-    title.textContent='Add a Place';
     saveBtn.textContent='Save to Archive';
   }
   document.getElementById('modal-backdrop').classList.add('open');
+  document.getElementById('f-name').focus();
 }
 function closeModal(){
   document.getElementById('modal-backdrop').classList.remove('open');
@@ -3325,7 +3304,8 @@ function closeModal(){
   document.getElementById('f-country').value='';
   document.getElementById('f-address').value='';
   const hint=document.getElementById('f-maps-hint'); if(hint){hint.textContent='';hint.className='form-maps-hint';}
-  const prev=document.getElementById('f-photo-preview'); if(prev){prev.src='';prev.dataset.dataUrl='';prev.classList.remove('visible');}
+  setModalPhoto('');
+  const prev=document.getElementById('f-photo-preview'); if(prev){ prev.src=''; if(prev.dataset)prev.dataset.dataUrl=''; }
 }
 function backdropClick(e){ if(e.target===document.getElementById('modal-backdrop'))closeModal(); }
 function handleModalFile(event){
@@ -3334,7 +3314,6 @@ function handleModalFile(event){
 }
 function handleModalDrop(event){
   event.preventDefault();
-  document.getElementById('f-drop-zone').classList.remove('drag-over');
   const file=event.dataTransfer.files[0]; if(!file||!file.type.startsWith('image/'))return;
   loadModalImageFile(file);
 }
@@ -3344,21 +3323,25 @@ function loadModalImageFile(file){
     const compressed=await compressImage(e.target.result);
     document.getElementById('f-photo').value='';
     const prev=document.getElementById('f-photo-preview');
-    prev.src=compressed; prev.classList.add('visible');
-    prev.dataset.dataUrl=compressed;
+    if(prev){ prev.src=compressed; if(prev.dataset)prev.dataset.dataUrl=compressed; }
+    setModalPhoto(compressed);
   };
   reader.readAsDataURL(file);
 }
 function handleModalUrl(val){
   if(!val)return;
-  const prev=document.getElementById('f-photo-preview'); prev.src=val; prev.classList.add('visible'); prev.dataset.dataUrl='';
+  const prev=document.getElementById('f-photo-preview');
+  if(prev){ prev.src=val; if(prev.dataset)prev.dataset.dataUrl=''; }
+  setModalPhoto(val);
 }
 function getModalPhoto(){
   const urlInput=document.getElementById('f-photo').value.trim();
   const prev=document.getElementById('f-photo-preview');
   if(urlInput) return urlInput;
-  if(prev.dataset.dataUrl) return prev.dataset.dataUrl;
-  return P.park;
+  if(prev?.dataset?.dataUrl) return prev.dataset.dataUrl;
+  const bg=document.getElementById('modal-photo-bg').style.backgroundImage;
+  if(bg) return bg.slice(5,-2).replace(/'/g,'');
+  return '';
 }
 // ── BULK IMPORT ──────────────────────────────────────────
 let bulkItems=[], bulkSeq=0;
