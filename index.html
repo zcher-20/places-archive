@@ -298,21 +298,16 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .archive-list { flex:1; overflow-y:auto; }
 /* on desktop, archive uses city-card grid layout */
 @media (min-width:769px) {
-  .desktop-archive-title { display:none !important; }
+  .archive-hero { display:none !important; }
+  .desktop-archive-title {
+    display:block !important;
+    font-family:var(--sans); font-size:56px; font-weight:800;
+    color:var(--charcoal); letter-spacing:-.04em;
+    padding:48px 28px 0; line-height:1; text-align:center;
+  }
   #view-archive.active { overflow:hidden; }
   .archive-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; }
   #archive-list { flex:none; overflow:visible; }
-
-  /* hero: centered, rounded, with space above */
-  .archive-hero {
-    display:block;
-    width:calc(100% - 96px); max-width:900px;
-    height:220px; border-radius:20px;
-    margin:40px auto 0;
-    flex-shrink:0;
-  }
-  .ah-content { padding:0 28px 22px; }
-  .ah-city { font-size:42px; }
 }
 .al-city-header {
   font-size:20px; font-weight:700; color:var(--charcoal);
