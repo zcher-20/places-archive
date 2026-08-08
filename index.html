@@ -305,9 +305,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     color:var(--charcoal); letter-spacing:-.04em;
     padding:48px 28px 28px; line-height:1; text-align:center;
   }
-  #view-archive.active { overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; }
+  #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; }
   .archive-scroll { padding:24px 28px 40px; overflow:visible; }
-  #archive-list { flex:none; overflow:visible; }
+  #archive-list { overflow:visible; }
 }
 .al-city-header {
   font-size:20px; font-weight:700; color:var(--charcoal);
@@ -1881,8 +1881,14 @@ async function loadCollections(){
   }catch(e){ console.warn('Collections load failed:',e); return []; }
 }
 async function upsertCollection(c){
-  const {error}=await db.from('collections').upsert({id:c.id,name:c.name,place_ids:c.placeIds});
-  if(error) console.error('Collection save error:',error);
+  if(c._new){
+    const {data,error}=await db.from('collections').insert({name:c.name,place_ids:c.placeIds}).select().single();
+    if(error){ console.error('Collection insert error:',error); return; }
+    if(data){ c.id=data.id; delete c._new; }
+  } else {
+    const {error}=await db.from('collections').upsert({id:c.id,name:c.name,place_ids:c.placeIds});
+    if(error) console.error('Collection save error:',error);
+  }
 }
 async function deleteCollectionFromDB(id){
   const {error}=await db.from('collections').delete().eq('id',id);
@@ -3095,7 +3101,7 @@ function closeNameColl(){
 function saveNameColl(){
   const name=document.getElementById('name-coll-input').value.trim();
   if(!name)return;
-  const c={id:Date.now(),name,placeIds:[]};
+  const c={id:Date.now(),name,placeIds:[],_new:true};
   collections.push(c);
   upsertCollection(c);
   activeCollection=c.id;
