@@ -2340,6 +2340,7 @@ function ctxToggleVisited(){
   const p=places.find(x=>x.id===ctxPlaceId); if(!p)return;
   p.visited=!p.visited; if(selectedPlace?.id===p.id){selectedPlace=p;refreshPanelBtns();}
   upsertPlace(p); renderArchive(); closeCtxMenu();
+  if(currentView==='journal') renderJournal();
 }
 function ctxToggleFav(){
   const p=places.find(x=>x.id===ctxPlaceId); if(!p)return;
@@ -2481,6 +2482,7 @@ function toggleVisited(){
   if(!selectedPlace)return;
   const p=places.find(x=>x.id===selectedPlace.id); p.visited=!p.visited; selectedPlace=p;
   upsertPlace(p); refreshPanelBtns(); renderArchive();
+  if(currentView==='journal') renderJournal();
 }
 function toggleFavorite(){
   if(!selectedPlace)return;
@@ -2854,6 +2856,7 @@ function toggleMapCardVisited(){
   const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
   p.visited=!p.visited; upsertPlace(p); renderArchive();
   document.getElementById('mcs-visited-btn').classList.toggle('on', p.visited);
+  if(currentView==='journal') renderJournal();
 }
 
 function openFromMapCard(){
@@ -3646,7 +3649,7 @@ function savePlace(){
     p.category=document.getElementById('f-cat').value;
     p.note=document.getElementById('f-note').value.trim();
     p.dateVisited=document.getElementById('f-date').value||null;
-    p.visited=!!document.getElementById('f-date').value;
+    if(p.dateVisited) p.visited=true; // entering a date marks as visited; clearing date keeps existing visited state
     p.googleMapsUrl=mapsUrl||p.googleMapsUrl||null;
     if(coords){ p.lat=coords.lat; p.lng=coords.lng; }
     const newPhoto=getModalPhoto();
@@ -3684,7 +3687,8 @@ function savePlace(){
 
 // ── BOOT ─────────────────────────────────────────────
 (async ()=>{
-  // Show map immediately with local cache so screen isn't blank during fetch
+  // Read saved view BEFORE showView('map') would overwrite it
+  const _savedView = localStorage.getItem('pa_view') || 'map';
   if(!new URLSearchParams(location.search).has('landing')){
     showView('map');
   }
@@ -3692,6 +3696,8 @@ function savePlace(){
   if(new URLSearchParams(location.search).has('landing')){
     document.getElementById('landing').classList.remove('hidden');
   } else {
+    // restore saved view after data loads
+    currentView = _savedView === 'collections' ? 'archive' : _savedView;
     enterApp();
   }
 })();
