@@ -2879,20 +2879,28 @@ function jumpToPlace(id){
 
 // ── JOURNAL ──────────────────────────────────────────
 function renderJournal(){
-  const visited=places.filter(p=>p.visited&&p.dateVisited).sort((a,b)=>new Date(b.dateVisited)-new Date(a.dateVisited));
+  const visited=places.filter(p=>p.visited).sort((a,b)=>{
+    if(!a.dateVisited && !b.dateVisited) return 0;
+    if(!a.dateVisited) return 1;
+    if(!b.dateVisited) return -1;
+    return new Date(b.dateVisited)-new Date(a.dateVisited);
+  });
   const byYear={};
-  visited.forEach(p=>{const yr=new Date(p.dateVisited).getFullYear();(byYear[yr]=byYear[yr]||[]).push(p);});
+  visited.forEach(p=>{
+    const yr=p.dateVisited ? new Date(p.dateVisited).getFullYear() : '—';
+    (byYear[yr]=byYear[yr]||[]).push(p);
+  });
   const el=document.getElementById('journal-content'); el.innerHTML='';
-  Object.keys(byYear).sort((a,b)=>b-a).forEach(yr=>{
+  Object.keys(byYear).sort((a,b)=>{ if(a==='—') return 1; if(b==='—') return -1; return b-a; }).forEach(yr=>{
     const block=document.createElement('div'); block.className='journal-year-block';
     block.innerHTML=`<div class="journal-year-ghost">${yr}</div>`;
     const grid=document.createElement('div'); grid.className='journal-entries-grid';
     byYear[yr].forEach(p=>{
-      const d=new Date(p.dateVisited);
+      const d=p.dateVisited ? new Date(p.dateVisited) : null;
       const entry=document.createElement('div'); entry.className='journal-entry';
       entry.innerHTML=`
-        <div class="je-date"><div class="je-day">${d.getDate()}</div><div class="je-month">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div>
-        <img class="je-img" src="${p.photo}" alt="${p.name}" loading="lazy">
+        <div class="je-date">${d ? `<div class="je-day">${d.getDate()}</div><div class="je-month">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div>` : `<div class="je-day" style="font-size:22px;opacity:.3">?</div>`}</div>
+        ${p.photo ? `<img class="je-img" src="${p.photo}" alt="${p.name}" loading="lazy">` : `<div class="je-img" style="background:var(--stone);border-radius:12px;flex-shrink:0;"></div>`}
         <div class="je-text">
           <div class="je-name">${p.name}</div>
           <div class="je-loc">${p.country?p.city+', '+p.country:p.city} · ${p.category}</div>
