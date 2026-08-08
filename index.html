@@ -299,6 +299,14 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
 /* list */
 .archive-list { flex:1; overflow-y:auto; }
+/* on desktop, archive uses city-card grid layout */
+@media (min-width:769px) {
+  .archive-hero { display:none !important; }
+  .desktop-archive-title { display:none !important; }
+  #view-archive { overflow:hidden; display:flex; flex-direction:column; }
+  .archive-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; display:block; }
+  #archive-list { flex:none; overflow:visible; }
+}
 .al-city-header {
   font-size:20px; font-weight:700; color:var(--charcoal);
   padding:0 16px 8px; font-family:var(--sans); letter-spacing:-.025em;
@@ -615,6 +623,17 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .cip-zoom button:hover { background:var(--stone); }
 .cip-close-btn { width:32px; height:32px; border:none; border-radius:50%; background:var(--stone); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-3); transition:background .15s; }
 .cip-close-btn:hover { background:var(--stone-2); color:var(--charcoal); }
+
+/* ── ARCHIVE CITY VIEW ───────────────────── */
+.archive-scroll { flex:1; overflow-y:auto; overflow-x:hidden; padding:20px 28px 40px; }
+.archive-scroll .colls-grid { margin-bottom:0; }
+#city-inline { display:none; margin-top:28px; border-radius:20px; background:var(--surface); box-shadow:0 4px 32px rgba(0,0,0,.10); overflow:hidden; }
+#city-inline.open { display:block; }
+.city-gallery { display:flex; gap:8px; padding:16px 20px; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid rgba(0,0,0,.06); background:var(--bg); }
+.city-gallery::-webkit-scrollbar { display:none; }
+.city-gallery-img { width:120px; height:90px; object-fit:cover; border-radius:10px; flex-shrink:0; cursor:pointer; transition:transform .2s,box-shadow .2s; background:var(--stone); }
+.city-gallery-img:hover { transform:scale(1.04); box-shadow:0 4px 16px rgba(0,0,0,.14); }
+#city-panel-map { width:100%; height:100%; min-height:400px; }
 
 /* ── COLLECTION DETAIL PANEL (mobile) ─────── */
 #coll-panel { position:fixed; right:0; top:0; bottom:0; width:480px; z-index:500; overflow-y:auto; background:var(--surface); transform:translateX(100%); transition:transform .38s cubic-bezier(.4,0,.2,1); box-shadow:-4px 0 40px rgba(0,0,0,.12); display:flex; flex-direction:column; }
@@ -1089,6 +1108,11 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   }
   .mah-chip.active { color:var(--charcoal); font-weight:600; border-bottom-color:var(--charcoal); }
 
+  /* on mobile, archive stays as plain list */
+  #archive-list.colls-grid { display:block !important; padding:0; gap:0; }
+  .archive-scroll { padding:0; }
+  #city-inline { display:none !important; }
+
   /* ── MOBILE LIST: cleaner items ────────────── */
   .al-cat { display:none; }
   .al-maps-link { display:none; }
@@ -1417,8 +1441,33 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
           <div class="afb-cat-opt" onclick="setCatFilter('Other',this)">Other</div>
         </div>
       </div>
-      <!-- list -->
-      <div class="archive-list" id="archive-list"></div>
+      <!-- city cards grid -->
+      <div class="archive-scroll" id="archive-scroll">
+        <div class="colls-grid" id="archive-list"></div>
+        <!-- city inline panel -->
+        <div id="city-inline">
+          <div class="cip-header">
+            <div class="cip-title-row">
+              <div class="cip-name" id="city-panel-name"></div>
+              <div class="cip-count" id="city-panel-count"></div>
+            </div>
+            <button class="cip-close-btn" onclick="closeCityPanel()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="city-gallery" id="city-gallery"></div>
+          <div class="cip-body">
+            <div class="cip-places" id="city-panel-places"></div>
+            <div class="cip-map-wrap">
+              <div id="city-panel-map"></div>
+              <div class="cip-zoom">
+                <button onclick="cityPanelMap?.zoomIn()">+</button>
+                <button onclick="cityPanelMap?.zoomOut()">−</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- city picker modal -->
@@ -2055,60 +2104,162 @@ function filteredPlaces(){
 
 let archiveHeaderPhoto = localStorage.getItem('archive-header-photo') || null;
 
+let activeCityPanel = null;
+let cityPanelMap = null;
+
 function renderArchive(){
   const list=filteredPlaces();
   const el=document.getElementById('archive-list');
   el.innerHTML='';
 
-  // update hero
-  const heroPhoto = archiveHeaderPhoto || (places.length ? places[0].photo : '');
-  document.getElementById('ah-bg').style.backgroundImage = heroPhoto ? `url('${heroPhoto}')` : '';
-  const allCities=[...new Set(places.map(p=>p.city))];
-  document.getElementById('ah-city').textContent = activeCityFilter || (allCities.length===1 ? allCities[0] : 'Archive');
-  const n=list.length;
-  document.getElementById('ah-meta').textContent = n+' place'+(n!==1?'s':'');
-
-  if(!list.length){
-    el.innerHTML='<div class="empty"><h3>Nothing here yet</h3><p>Save your first place or try a different filter.</p></div>';
+  if(window.innerWidth<=768){
+    // ── MOBILE: plain list grouped by city ──
+    const heroPhoto = archiveHeaderPhoto || (places.length ? places[0].photo : '');
+    document.getElementById('ah-bg').style.backgroundImage = heroPhoto ? `url('${heroPhoto}')` : '';
+    const allCities=[...new Set(places.map(p=>p.city))];
+    document.getElementById('ah-city').textContent = activeCityFilter || (allCities.length===1 ? allCities[0] : 'Archive');
+    const n=list.length;
+    document.getElementById('ah-meta').textContent = n+' place'+(n!==1?'s':'');
+    if(!list.length){
+      el.innerHTML='<div class="empty"><h3>Nothing here yet</h3><p>Save your first place or try a different filter.</p></div>';
+      return;
+    }
+    const cityGroups={};
+    list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
+    Object.entries(cityGroups).forEach(([city,ps])=>{
+      const hdr=document.createElement('div');
+      hdr.className='al-city-header';
+      hdr.textContent=city;
+      el.appendChild(hdr);
+      ps.forEach(p=>{
+        const row=document.createElement('div');
+        row.className='al-item'+(selectedPlace?.id===p.id?' selected':'');
+        row.id='al-'+p.id;
+        row.onclick=(e)=>{ if(!e.target.closest('.al-edit')&&!e.target.closest('.al-delete')&&!e.target.closest('.al-stars')&&!e.target.closest('.al-maps-link')){ e.stopPropagation(); openPlace(p); } };
+        const mapsLink=p.googleMapsUrl?`<a class="al-maps-link" href="${p.googleMapsUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open in Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a>`:'';
+        const starsHtml=p.visited?`<div class="al-stars" onclick="event.stopPropagation()">${[1,2,3,4,5].map(n=>`<span class="al-star${(p.rating||0)>=n?' on':''}" onclick="setRating(${p.id},${n},this)">★</span>`).join('')}</div>`:'';
+        row.innerHTML=`
+          <img class="al-thumb" src="${p.photo}" alt="${p.name}" loading="lazy">
+          <div class="al-text">
+            <div class="al-name">${p.name}${p.favorite?'<span class="al-fav">★</span>':''}</div>
+            <div class="al-loc">${p.address||p.neighborhood||p.city}</div>
+            <div class="al-cat">${p.category}</div>
+          </div>
+          ${starsHtml}${mapsLink}
+          <button class="al-edit" onclick="event.stopPropagation();openModal(${p.id})" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="al-delete" onclick="event.stopPropagation();deleteArchivePlace(${p.id})" title="Delete"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`;
+        el.appendChild(row);
+      });
+    });
     return;
   }
 
-  // group by city
+  // ── DESKTOP: city cards grid ──
+  if(!list.length){
+    el.innerHTML='<div class="colls-empty"><div class="colls-empty-title">Nothing here yet</div><div class="colls-empty-sub">Save your first place or try a different filter.</div></div>';
+    document.getElementById('city-inline').classList.remove('open');
+    return;
+  }
   const cityGroups={};
   list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
-
-  Object.entries(cityGroups).forEach(([city,ps])=>{
-    const hdr=document.createElement('div');
-    hdr.className='al-city-header';
-    const country=ps[0].country;
-    hdr.textContent=country?city+', '+country:city;
-    el.appendChild(hdr);
-
-    ps.forEach(p=>{
-      const row=document.createElement('div');
-      row.className='al-item'+(selectedPlace?.id===p.id?' selected':'');
-      row.id='al-'+p.id;
-      row.onclick=(e)=>{ if(!e.target.closest('.al-edit')&&!e.target.closest('.al-delete')&&!e.target.closest('.al-stars')&&!e.target.closest('.al-maps-link')){ e.stopPropagation(); openPlace(p); } };
-      const mapsLink=p.googleMapsUrl?`<a class="al-maps-link" href="${p.googleMapsUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open in Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a>`:'';
-      const starsHtml=p.visited?`<div class="al-stars" onclick="event.stopPropagation()">${[1,2,3,4,5].map(n=>`<span class="al-star${(p.rating||0)>=n?' on':''}" onclick="setRating(${p.id},${n},this)">★</span>`).join('')}</div>`:'';
-      row.innerHTML=`
-        <img class="al-thumb" src="${p.photo}" alt="${p.name}" loading="lazy">
-        <div class="al-text">
-          <div class="al-name">${p.name}${p.favorite?'<span class="al-fav">★</span>':''}</div>
-          <div class="al-loc">${p.address||p.neighborhood||p.city}</div>
-          <div class="al-cat">${p.category}</div>
-        </div>
-        ${starsHtml}
-        ${mapsLink}
-        <button class="al-edit" onclick="event.stopPropagation();openModal(${p.id})" title="Edit">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button class="al-delete" onclick="event.stopPropagation();deleteArchivePlace(${p.id})" title="Delete">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>`;
-      el.appendChild(row);
-    });
+  const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
+  sortedCities.forEach(city=>{
+    const ps=cityGroups[city];
+    const cover=ps.find(p=>p.photo)?.photo||'';
+    const count=ps.length;
+    const card=document.createElement('div');
+    card.className='coll-card'+(activeCityPanel===city?' active-city-card':'');
+    card.onclick=()=>openCityPanel(city,cityGroups);
+    card.innerHTML=`
+      ${cover
+        ?`<img class="coll-card-img" src="${cover}" alt="${city}" loading="lazy">`
+        :`<div class="coll-card-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/></svg></div>`}
+      <div class="coll-card-overlay">
+        <div class="coll-card-name">${city}</div>
+        <div class="coll-card-sub">${count} place${count!==1?'s':''}</div>
+      </div>`;
+    el.appendChild(card);
   });
+  // refresh open panel if city still in results
+  if(activeCityPanel && cityGroups[activeCityPanel]){
+    renderCityPanel(activeCityPanel, cityGroups[activeCityPanel]);
+  } else if(activeCityPanel){
+    closeCityPanel();
+  }
+}
+
+function openCityPanel(city, cityGroups){
+  if(!cityGroups){
+    const list=filteredPlaces();
+    cityGroups={};
+    list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
+  }
+  activeCityPanel=city;
+  renderCityPanel(city, cityGroups[city]||[]);
+  const panel=document.getElementById('city-inline');
+  panel.classList.add('open');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function renderCityPanel(city, ps){
+  document.getElementById('city-panel-name').textContent=city;
+  const n=ps.length;
+  document.getElementById('city-panel-count').textContent=n+' place'+(n!==1?'s':'');
+  // photo gallery
+  const gallery=document.getElementById('city-gallery');
+  gallery.innerHTML='';
+  ps.filter(p=>p.photo).forEach(p=>{
+    const img=document.createElement('img');
+    img.className='city-gallery-img';
+    img.src=p.photo; img.alt=p.name; img.loading='lazy';
+    img.title=p.name;
+    img.onclick=()=>openPlace(p);
+    gallery.appendChild(img);
+  });
+  // places list
+  const listEl=document.getElementById('city-panel-places');
+  listEl.innerHTML='';
+  ps.forEach(p=>{
+    const row=document.createElement('div');
+    row.className='pp-item';
+    row.onclick=()=>openPlace(p);
+    row.innerHTML=`
+      <img class="pp-thumb" src="${p.photo}" alt="${p.name}" loading="lazy">
+      <div>
+        <div class="pp-name">${p.name}${p.favorite?' ★':''}</div>
+        <div class="pp-sub">${p.address||p.neighborhood||p.city}</div>
+      </div>`;
+    listEl.appendChild(row);
+  });
+  // map
+  buildCityPanelMap(ps);
+}
+
+function buildCityPanelMap(ps){
+  const container=document.getElementById('city-panel-map');
+  if(cityPanelMap){ cityPanelMap.remove(); cityPanelMap=null; }
+  container.innerHTML='';
+  const geo=ps.filter(p=>p.lat&&p.lng);
+  if(!geo.length) return;
+  cityPanelMap=L.map(container,{zoomControl:false,scrollWheelZoom:true,dragging:true,touchZoom:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityPanelMap);
+  const markers=geo.map(p=>{
+    const icon=L.divIcon({
+      className:'',
+      html:`<div class="sq-pin-wrap"><div class="sq-pin${p.visited?'':' want'}" style="background-image:url('${p.photo||''}')"></div><div class="sq-pin-label">${p.name.length>14?p.name.slice(0,13)+'…':p.name}</div></div>`,
+      iconSize:[64,58],iconAnchor:[32,20]
+    });
+    return L.marker([p.lat,p.lng],{icon}).addTo(cityPanelMap);
+  });
+  const group=L.featureGroup(markers);
+  cityPanelMap.fitBounds(group.getBounds().pad(0.2));
+  setTimeout(()=>cityPanelMap?.invalidateSize(),80);
+}
+
+function closeCityPanel(){
+  activeCityPanel=null;
+  document.getElementById('city-inline').classList.remove('open');
+  if(cityPanelMap){ cityPanelMap.remove(); cityPanelMap=null; }
 }
 
 // ── FILTER BAR ────────────────────────────────────────
