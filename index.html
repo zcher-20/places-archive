@@ -83,40 +83,55 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #app { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
 
 /* ── TOPBAR ──────────────────────────────── */
+/* ── LEFT SIDEBAR NAV (desktop) ─────────────── */
 #topbar {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 20px; height:50px; flex-shrink:0;
-  background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
-  position:relative; z-index:200;
+  position:fixed; left:0; top:0; bottom:0; z-index:300;
+  width:52px; display:flex; flex-direction:column;
+  background:#fff; border-right:1px solid rgba(0,0,0,.07);
+  transition:width .28s cubic-bezier(.4,0,.2,1);
+  overflow:hidden; flex-shrink:0;
 }
-#topbar-maps-link {
-  display:flex; align-items:center; gap:6px;
-  font-family:var(--sans); font-size:13px; font-weight:500;
-  color:var(--text-3); text-decoration:none;
-  padding:6px 12px; border-radius:8px;
-  transition:background .15s,color .15s;
-  white-space:nowrap;
+#topbar.expanded { width:200px; }
+#topbar-toggle {
+  display:flex; align-items:center; justify-content:center;
+  width:52px; height:52px; flex-shrink:0; cursor:pointer;
+  background:none; border:none; color:var(--text-3);
+  transition:color .15s;
 }
-#topbar-maps-link:hover { background:var(--stone); color:var(--charcoal); }
-
-/* Inline tab nav */
+#topbar-toggle:hover { color:var(--charcoal); }
 #top-menu {
-  display:flex; align-items:center; gap:0;
+  display:flex; flex-direction:column; flex:1; padding:4px 0;
 }
 .tm-item {
-  position:relative; padding:0 16px; height:50px;
-  display:flex; align-items:center;
+  position:relative; height:44px; min-width:52px;
+  display:flex; align-items:center; gap:14px;
+  padding:0 16px;
   font-size:13.5px; color:var(--text-3); font-weight:400;
   cursor:pointer; font-family:var(--sans);
-  transition:color .15s ease; white-space:nowrap;
-  background:transparent; border:none;
+  transition:color .15s,background .15s; white-space:nowrap;
+  background:transparent; border:none; text-align:left;
+  border-radius:0;
 }
-.tm-item:hover { color:var(--charcoal); }
-.tm-item.active { color:var(--charcoal); font-weight:600; }
-.tm-item.active::after {
-  content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-  width:20px; height:2px; background:var(--charcoal); border-radius:2px;
+.tm-item:hover { color:var(--charcoal); background:var(--stone); }
+.tm-item.active { color:var(--charcoal); font-weight:600; background:var(--stone); }
+.tm-item.active::after { display:none; }
+.tm-icon-wrap { width:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.tm-label { opacity:0; transition:opacity .18s; white-space:nowrap; }
+#topbar.expanded .tm-label { opacity:1; }
+
+/* Google Maps link at bottom of sidebar */
+#topbar-maps-link {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px; font-family:var(--sans); font-size:13px;
+  font-weight:500; color:var(--text-3); text-decoration:none;
+  transition:color .15s,background .15s; white-space:nowrap;
+  border-top:1px solid rgba(0,0,0,.07);
 }
+#topbar-maps-link:hover { background:var(--stone); color:var(--charcoal); }
+#topbar-maps-link .tm-label { opacity:0; transition:opacity .18s; }
+#topbar.expanded #topbar-maps-link .tm-label { opacity:1; }
+#topbar-maps-link svg { width:20px; height:20px; flex-shrink:0; }
+
 .tm-count { display:none; }
 .sb-add-btn { display:none; }
 
@@ -150,7 +165,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .leaflet-bar a { border-bottom:none !important; }
 
 /* ── MAIN ────────────────────────────────── */
-#main { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+#app { display:flex; flex-direction:row; height:100%; }
+#main { flex:1; overflow:hidden; display:flex; flex-direction:column; margin-left:52px; transition:margin-left .28s cubic-bezier(.4,0,.2,1); }
+#topbar.expanded~#main, body.sidebar-open #main { margin-left:200px; }
 .view { flex:1; overflow-y:auto; overflow-x:hidden; display:none; }
 .view.active { display:flex; flex-direction:column; }
 
@@ -663,7 +680,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
 /* ── DETAIL PANEL ────────────────────────── */
 #panel-backdrop { position:fixed; inset:0; z-index:30; pointer-events:none; }
-#detail-panel { position:fixed; right:0; top:50px; width:var(--pw); height:calc(100vh - 50px); overflow-y:auto; background:var(--surface); box-shadow:var(--sh-panel); transform:translateX(100%); transition:transform .38s cubic-bezier(.4,0,.2,1); z-index:40; }
+#detail-panel { position:fixed; right:0; top:0; width:var(--pw); height:100vh; overflow-y:auto; background:var(--surface); box-shadow:var(--sh-panel); transform:translateX(100%); transition:transform .38s cubic-bezier(.4,0,.2,1); z-index:40; }
 #detail-panel.open { transform:translateX(0); }
 
 /* ── ARCHIVE BOTTOM PANEL (desktop) ─────────────────────── */
@@ -948,7 +965,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     bottom:calc(16px + env(safe-area-inset-bottom));
     left:12px; right:12px; top:auto;
     transform:none; width:auto; height:auto;
-    padding:8px 6px;
+    padding:8px 6px; flex-direction:row;
     background:rgba(255,255,255,.35);
     backdrop-filter:blur(28px) saturate(1.4);
     -webkit-backdrop-filter:blur(28px) saturate(1.4);
@@ -982,8 +999,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .tm-icon { display:block; }
 
   /* ── MAIN fills full viewport; views get padding for bar ─ */
-  #main { flex:none; height:100vh; }
+  #main { flex:none; height:100vh; margin-left:0 !important; }
   .view { padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
+  #topbar-toggle { display:none; }
+  .tm-label { opacity:1 !important; }
 
   /* ── LANDING ─────────────────────────────── */
   .landing-title { font-size:52px; }
@@ -1264,6 +1283,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 <!-- APP -->
 <div id="app">
   <header id="topbar">
+    <button id="topbar-toggle" onclick="toggleSidebar()" title="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div id="top-menu">
       <div class="tm-item" id="nav-map" onclick="showView('map')">
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
@@ -1287,8 +1309,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       </div>
     </div>
     <a id="topbar-maps-link" href="https://www.google.com/maps" target="_blank" rel="noopener" title="Open Google Maps">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      Google Maps
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span class="tm-label">Google Maps</span>
     </a>
   </header>
 
@@ -1986,6 +2008,11 @@ function buildSidebar(){
 }
 
 // ── ROUTING ──────────────────────────────────────────
+function toggleSidebar(){
+  const sb=document.getElementById('topbar');
+  sb.classList.toggle('expanded');
+  document.getElementById('main').style.marginLeft=sb.classList.contains('expanded')?'200px':'52px';
+}
 function showView(v){
   currentView=v;
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
