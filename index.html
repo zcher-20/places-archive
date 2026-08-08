@@ -303,7 +303,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     display:block !important;
     font-family:var(--sans); font-size:56px; font-weight:800;
     color:var(--charcoal); letter-spacing:-.04em;
-    padding:48px 28px 0; line-height:1; text-align:center;
+    padding:48px 28px 28px; line-height:1; text-align:center;
   }
   #view-archive.active { overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; }
   .archive-scroll { padding:24px 28px 40px; overflow:visible; }
@@ -2009,7 +2009,9 @@ function cityPhoto(city){
 function enterApp(){
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('archive-count').textContent = places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
-  showView('map');
+  // only snap to map on first load, not after data refreshes mid-session
+  if(currentView==='map') { initMap(); syncMapMarkers(); }
+  else renderArchive();
 }
 function buildSidebar(){
   const el=document.getElementById('sb-colls-list'); el.innerHTML='';
@@ -3638,14 +3640,13 @@ function savePlace(){
   };
   places.unshift(p); upsertPlace(p); closeModal(); document.getElementById('archive-count').textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   if(p.lat||p.lng){
-    showView('map'); // make container visible before Leaflet touches it
-    setTimeout(()=>{
-      syncMapMarkers();
-      leafletMap.invalidateSize();
-      leafletMap.flyTo([p.lat,p.lng],15,{duration:1.2});
-      showMapCard(p);
-    }, 80);
-  } else { showView('archive'); renderArchive(); openPlace(p); }
+    syncMapMarkers();
+    if(currentView==='map'){
+      setTimeout(()=>{ leafletMap?.invalidateSize(); leafletMap?.flyTo([p.lat,p.lng],15,{duration:1.2}); showMapCard(p); }, 80);
+    } else {
+      renderArchive(); openPlace(p);
+    }
+  } else { renderArchive(); openPlace(p); }
 }
 
 // ── BOOT ─────────────────────────────────────────────
