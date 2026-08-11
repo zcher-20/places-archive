@@ -644,7 +644,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 #cityv-map { width:100%; height:100%; }
 
 .archive-colls-section { padding:0 28px 80px; }
-.archive-colls-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:36px; padding-top:120px; border-top:none; }
+.archive-colls-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:36px; padding-top:80px; border-top:1px solid rgba(0,0,0,.08); }
 .archive-colls-title { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; margin:0; line-height:1; }
 .btn-new-coll { padding:0; background:none; color:var(--text-3); border:none; font-size:20px; font-family:var(--sans); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:color .15s; flex-shrink:0; line-height:1; }
 .btn-new-coll:hover { color:var(--charcoal); }
@@ -1384,7 +1384,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 <div id="app">
 <!-- TOP NAV (archive + journal) -->
 <nav id="page-topnav">
-  <button class="ptn-brand" onclick="showView(currentView)">Places Archive</button>
   <div class="ptn-links">
     <button class="ptn-link" id="ptn-map" onclick="showView('map')">Map</button>
     <button class="ptn-link" id="ptn-archive" onclick="showView('archive')">Archive</button>
@@ -2349,8 +2348,58 @@ function openCityView(city){
 
 function closeCityView(){
   activeCityView=null;
+  activeCollectionView=null;
   if(cityViewMap){ cityViewMap.remove(); cityViewMap=null; }
   showView('archive');
+}
+
+let activeCollectionView=null;
+function openCollectionView(id){
+  const c=collections.find(x=>x.id===id); if(!c)return;
+  activeCollectionView=id;
+  activeCityView=null;
+  const collPlaces=c.placeIds.map(pid=>places.find(p=>p.id===pid||String(p.id)===String(pid))).filter(Boolean);
+
+  document.getElementById('cityv-name').textContent=c.name;
+  document.getElementById('cityv-count').textContent=collPlaces.length+' place'+(collPlaces.length!==1?'s':'');
+
+  // gallery
+  const gallery=document.getElementById('cityv-gallery');
+  gallery.innerHTML='';
+  collPlaces.filter(p=>p.photo).forEach(p=>{
+    const img=document.createElement('img');
+    img.className='city-gallery-img'; img.src=p.photo; img.alt=p.name; img.loading='lazy';
+    img.onclick=()=>{ if(selectedPlace?.id===p.id){closePanel();}else{openPlace(p);} };
+    gallery.appendChild(img);
+  });
+
+  // list
+  const listEl=document.getElementById('cityv-list');
+  listEl.innerHTML='';
+  collPlaces.forEach(p=>{
+    const row=document.createElement('div');
+    row.className='pp-item';
+    row.onclick=(e)=>{ if(!e.target.closest('.pp-action-btn')) openPlace(p); };
+    row.innerHTML=`
+      <img class="pp-thumb" src="${p.photo}" alt="${p.name}" loading="lazy">
+      <div style="flex:1;min-width:0;">
+        <div class="pp-name">${p.name}${p.favorite?' ★':''}</div>
+        <div class="pp-sub">${p.address||p.neighborhood||p.city}</div>
+      </div>
+      <div class="pp-actions">
+        <button class="pp-action-btn" onclick="event.stopPropagation();openModal(${p.id})" title="Edit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="pp-action-btn del" onclick="event.stopPropagation();removePlaceFromCollection(${id},${p.id})" title="Remove">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    listEl.appendChild(row);
+  });
+
+  showView('city');
+  document.getElementById('nav-archive')?.classList.add('active');
+  buildCityViewMap(collPlaces);
 }
 
 function buildCityViewMap(ps){
@@ -3185,7 +3234,7 @@ function renderCollections(){
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
     const section=document.createElement('div');
     section.className='arc-section';
-    section.onclick=()=>openCollectionPanel(c.id);
+    section.onclick=()=>openCollectionView(c.id);
     const strip=document.createElement('div'); strip.className='arc-strip';
     if(collPlaces.length){
       for(let i=0;i<collPlaces.length;i++){
