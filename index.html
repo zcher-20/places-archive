@@ -2426,13 +2426,14 @@ function openPlace(p){
   const isArchiveDesktop=window.innerWidth>768 && currentView==='archive';
   const alreadyOpen=panel.classList.contains('open') && panel.classList.contains('archive-bottom');
   if(isArchiveDesktop){
-    panel.classList.add('archive-bottom');
     if(!alreadyOpen){
+      // suppress transition while repositioning from side-slide to bottom-slide
       panel.style.transition='none';
+      panel.classList.add('archive-bottom');
       panel.style.transform='translateY(calc(100% + 2px))';
-      panel.offsetHeight;
-      panel.style.transition='';
+      panel.offsetHeight; // force reflow
       panel.style.transform='';
+      panel.style.transition='';
       document.getElementById('archive-list').style.paddingBottom='48vh';
     }
   } else {
