@@ -306,7 +306,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
     padding:32px 28px 16px; line-height:1; text-align:center;
   }
   #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; }
-  .archive-scroll { padding:24px 28px 40px; overflow:visible; }
+  .archive-scroll { padding:32px 48px 40px; overflow:visible; }
+  #city-inline { display:none !important; }
   #archive-list { overflow:visible; }
 }
 .al-city-header {
@@ -616,6 +617,31 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .je-note-empty { color:var(--text-4); font-style:normal; font-family:var(--sans); font-size:13px; }
 
 /* ── COLLECTIONS ─────────────────────────── */
+/* ── ARCHIVE STRIP REDESIGN (desktop) ─────────────── */
+.arc-section { margin-bottom:52px; cursor:pointer; }
+.arc-strip { display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+.arc-strip::-webkit-scrollbar { display:none; }
+.arc-tile { flex-shrink:0; width:168px; }
+.arc-tile-img { width:168px; height:168px; object-fit:cover; display:block; transition:opacity .22s; }
+.arc-section:hover .arc-tile-img { opacity:.85; }
+.arc-tile-num { font-family:var(--serif); font-style:italic; font-size:11.5px; color:var(--text-3); margin-top:9px; padding-left:1px; }
+.arc-city-footer { display:flex; justify-content:flex-end; margin-top:14px; }
+.arc-city-label { font-family:var(--serif); font-size:15px; font-weight:400; color:var(--charcoal); letter-spacing:-.01em; }
+
+/* ── CITY DETAIL VIEW ─────────────────────────────── */
+#view-city { display:flex; flex-direction:column; overflow:hidden; background:var(--bg); }
+.cityv-header { display:flex; align-items:center; gap:20px; padding:28px 48px 20px; border-bottom:1px solid rgba(0,0,0,.07); flex-shrink:0; }
+.cityv-back { display:flex; align-items:center; gap:7px; background:none; border:none; font-family:var(--sans); font-size:13px; color:var(--text-3); cursor:pointer; padding:0; transition:color .15s; flex-shrink:0; }
+.cityv-back:hover { color:var(--charcoal); }
+.cityv-name { font-family:var(--sans); font-size:28px; font-weight:800; color:var(--charcoal); letter-spacing:-.03em; flex:1; margin:0; }
+.cityv-header-right { display:flex; align-items:center; gap:14px; flex-shrink:0; }
+.cityv-count { font-size:13px; color:var(--text-3); font-family:var(--sans); }
+.cityv-gallery-wrap { flex-shrink:0; padding:20px 48px 0; }
+.cityv-body { display:flex; flex:1; overflow:hidden; min-height:0; }
+.cityv-list { width:340px; flex-shrink:0; overflow-y:auto; border-right:1px solid rgba(0,0,0,.06); padding:8px 0; }
+.cityv-map-wrap { flex:1; position:relative; }
+#cityv-map { width:100%; height:100%; }
+
 .archive-colls-section { padding:0 28px 80px; }
 .archive-colls-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-top:48px; border-top:1px solid rgba(0,0,0,.07); }
 .archive-colls-title { font-family:var(--sans); font-size:22px; font-weight:700; color:var(--charcoal); letter-spacing:-.02em; }
@@ -1559,6 +1585,37 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
       <div class="ctx-item danger" onclick="ctxDelete()">Remove</div>
     </div>
 
+    <!-- CITY DETAIL VIEW -->
+    <div class="view" id="view-city">
+      <div class="cityv-header">
+        <button class="cityv-back" onclick="closeCityView()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Archive
+        </button>
+        <h1 class="cityv-name" id="cityv-name"></h1>
+        <div class="cityv-header-right">
+          <span class="cityv-count" id="cityv-count"></span>
+          <button class="cdp-add-btn" onclick="openModalForCityView()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add place
+          </button>
+        </div>
+      </div>
+      <div class="cityv-gallery-wrap">
+        <div class="city-gallery" id="cityv-gallery"></div>
+      </div>
+      <div class="cityv-body">
+        <div class="cityv-list" id="cityv-list"></div>
+        <div class="cityv-map-wrap">
+          <div id="cityv-map"></div>
+          <div class="cip-zoom" style="position:absolute;bottom:12px;right:12px;">
+            <button onclick="cityViewMap?.zoomIn()">+</button>
+            <button onclick="cityViewMap?.zoomOut()">−</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- JOURNAL -->
     <div class="view" id="view-journal">
       <div class="journal-wrap">
@@ -2014,8 +2071,8 @@ function cityPhoto(city){
 function enterApp(){
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('archive-count').textContent = places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
-  // redirect stale 'collections' view to archive
-  if(currentView==='collections') currentView='archive';
+  // redirect stale views to archive
+  if(currentView==='collections'||currentView==='city') currentView='archive';
   showView(currentView);
 }
 function buildSidebar(){
@@ -2125,10 +2182,9 @@ function renderArchive(){
     return;
   }
 
-  // ── DESKTOP: city cards grid ──
+  // ── DESKTOP: elegant photo strips per city ──
   if(!list.length){
     el.innerHTML='<div class="colls-empty"><div class="colls-empty-title">Nothing here yet</div><div class="colls-empty-sub">Save your first place or try a different filter.</div></div>';
-    document.getElementById('city-inline').classList.remove('open');
     return;
   }
   const cityGroups={};
@@ -2136,26 +2192,122 @@ function renderArchive(){
   const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
   sortedCities.forEach(city=>{
     const ps=cityGroups[city];
-    const cover=ps.find(p=>p.photo)?.photo||'';
-    const count=ps.length;
-    const card=document.createElement('div');
-    card.className='coll-card'+(activeCityPanel===city?' active-city-card':'');
-    card.onclick=()=>openCityPanel(city,cityGroups);
-    card.innerHTML=`
-      ${cover
-        ?`<img class="coll-card-img" src="${cover}" alt="${city}" loading="lazy">`
-        :`<div class="coll-card-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/></svg></div>`}
-      <div class="coll-card-overlay">
-        <div class="coll-card-name">${city}</div>
-      </div>`;
-    el.appendChild(card);
+    const section=document.createElement('div');
+    section.className='arc-section';
+    section.onclick=()=>openCityView(city);
+    const strip=document.createElement('div');
+    strip.className='arc-strip';
+    ps.forEach((p,i)=>{
+      const tile=document.createElement('div');
+      tile.className='arc-tile';
+      const img=document.createElement('img');
+      img.className='arc-tile-img';
+      img.src=p.photo; img.alt=p.name; img.loading='lazy';
+      const num=document.createElement('div');
+      num.className='arc-tile-num';
+      num.textContent=`(${String(i+1).padStart(2,'0')}.)`;
+      tile.appendChild(img); tile.appendChild(num);
+      strip.appendChild(tile);
+    });
+    const footer=document.createElement('div');
+    footer.className='arc-city-footer';
+    footer.innerHTML=`<span class="arc-city-label">${city}</span>`;
+    section.appendChild(strip);
+    section.appendChild(footer);
+    el.appendChild(section);
   });
-  // refresh open panel if city still in results
-  if(activeCityPanel && cityGroups[activeCityPanel]){
-    renderCityPanel(activeCityPanel, cityGroups[activeCityPanel]);
-  } else if(activeCityPanel){
-    closeCityPanel();
-  }
+}
+
+// ── CITY DETAIL VIEW ─────────────────────────────────
+let activeCityView=null;
+let cityViewMap=null;
+
+function openCityView(city){
+  activeCityView=city;
+  const list=filteredPlaces();
+  const cityGroups={};
+  list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
+  const ps=cityGroups[city]||places.filter(p=>p.city===city);
+
+  document.getElementById('cityv-name').textContent=city;
+  document.getElementById('cityv-count').textContent=ps.length+' place'+(ps.length!==1?'s':'');
+
+  // gallery
+  const gallery=document.getElementById('cityv-gallery');
+  gallery.innerHTML='';
+  ps.filter(p=>p.photo).forEach(p=>{
+    const img=document.createElement('img');
+    img.className='city-gallery-img'; img.src=p.photo; img.alt=p.name; img.loading='lazy';
+    img.onclick=()=>{ if(selectedPlace?.id===p.id){closePanel();}else{openPlace(p);} };
+    gallery.appendChild(img);
+  });
+
+  // places list
+  const listEl=document.getElementById('cityv-list');
+  listEl.innerHTML='';
+  ps.forEach(p=>{
+    const row=document.createElement('div');
+    row.className='pp-item';
+    row.onclick=(e)=>{ if(!e.target.closest('.pp-action-btn')) openPlace(p); };
+    row.innerHTML=`
+      <img class="pp-thumb" src="${p.photo}" alt="${p.name}" loading="lazy">
+      <div style="flex:1;min-width:0;">
+        <div class="pp-name">${p.name}${p.favorite?' ★':''}</div>
+        <div class="pp-sub">${p.address||p.neighborhood||p.city}</div>
+      </div>
+      <div class="pp-actions">
+        <button class="pp-action-btn" onclick="event.stopPropagation();openModal(${p.id})" title="Edit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="pp-action-btn del" onclick="event.stopPropagation();deleteCityViewPlace(${p.id})" title="Remove">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    listEl.appendChild(row);
+  });
+
+  // show view, highlight archive nav
+  showView('city');
+  document.getElementById('nav-archive')?.classList.add('active');
+
+  // map
+  buildCityViewMap(ps);
+}
+
+function closeCityView(){
+  activeCityView=null;
+  if(cityViewMap){ cityViewMap.remove(); cityViewMap=null; }
+  showView('archive');
+}
+
+function buildCityViewMap(ps){
+  const container=document.getElementById('cityv-map');
+  if(cityViewMap){ cityViewMap.remove(); cityViewMap=null; }
+  container.innerHTML='';
+  const geo=ps.filter(p=>p.lat&&p.lng);
+  if(!geo.length) return;
+  cityViewMap=L.map(container,{zoomControl:false,scrollWheelZoom:true,dragging:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityViewMap);
+  const markers=geo.map(p=>{
+    const icon=L.divIcon({className:'',html:`<div class="sq-pin-wrap"><img class="sq-pin" src="${p.photo}" onclick="openPlace(places.find(x=>x.id===${p.id}))"></div>`,iconSize:[54,54],iconAnchor:[27,27]});
+    return L.marker([p.lat,p.lng],{icon}).addTo(cityViewMap);
+  });
+  const group=L.featureGroup(markers);
+  setTimeout(()=>{ cityViewMap?.invalidateSize(); cityViewMap?.fitBounds(group.getBounds().pad(0.25)); },120);
+}
+
+function deleteCityViewPlace(id){
+  places=places.filter(x=>x.id!==id);
+  if(selectedPlace?.id===id) closePanel();
+  if(mapMarkers[id]){ leafletMap?.removeLayer(mapMarkers[id]); delete mapMarkers[id]; }
+  deleteFromDB(id);
+  document.getElementById('archive-count').textContent=places.length;
+  if(activeCityView) openCityView(activeCityView);
+}
+
+function openModalForCityView(){
+  openModal();
+  if(activeCityView) document.getElementById('f-city').value=activeCityView;
 }
 
 function openCityPanel(city, cityGroups){
@@ -3722,8 +3874,9 @@ function savePlace(){
   if(p.lat||p.lng) syncMapMarkers();
   if(currentView==='map'){
     setTimeout(()=>{ leafletMap?.invalidateSize(); leafletMap?.flyTo([p.lat,p.lng],15,{duration:1.2}); showMapCard(p); }, 80);
+  } else if(currentView==='city'){
+    openCityView(activeCityView||p.city);
   } else {
-    // on desktop archive, just re-render (city panel updates automatically); no detail panel
     renderArchive();
     if(window.innerWidth<=768) openPlace(p);
   }
