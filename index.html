@@ -629,7 +629,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-city-label { font-family:var(--serif); font-size:15px; font-weight:400; color:var(--charcoal); letter-spacing:-.01em; }
 
 /* ── CITY DETAIL VIEW ─────────────────────────────── */
-#view-city { display:flex; flex-direction:column; overflow:hidden; background:var(--bg); }
+#view-city { overflow:hidden; background:var(--bg); }
+#view-city.active { display:flex; flex-direction:column; }
 .cityv-header { display:flex; align-items:center; gap:20px; padding:28px 48px 20px; border-bottom:1px solid rgba(0,0,0,.07); flex-shrink:0; }
 .cityv-back { display:flex; align-items:center; gap:7px; background:none; border:none; font-family:var(--sans); font-size:13px; color:var(--text-3); cursor:pointer; padding:0; transition:color .15s; flex-shrink:0; }
 .cityv-back:hover { color:var(--charcoal); }
