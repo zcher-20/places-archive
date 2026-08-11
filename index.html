@@ -1351,7 +1351,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 }
 
 
-.arc-hero-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:36px; }
+.arc-hero-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:36px; padding-top:64px; }
 .arc-hero-title { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; margin:0; line-height:1; }
 .arc-hero-add { background:none; border:none; font-size:26px; color:#999; cursor:pointer; padding:0; line-height:1; transition:color .15s; }
 .arc-hero-add:hover { color:#111; }
@@ -2003,24 +2003,40 @@ async function deleteFromDB(id){
   const {error}=await db.from('places').delete().eq('id',id);
   if(error) console.error('delete error:',error);
 }
+function saveCollections(){
+  try{ localStorage.setItem('collections-data',JSON.stringify(collections)); }
+  catch(e){ console.warn('localStorage collections save failed:',e); }
+}
+function localCacheCollections(){
+  try{ const s=localStorage.getItem('collections-data'); return s?JSON.parse(s):[]; }
+  catch(e){ return []; }
+}
 async function loadCollections(){
   try{
     const {data,error}=await db.from('collections').select('*').order('id',{ascending:false});
     if(error) throw error;
-    return (data||[]).map(r=>({id:Number(r.id),name:r.name,placeIds:r.place_ids||[]}));
-  }catch(e){ console.warn('Collections load failed:',e); return []; }
+    const remote=(data||[]).map(r=>({id:Number(r.id),name:r.name,placeIds:r.place_ids||[]}));
+    try{ localStorage.setItem('collections-data',JSON.stringify(remote)); }catch(e){}
+    return remote;
+  }catch(e){
+    console.warn('Collections load failed, using local cache:',e);
+    return localCacheCollections();
+  }
 }
 async function upsertCollection(c){
+  saveCollections();
   if(c._new){
     const {data,error}=await db.from('collections').insert({name:c.name,place_ids:c.placeIds}).select().single();
     if(error){ console.error('Collection insert error:',error); return; }
-    if(data){ c.id=data.id; delete c._new; }
+    if(data){ c.id=data.id; delete c._new; saveCollections(); }
   } else {
     const {error}=await db.from('collections').upsert({id:c.id,name:c.name,place_ids:c.placeIds});
     if(error) console.error('Collection save error:',error);
+    else saveCollections();
   }
 }
 async function deleteCollectionFromDB(id){
+  saveCollections();
   const {error}=await db.from('collections').delete().eq('id',id);
   if(error) console.error('Collection delete error:',error);
 }
@@ -2076,6 +2092,7 @@ function compressImage(dataUrl, maxDim=900, quality=0.75){
   });
 }
 let places = localCachePlaces(); // will be replaced async on boot
+let collections = localCacheCollections(); // will be replaced async on boot
 
 // city cover photos (overrideable)
 let cityCoverPhotos = {};
@@ -2092,7 +2109,6 @@ let mapMarkers      = {};
 let miniMap         = null;
 let photoModalTarget= null;
 let pendingPhotoUrl = null;
-let collections     = [];
 let activeCollection= null;
 
 // ── HELPERS ───────────────────────────────────────────
