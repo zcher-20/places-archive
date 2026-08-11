@@ -623,8 +623,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-tile-img { width:220px; height:150px; object-fit:cover; display:block; transition:opacity .22s; }
 .arc-section:hover .arc-tile-img { opacity:.85; }
 .arc-tile-num { font-family:var(--serif); font-style:italic; font-size:11.5px; color:var(--text-3); margin-top:9px; padding-left:1px; }
-.arc-city-footer { display:flex; justify-content:flex-end; margin-top:14px; }
+.arc-section { position:relative; } .arc-city-footer { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
 .arc-city-label { font-family:var(--serif); font-size:15px; font-weight:400; color:var(--charcoal); letter-spacing:-.01em; }
+.arc-section-add { background:none; border:none; font-size:18px; color:var(--text-3); cursor:pointer; padding:0 2px; line-height:1; transition:color .15s; }
+.arc-section-add:hover { color:var(--charcoal); }
 
 /* ── CITY DETAIL VIEW ─────────────────────────────── */
 #view-city { overflow:hidden; background:var(--bg); }
@@ -644,8 +646,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .archive-colls-section { padding:0 28px 80px; }
 .archive-colls-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-top:48px; border-top:1px solid rgba(0,0,0,.07); }
 .archive-colls-title { font-family:var(--sans); font-size:22px; font-weight:700; color:var(--charcoal); letter-spacing:-.02em; }
-.btn-new-coll { width:36px; height:36px; padding:0; background:var(--charcoal); color:#fff; border:none; border-radius:50%; font-size:13px; font-family:var(--sans); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:opacity .15s; flex-shrink:0; }
-.btn-new-coll:hover { opacity:.8; }
+.btn-new-coll { padding:0; background:none; color:var(--text-3); border:none; font-size:20px; font-family:var(--sans); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:color .15s; flex-shrink:0; line-height:1; }
+.btn-new-coll:hover { color:var(--charcoal); }
 .colls-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
 .coll-card { border-radius:14px; overflow:hidden; cursor:pointer; aspect-ratio:1/1; position:relative; box-shadow:0 4px 24px rgba(0,0,0,.1); transition:transform .22s ease,box-shadow .22s ease; background:var(--stone); }
 .coll-card:hover { transform:translateY(-4px); box-shadow:0 10px 32px rgba(0,0,0,.16); }
@@ -2208,7 +2210,10 @@ function renderArchive(){
     });
     const footer=document.createElement('div');
     footer.className='arc-city-footer';
-    footer.innerHTML=`<span class="arc-city-label">${city}</span>`;
+    const addBtn=document.createElement('button'); addBtn.className='arc-section-add'; addBtn.textContent='+';
+    addBtn.title='Add place'; addBtn.onclick=(e)=>{ e.stopPropagation(); openAddPlaceModal(city); };
+    footer.appendChild(addBtn);
+    footer.innerHTML+=`<span class="arc-city-label">${city}</span>`;
     section.appendChild(strip);
     section.appendChild(footer);
     el.appendChild(section);
@@ -3126,7 +3131,10 @@ function renderCollections(){
       strip.appendChild(empty);
     }
     const footer=document.createElement('div'); footer.className='arc-city-footer';
-    footer.innerHTML=`<span class="arc-city-label">${c.name}</span>`;
+    const addBtn=document.createElement('button'); addBtn.className='arc-section-add'; addBtn.textContent='+';
+    addBtn.title='Add collection'; addBtn.onclick=(e)=>{ e.stopPropagation(); newCollection(); };
+    footer.appendChild(addBtn);
+    footer.innerHTML+=`<span class="arc-city-label">${c.name}</span>`;
     section.appendChild(strip); section.appendChild(footer);
     el.appendChild(section);
   });
@@ -3500,6 +3508,10 @@ function setModalPhoto(url){
 function openModalForCity(){
   openModal();
   if(activeCityPanel) document.getElementById('f-city').value=activeCityPanel;
+}
+function openAddPlaceModal(city){
+  openModal();
+  if(city) document.getElementById('f-city').value=city;
 }
 function openModal(id=null){
   editingPlaceId=id;
