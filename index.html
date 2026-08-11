@@ -2136,7 +2136,6 @@ function renderArchive(){
         :`<div class="coll-card-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/></svg></div>`}
       <div class="coll-card-overlay">
         <div class="coll-card-name">${city}</div>
-        <div class="coll-card-sub">${count} place${count!==1?'s':''}</div>
       </div>`;
     el.appendChild(card);
   });
@@ -3558,20 +3557,26 @@ function isShortMapsLink(val){
 }
 function extractMapsMetadata(url){
   const result={};
-  // place name (and optional street address) from /maps/place/NAME/
+  // place name (and optional street address + city) from /maps/place/NAME/
   const placeMatch=url.match(/\/maps\/place\/([^\/@?]+)/);
   if(placeMatch){
     const raw=decodeURIComponent(placeMatch[1].replace(/\+/g,' ')).trim();
     const parts=raw.split(',').map(s=>s.trim());
     if(parts.length>=2 && /^\d/.test(parts[1])){
-      // "Business Name, 123 Street, City…" format
+      // "Business Name, 123 Street, City, Country" format
       result.name=parts[0];
       result.address=parts[1];
+      if(parts.length>=3) result.city=parts[2];
+      if(parts.length>=4) result.country=parts[3];
     } else if(/^\d/.test(parts[0])){
-      // pure address "123 Street, City…"
+      // pure address
       result.address=parts[0];
+      if(parts.length>=2) result.city=parts[1];
     } else {
       result.name=parts[0];
+      // "Business Name, City, Country"
+      if(parts.length>=2) result.city=parts[1];
+      if(parts.length>=3) result.country=parts[2];
     }
   }
   // category from name keywords
@@ -3595,26 +3600,38 @@ function handleMapsUrl(val){
   }
   const coords=parseGoogleMapsUrl(val);
   const meta=extractMapsMetadata(val);
-  // auto-fill name if empty
+  // auto-fill name
   if(meta.name && !document.getElementById('f-name').value.trim())
     document.getElementById('f-name').value=meta.name;
-  // auto-fill address from URL if present
+  // auto-fill address
   if(meta.address && !document.getElementById('f-address').value.trim())
     document.getElementById('f-address').value=meta.address;
+  // auto-fill city
+  if(meta.city && !document.getElementById('f-city').value.trim())
+    document.getElementById('f-city').value=meta.city;
+  // auto-fill country
+  if(meta.country && !document.getElementById('f-country').value.trim())
+    document.getElementById('f-country').value=meta.country;
   // auto-set category
   if(meta.category) document.getElementById('f-cat').value=meta.category;
   if(coords){
     hint.textContent=`${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}${meta.name?' — '+meta.name:''}`;
     hint.className='form-maps-hint ok';
-    // if address still empty, reverse-geocode from coordinates
-    if(!document.getElementById('f-address').value.trim()){
-      hint.textContent+=' · looking up address…';
-      reverseGeocode(coords.lat, coords.lng).then(addr=>{
-        if(addr && !document.getElementById('f-address').value.trim()){
-          document.getElementById('f-address').value=addr;
-          const h=document.getElementById('f-maps-hint');
-          if(h) h.textContent=h.textContent.replace(' · looking up address…','');
-        }
+    // reverse-geocode to fill any remaining blank fields
+    const needsCity=!document.getElementById('f-city').value.trim();
+    const needsAddr=!document.getElementById('f-address').value.trim();
+    if(needsCity||needsAddr){
+      hint.textContent+=' · looking up location…';
+      reverseGeocode(coords.lat, coords.lng).then(geo=>{
+        if(!geo) return;
+        const h=document.getElementById('f-maps-hint');
+        if(geo.street && !document.getElementById('f-address').value.trim())
+          document.getElementById('f-address').value=geo.street;
+        if(geo.city && !document.getElementById('f-city').value.trim())
+          document.getElementById('f-city').value=geo.city;
+        if(geo.country && !document.getElementById('f-country').value.trim())
+          document.getElementById('f-country').value=geo.country;
+        if(h) h.textContent=h.textContent.replace(' · looking up location…','');
       });
     }
   } else {
@@ -3630,7 +3647,9 @@ async function reverseGeocode(lat, lng){
     if(d&&d.address){
       const a=d.address;
       const street=[a.house_number,a.road].filter(Boolean).join(' ');
-      return street||null;
+      const city=a.city||a.town||a.village||a.municipality||a.county||null;
+      const country=a.country||null;
+      return {street:street||null, city, country};
     }
   }catch(e){ console.warn('Reverse geocode failed:',e); }
   return null;
