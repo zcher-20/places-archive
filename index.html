@@ -3718,14 +3718,14 @@ function savePlace(){
     visited:!!document.getElementById('f-date').value, favorite:false
   };
   places.unshift(p); upsertPlace(p); closeModal(); document.getElementById('archive-count').textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
-  if(p.lat||p.lng){
-    syncMapMarkers();
-    if(currentView==='map'){
-      setTimeout(()=>{ leafletMap?.invalidateSize(); leafletMap?.flyTo([p.lat,p.lng],15,{duration:1.2}); showMapCard(p); }, 80);
-    } else {
-      renderArchive(); openPlace(p);
-    }
-  } else { renderArchive(); openPlace(p); }
+  if(p.lat||p.lng) syncMapMarkers();
+  if(currentView==='map'){
+    setTimeout(()=>{ leafletMap?.invalidateSize(); leafletMap?.flyTo([p.lat,p.lng],15,{duration:1.2}); showMapCard(p); }, 80);
+  } else {
+    // on desktop archive, just re-render (city panel updates automatically); no detail panel
+    renderArchive();
+    if(window.innerWidth<=768) openPlace(p);
+  }
 }
 
 // ── BOOT ─────────────────────────────────────────────
