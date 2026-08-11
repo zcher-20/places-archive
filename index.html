@@ -1454,9 +1454,15 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
               <div class="cip-name" id="city-panel-name"></div>
               <div class="cip-count" id="city-panel-count"></div>
             </div>
-            <button class="cip-close-btn" onclick="closeCityPanel()">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <button class="cdp-add-btn" id="city-panel-add-btn" onclick="openModalForCity()" title="Add place to this city">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add place
+              </button>
+              <button class="cip-close-btn" onclick="closeCityPanel()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
           </div>
           <div class="city-gallery" id="city-gallery"></div>
           <div class="cip-body">
@@ -3332,6 +3338,10 @@ function setModalPhoto(url){
   const bg=document.getElementById('modal-photo-bg');
   if(url){ bg.style.backgroundImage=`url('${url}')`; col.classList.add('has-photo'); }
   else { bg.style.backgroundImage=''; col.classList.remove('has-photo'); }
+}
+function openModalForCity(){
+  openModal();
+  if(activeCityPanel) document.getElementById('f-city').value=activeCityPanel;
 }
 function openModal(id=null){
   editingPlaceId=id;
