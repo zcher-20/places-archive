@@ -3730,17 +3730,17 @@ function savePlace(){
 
 // ── BOOT ─────────────────────────────────────────────
 (async ()=>{
-  // Read saved view BEFORE showView('map') would overwrite it
-  const _savedView = localStorage.getItem('pa_view') || 'map';
-  if(!new URLSearchParams(location.search).has('landing')){
-    showView('map');
+  const hasLanding = new URLSearchParams(location.search).has('landing');
+  if(!hasLanding){
+    // show map skeleton while data loads without touching localStorage or currentView
+    document.getElementById('view-map').classList.add('active');
+    document.getElementById('nav-map')?.classList.add('active');
+    initMap();
   }
   [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
-  if(new URLSearchParams(location.search).has('landing')){
+  if(hasLanding){
     document.getElementById('landing').classList.remove('hidden');
   } else {
-    // restore saved view after data loads
-    currentView = _savedView === 'collections' ? 'archive' : _savedView;
     enterApp();
   }
 })();
