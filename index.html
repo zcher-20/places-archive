@@ -3103,25 +3103,33 @@ function renderCollections(){
     </div>`;
     return;
   }
-  const grid=document.createElement('div'); grid.className='colls-grid';
   const sorted=[...collections].sort((a,b)=>b.id-a.id);
   sorted.forEach(c=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
-    const cover=collPlaces.find(p=>p.photo)?.photo||'';
-    const count=collPlaces.length;
-    const card=document.createElement('div'); card.className='coll-card';
-    card.onclick=()=>openCollectionPanel(c.id);
-    card.innerHTML=`
-      ${cover
-        ?`<img class="coll-card-img" src="${cover}" alt="${c.name}" loading="lazy">`
-        :`<div class="coll-card-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>`}
-      <div class="coll-card-overlay">
-        <div class="coll-card-name">${c.name}</div>
-        <div class="coll-card-sub">${count} place${count!==1?'s':''}</div>
-      </div>`;
-    grid.appendChild(card);
+    const section=document.createElement('div');
+    section.className='arc-section';
+    section.onclick=()=>openCollectionPanel(c.id);
+    const strip=document.createElement('div'); strip.className='arc-strip';
+    if(collPlaces.length){
+      collPlaces.forEach((p,i)=>{
+        const tile=document.createElement('div'); tile.className='arc-tile';
+        const img=document.createElement('img');
+        img.className='arc-tile-img'; img.src=p.photo||''; img.alt=p.name; img.loading='lazy';
+        const num=document.createElement('div'); num.className='arc-tile-num';
+        num.textContent=`(${String(i+1).padStart(2,'0')}.)`;
+        tile.appendChild(img); tile.appendChild(num); strip.appendChild(tile);
+      });
+    } else {
+      const empty=document.createElement('div');
+      empty.className='arc-tile';
+      empty.innerHTML=`<div class="arc-tile-img" style="background:var(--stone);display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.18)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>`;
+      strip.appendChild(empty);
+    }
+    const footer=document.createElement('div'); footer.className='arc-city-footer';
+    footer.innerHTML=`<span class="arc-city-label">${c.name}</span>`;
+    section.appendChild(strip); section.appendChild(footer);
+    el.appendChild(section);
   });
-  el.appendChild(grid);
 }
 
 let activeCollId=null;
