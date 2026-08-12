@@ -301,10 +301,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .archive-hero { display:none !important; }
   #archive-afb { display:none !important; }
   .desktop-archive-title { display:block !important; padding:0; }
-  #view-archive.active { overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:row; align-items:flex-start; padding-top:54px; }
-  .arc-page-title { display:block !important; flex-shrink:0; width:180px; padding:80px 0 0 48px; position:sticky; top:80px; }
-  .archive-scroll { flex:1; min-width:0; }
-  .archive-scroll { padding:80px 48px 40px 0; overflow:visible; }
+  #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; padding-top:54px; }
+  .archive-scroll { padding:0 48px 40px; overflow:visible; }
   #city-inline { display:none !important; }
   #archive-list { overflow:visible; }
   .desktop-archive-title { display:block !important; padding:0; }
@@ -1354,10 +1352,16 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
 
 .arc-hero-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:36px; padding-top:64px; }
-.arc-page-title { display:none; font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; }
+
 .arc-hero-title { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; margin:0; line-height:1; }
 .arc-hero-add { background:none; border:none; font-size:26px; color:#999; cursor:pointer; padding:0; line-height:1; transition:color .15s; }
 .arc-hero-add:hover { color:#111; }
+
+
+.arc-two-col { display:flex; flex-direction:row; align-items:flex-start; padding-top:80px; }
+.arc-title-col { width:160px; flex-shrink:0; padding-left:0; position:sticky; top:calc(54px + 20px); align-self:flex-start; }
+.arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; }
+.arc-strips-col { flex:1; min-width:0; }
 
 </style>
 </head>
@@ -1520,11 +1524,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
           <div class="afb-cat-opt" onclick="setCatFilter('Other',this)">Other</div>
         </div>
       </div>
-      <!-- desktop archive title -->
-      <div class="arc-page-title" id="arc-page-title">Archive</div>
       <!-- city cards grid -->
       <div class="archive-scroll" id="archive-scroll">
-        <div class="colls-grid" id="archive-list"></div>
+        <div id="archive-list"></div>
         <!-- city inline panel -->
         <div id="city-inline">
           <div class="cip-header">
@@ -2268,6 +2270,13 @@ function renderArchive(){
     el.innerHTML='<div class="colls-empty"><div class="colls-empty-title">Nothing here yet</div><div class="colls-empty-sub">Save your first place or try a different filter.</div></div>';
     return;
   }
+  // two-col layout: title left, strips right
+  const wrapper=document.createElement('div'); wrapper.className='arc-two-col';
+  const titleCol=document.createElement('div'); titleCol.className='arc-title-col';
+  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; titleEl.textContent='Archive';
+  titleCol.appendChild(titleEl); wrapper.appendChild(titleCol);
+  const stripsCol=document.createElement('div'); stripsCol.className='arc-strips-col';
+  wrapper.appendChild(stripsCol); el.appendChild(wrapper);
   const cityGroups={};
   list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
   const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
@@ -2299,7 +2308,7 @@ function renderArchive(){
     footer.appendChild(cityLabel);
     section.appendChild(strip);
     section.appendChild(footer);
-    el.appendChild(section);
+    stripsCol.appendChild(section);
   });
 }
 
