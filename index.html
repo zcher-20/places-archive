@@ -1399,6 +1399,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   <div class="ptn-links">
     <button class="ptn-link" id="ptn-map" onclick="showView('map')">Map</button>
     <button class="ptn-link" id="ptn-archive" onclick="showView('archive')">Archive</button>
+    <button class="ptn-link" id="ptn-collections" onclick="showCollections()">Collections</button>
     <button class="ptn-link" id="ptn-journal" onclick="showView('journal')">Journal</button>
     <button class="ptn-link ptn-link-save" onclick="openModal()" title="Save place">+</button>
   </div>
@@ -1563,7 +1564,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
         </div>
       </div>
       <!-- collections section -->
-      <div class="archive-colls-section">
+      <div class="archive-colls-section" id="collections-anchor">
         <div id="colls-list"></div>
         <div id="coll-inline">
           <div class="cip-header">
@@ -2368,6 +2369,16 @@ function openCityView(city){
 
   // map
   buildCityViewMap(ps);
+}
+
+function showCollections(){
+  if(currentView!=='archive'){ showView('archive'); }
+  document.querySelectorAll('.ptn-link').forEach(x=>x.classList.remove('active'));
+  document.getElementById('ptn-collections')?.classList.add('active');
+  setTimeout(()=>{
+    const anchor=document.getElementById('collections-anchor');
+    if(anchor) anchor.scrollIntoView({behavior:'smooth',block:'start'});
+  }, currentView!=='archive'?300:0);
 }
 
 function closeCityView(){
