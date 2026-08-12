@@ -2232,10 +2232,12 @@ let activeCityPanel = null;
 let cityPanelMap = null;
 
 
-function getCityCover(city,ps){ const id=localStorage.getItem('arc-city-cover-id-'+city); const p=id&&ps.find(x=>String(x.id)===id); return (p&&p.photo)||ps.find(x=>x.photo)?.photo||''; }
-function setCityCover(city,placeId){ localStorage.setItem('arc-city-cover-id-'+city,String(placeId)); renderArchive(); }
-function getCollCover(c,collPlaces){ const id=localStorage.getItem('arc-coll-cover-id-'+c.id); const p=id&&collPlaces.find(x=>String(x.id)===id); return (p&&p.photo)||collPlaces.find(x=>x.photo)?.photo||''; }
-function setCollCover(c,placeId){ localStorage.setItem('arc-coll-cover-id-'+c.id,String(placeId)); renderCollections(); }
+function _loadCoverIds(){ try{ return JSON.parse(localStorage.getItem('arc-cover-ids')||'{}'); }catch(e){ return {}; } }
+function _saveCoverIds(obj){ try{ localStorage.setItem('arc-cover-ids',JSON.stringify(obj)); }catch(e){} }
+function getCityCover(city,ps){ const obj=_loadCoverIds(); const id=obj['city-'+city]; const p=id&&ps.find(x=>String(x.id)===String(id)); return (p&&p.photo)||ps.find(x=>x.photo)?.photo||''; }
+function setCityCover(city,placeId){ const obj=_loadCoverIds(); obj['city-'+city]=placeId; _saveCoverIds(obj); renderArchive(); }
+function getCollCover(c,collPlaces){ const obj=_loadCoverIds(); const id=obj['coll-'+c.id]||c.coverPlaceId; const p=id&&collPlaces.find(x=>String(x.id)===String(id)); return (p&&p.photo)||collPlaces.find(x=>x.photo)?.photo||''; }
+function setCollCover(c,placeId){ const obj=_loadCoverIds(); obj['coll-'+c.id]=placeId; _saveCoverIds(obj); c.coverPlaceId=placeId; saveCollections(); upsertCollection(c); renderCollections(); }
 function openCoverPicker(placesWithPhotos,onPick){
   let ov=document.getElementById('cover-picker-ov');
   if(!ov){ ov=document.createElement('div'); ov.id='cover-picker-ov'; document.body.appendChild(ov); }
