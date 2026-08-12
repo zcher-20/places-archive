@@ -2093,7 +2093,7 @@ function localCachePlaces(){
   try{ const s=localStorage.getItem('places-data'); return s?JSON.parse(s):DEFAULT_PLACES; }catch(e){ return DEFAULT_PLACES; }
 }
 
-function compressImage(dataUrl, maxDim=900, quality=0.75){
+function compressImage(dataUrl, maxDim=700, quality=0.65){
   return new Promise(resolve=>{
     const img=new Image();
     img.onload=()=>{
@@ -2232,8 +2232,13 @@ let activeCityPanel = null;
 let cityPanelMap = null;
 
 
+function _cleanOldCoverKeys(){
+  const toDelete=[];
+  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&(k.startsWith('arc-city-cover-')||k.startsWith('arc-coll-cover-id-'))) toDelete.push(k); }
+  toDelete.forEach(k=>localStorage.removeItem(k));
+}
 function _loadCoverIds(){ try{ return JSON.parse(localStorage.getItem('arc-cover-ids')||'{}'); }catch(e){ return {}; } }
-function _saveCoverIds(obj){ try{ localStorage.setItem('arc-cover-ids',JSON.stringify(obj)); }catch(e){} }
+function _saveCoverIds(obj){ try{ localStorage.setItem('arc-cover-ids',JSON.stringify(obj)); }catch(e){ console.warn('cover save failed',e); } }
 function getCityCover(city,ps){ const obj=_loadCoverIds(); const id=obj['city-'+city]; const p=id&&ps.find(x=>String(x.id)===String(id)); return (p&&p.photo)||ps.find(x=>x.photo)?.photo||''; }
 function setCityCover(city,placeId){ const obj=_loadCoverIds(); obj['city-'+city]=placeId; _saveCoverIds(obj); renderArchive(); }
 function getCollCover(c,collPlaces){ const obj=_loadCoverIds(); const id=obj['coll-'+c.id]||c.coverPlaceId; const p=id&&collPlaces.find(x=>String(x.id)===String(id)); return (p&&p.photo)||collPlaces.find(x=>x.photo)?.photo||''; }
@@ -4107,6 +4112,8 @@ function savePlace(){
     document.getElementById('landing').classList.remove('hidden');
     return;
   }
+  // remove old cover keys that stored full base64 data (could fill localStorage)
+  _cleanOldCoverKeys();
   // show correct view instantly with cached data, no blank screen
   enterApp();
   // then fetch fresh data from Supabase and silently re-render
