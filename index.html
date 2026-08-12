@@ -1357,11 +1357,13 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-hero-add:hover { color:#111; }
 
 
-.arc-content-wrap { width:fit-content; margin:0 auto; padding-top:120px; }
+.arc-content-wrap { width:min(fit-content, calc(100vw - 96px)); margin:0 auto; padding-top:120px; overflow:hidden; }
 .arc-title-row { display:flex; align-items:flex-end; gap:16px; margin-bottom:48px; }
 .arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; display:block; text-align:left; }
-.arc-strips-col { display:flex; flex-direction:row; align-items:flex-start; gap:24px; overflow-x:auto; scrollbar-width:none; }
-.arc-strips-col::-webkit-scrollbar { display:none; }
+.arc-strips-col { display:flex; flex-direction:row; align-items:flex-start; gap:24px; overflow-x:auto; scrollbar-width:thin; scrollbar-color:rgba(0,0,0,.12) transparent; }
+.arc-strips-col::-webkit-scrollbar { height:2px; }
+.arc-strips-col::-webkit-scrollbar-track { background:transparent; }
+.arc-strips-col::-webkit-scrollbar-thumb { background:rgba(0,0,0,.12); border-radius:2px; }
 .arc-strips-col .arc-section { width:fit-content; }
 
 .coll-content-wrap { width:fit-content; margin:0 auto; padding-top:40px; }
@@ -2280,34 +2282,27 @@ function renderArchive(){
   const cityGroups={};
   list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
   const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
-  let globalIdx=0;
-  sortedCities.forEach(city=>{
+  sortedCities.forEach((city,ci)=>{
     const ps=cityGroups[city];
+    const cover=ps.find(p=>p.photo)?.photo||'';
     const section=document.createElement('div');
     section.className='arc-section';
     section.onclick=()=>openCityView(city);
-    const strip=document.createElement('div');
-    strip.className='arc-strip';
-    for(let i=0;i<ps.length;i++){
-      const p=ps[i];
-      globalIdx++;
-      const tile=document.createElement('div');
-      tile.className='arc-tile';
-      const img=document.createElement('img');
-      img.className='arc-tile-img';
-      img.src=p.photo; img.alt=p.name; img.loading='lazy';
-      const num=document.createElement('div');
-      num.className='arc-tile-num';
-      num.textContent='('+String(globalIdx).padStart(2,'0')+'.)';;
-      tile.appendChild(img); tile.appendChild(num);
-      strip.appendChild(tile);
+    const tile=document.createElement('div'); tile.className='arc-tile';
+    if(cover){
+      const img=document.createElement('img'); img.className='arc-tile-img'; img.src=cover; img.alt=city; img.loading='lazy';
+      tile.appendChild(img);
+    } else {
+      const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
+      tile.appendChild(ph);
     }
-    const footer=document.createElement('div');
-    footer.className='arc-city-footer';
+    const num=document.createElement('div'); num.className='arc-tile-num';
+    num.textContent='('+String(ci+1).padStart(2,'0')+'.)';
+    tile.appendChild(num);
+    const footer=document.createElement('div'); footer.className='arc-city-footer';
     const cityLabel=document.createElement('span'); cityLabel.className='arc-city-label'; cityLabel.textContent=city;
     footer.appendChild(cityLabel);
-    section.appendChild(strip);
-    section.appendChild(footer);
+    section.appendChild(tile); section.appendChild(footer);
     stripsCol.appendChild(section);
   });
 }
