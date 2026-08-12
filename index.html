@@ -2436,7 +2436,7 @@ function buildCityViewMap(ps){
   const geo=ps.filter(p=>p.lat&&p.lng);
   if(!geo.length) return;
   cityViewMap=L.map(container,{zoomControl:false,scrollWheelZoom:true,dragging:true});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityViewMap);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityViewMap);
   const markers=geo.map(p=>{
     const icon=L.divIcon({className:'',html:`<div class="sq-pin-wrap"><img class="sq-pin" src="${p.photo}" onclick="openPlace(places.find(x=>x.id===${p.id}))"></div>`,iconSize:[54,54],iconAnchor:[27,27]});
     return L.marker([p.lat,p.lng],{icon}).addTo(cityViewMap);
@@ -2522,7 +2522,7 @@ function buildCityPanelMap(ps){
   const geo=ps.filter(p=>p.lat&&p.lng);
   if(!geo.length) return;
   cityPanelMap=L.map(container,{zoomControl:false,scrollWheelZoom:true,dragging:true,touchZoom:true});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityPanelMap);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityPanelMap);
   const markers=geo.map(p=>{
     const icon=L.divIcon({
       className:'',
@@ -3248,20 +3248,13 @@ function renderJournal(){
 function renderCollections(){
   const el=document.getElementById('colls-list'); if(!el)return;
   el.innerHTML='';
-  if(!collections.length){
-    el.innerHTML=`<div class="colls-empty">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".25"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      <div class="colls-empty-title">No collections yet</div>
-      <div class="colls-empty-sub">Group your favourite places into curated collections.</div>
-    </div>`;
-    return;
-  }
   const sorted=[...collections].sort((a,b)=>b.id-a.id);
-  // centered wrapper with right-aligned title
+  // always render title + button
   const collWrap=document.createElement('div'); collWrap.className='coll-content-wrap'; el.appendChild(collWrap);
   const collHeader=document.createElement('div'); collHeader.className='coll-title-row'; collWrap.appendChild(collHeader);
   const collTitleEl=document.createElement('h2'); collTitleEl.className='coll-title-text'; collTitleEl.textContent='Collections'; collHeader.appendChild(collTitleEl);
   const collAddBtn=document.createElement('button'); collAddBtn.className='btn-new-coll'; collAddBtn.title='New collection'; collAddBtn.textContent='+'; collAddBtn.onclick=(e)=>{e.stopPropagation();newCollection();}; collHeader.appendChild(collAddBtn);
+  if(!collections.length && !_pendingNewColl){ return; }
   // one tile per collection in a single horizontal row
   const stripsRow=document.createElement('div'); stripsRow.className='arc-strips-col'; collWrap.appendChild(stripsRow);
   // inline draft tile when + is clicked
