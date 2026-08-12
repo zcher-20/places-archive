@@ -3259,35 +3259,26 @@ function renderCollections(){
   const collHeader=document.createElement('div'); collHeader.className='coll-title-row'; collWrap.appendChild(collHeader);
   const collTitleEl=document.createElement('h2'); collTitleEl.className='coll-title-text'; collTitleEl.textContent='Collections'; collHeader.appendChild(collTitleEl);
   const collAddBtn=document.createElement('button'); collAddBtn.className='btn-new-coll'; collAddBtn.title='New collection'; collAddBtn.textContent='+'; collAddBtn.onclick=(e)=>{e.stopPropagation();newCollection();}; collHeader.appendChild(collAddBtn);
+  // one tile per collection in a single horizontal row
   const stripsRow=document.createElement('div'); stripsRow.className='arc-strips-col'; collWrap.appendChild(stripsRow);
-  let collGlobalIdx=0;
   sorted.forEach((c,ci)=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
-    const section=document.createElement('div');
-    section.className='arc-section';
-    section.onclick=()=>openCollectionView(c.id);
-    const strip=document.createElement('div'); strip.className='arc-strip';
-    if(collPlaces.length){
-      for(let i=0;i<collPlaces.length;i++){
-        const p=collPlaces[i];
-        collGlobalIdx++;
-        const tile=document.createElement('div'); tile.className='arc-tile';
-        const img=document.createElement('img');
-        img.className='arc-tile-img'; img.src=p.photo||''; img.alt=p.name; img.loading='lazy';
-        const num=document.createElement('div'); num.className='arc-tile-num';
-        num.textContent='('+String(collGlobalIdx).padStart(2,'0')+'.)';;
-        tile.appendChild(img); tile.appendChild(num); strip.appendChild(tile);
-      }
+    const coverPhoto=collPlaces.find(p=>p.photo)?.photo||'';
+    const section=document.createElement('div'); section.className='arc-section'; section.onclick=()=>openCollectionView(c.id);
+    const tile=document.createElement('div'); tile.className='arc-tile';
+    if(coverPhoto){
+      const img=document.createElement('img'); img.className='arc-tile-img'; img.src=coverPhoto; img.alt=c.name; img.loading='lazy';
+      tile.appendChild(img);
     } else {
-      const empty=document.createElement('div'); empty.className='arc-tile';
-      const ph=document.createElement('div'); ph.className='arc-tile-img';
-      ph.style.cssText='background:var(--stone);display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.18)';
-      empty.appendChild(ph); strip.appendChild(empty);
+      const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
+      tile.appendChild(ph);
     }
+    const num=document.createElement('div'); num.className='arc-tile-num'; num.textContent='('+(String(ci+1).padStart(2,'0'))+'.)';
+    tile.appendChild(num);
     const footer=document.createElement('div'); footer.className='arc-city-footer';
     const nameLabel=document.createElement('span'); nameLabel.className='arc-city-label'; nameLabel.textContent=c.name;
     footer.appendChild(nameLabel);
-    section.appendChild(strip); section.appendChild(footer);
+    section.appendChild(tile); section.appendChild(footer);
     stripsRow.appendChild(section);
   });
 }
