@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Places</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -302,7 +304,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   #archive-afb { display:none !important; }
   .desktop-archive-title { display:block !important; padding:0; }
   #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; padding-top:54px; }
-  .archive-scroll { padding:0 48px 40px; overflow:visible; display:flex; flex-direction:column; align-items:center; }
+  .archive-scroll { padding:0; overflow:visible; display:block; }
   #city-inline { display:none !important; }
   #archive-list { overflow:visible; }
   .desktop-archive-title { display:block !important; padding:0; }
@@ -643,7 +645,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .cityv-map-wrap { flex:1; position:relative; }
 #cityv-map { width:100%; height:100%; }
 
-.archive-colls-section { padding:0 28px 80px; }
+.archive-colls-section { padding:0 0 100px; }
 .archive-colls-header { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; margin-bottom:36px; padding-top:80px; }
 .archive-colls-title { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; margin:0; line-height:1; }
 .btn-new-coll { padding:0 0 2px; background:none; color:var(--text-3); border:none; font-size:20px; font-family:var(--sans); cursor:pointer; display:flex; align-items:flex-end; justify-content:center; transition:color .15s; flex-shrink:0; line-height:1; }
@@ -1357,6 +1359,30 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-hero-add:hover { color:#111; }
 
 
+/* ── archive / collections photo grid ── */
+.arc-page-wrap { max-width:1080px; margin:0 auto; padding:110px 48px 0; }
+.arc-new-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:52px 28px; }
+.arc-grid-cell { display:flex; align-items:flex-start; gap:9px; cursor:pointer; }
+.arc-grid-cell:hover .arc-cell-img { opacity:.82; }
+.arc-cell-num { font-size:10.5px; color:#c8c8c8; min-width:20px; padding-top:5px; font-family:var(--serif); flex-shrink:0; }
+.arc-cell-content { flex:1; display:flex; flex-direction:column; position:relative; }
+.arc-cell-img-wrap { width:100%; aspect-ratio:3/4; overflow:hidden; background:var(--stone,#f0ede8); position:relative; }
+.arc-cell-img { width:100%; height:100%; object-fit:cover; display:block; transition:opacity .22s; }
+.arc-cell-title { font-family:'Dancing Script',cursive; font-size:19px; font-weight:500; color:#222; text-align:center; margin-top:10px; line-height:1.2; }
+.arc-cell-img-wrap .cover-change-btn { top:5px; right:5px; }
+/* middle action bar */
+.arc-mid-bar { display:flex; align-items:center; justify-content:space-between; padding:28px 0; margin:72px 0 60px; border-top:1px solid rgba(0,0,0,.06); border-bottom:1px solid rgba(0,0,0,.06); }
+.arc-mid-label { font-family:var(--serif); font-style:italic; font-size:12px; color:#b0b0b0; letter-spacing:.02em; flex:1; text-align:center; }
+.arc-mid-btn { background:none; border:1px solid rgba(0,0,0,.16); border-radius:20px; padding:7px 20px; font-size:11.5px; color:#555; cursor:pointer; letter-spacing:.03em; font-family:var(--sans); transition:background .15s,color .15s,border-color .15s; white-space:nowrap; }
+.arc-mid-btn:hover { background:#111; color:#fff; border-color:#111; }
+/* inline draft input in grid */
+.coll-draft-ph { background:var(--stone,#f0ede8); }
+.arc-cell-draft-input { background:none; border:none; border-bottom:1px solid rgba(0,0,0,.2); font-family:'Dancing Script',cursive; font-size:18px; color:#222; outline:none; width:100%; text-align:center; padding:2px 0; margin-top:10px; cursor:text; }
+.arc-cell-draft-input::placeholder { color:rgba(0,0,0,.28); }
+
+.cover-change-btn { position:absolute; top:6px; right:6px; background:rgba(255,255,255,.85); border:none; border-radius:4px; font-size:13px; line-height:1; padding:3px 5px; cursor:pointer; opacity:0; transition:opacity .15s; color:#333; }
+.arc-grid-cell:hover .cover-change-btn { opacity:1; }
+/* keep old classes for mobile compat */
 .arc-content-wrap { max-width:calc(100vw - 96px); padding-top:120px; }
 .arc-title-row { display:flex; align-items:flex-end; gap:16px; margin-bottom:48px; }
 .arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:26px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; display:block; text-align:left; }
@@ -1365,16 +1391,12 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-strips-col::-webkit-scrollbar-track { background:transparent; }
 .arc-strips-col::-webkit-scrollbar-thumb { background:rgba(0,0,0,.12); border-radius:2px; }
 .arc-strips-col .arc-section { width:fit-content; }
-
 .coll-content-wrap { width:fit-content; margin:0 auto; padding-top:40px; }
 .coll-title-row { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; margin-bottom:48px; }
 .coll-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:26px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; }
-.coll-draft-ph { background:var(--stone,#f0ede8); }
 .coll-draft-input { background:none; border:none; border-bottom:1px solid rgba(0,0,0,.25); font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:11.5px; color:#111; outline:none; width:100%; text-align:right; padding:2px 0; cursor:text; }
 .coll-draft-input::placeholder { color:rgba(0,0,0,.3); }
-
 .arc-tile { position:relative; }
-.cover-change-btn { position:absolute; top:6px; right:6px; background:rgba(255,255,255,.85); border:none; border-radius:4px; font-size:13px; line-height:1; padding:3px 5px; cursor:pointer; opacity:0; transition:opacity .15s; color:#333; }
 .arc-section:hover .cover-change-btn { opacity:1; }
 #cover-picker-ov { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:2000; display:none; align-items:center; justify-content:center; }
 #cover-picker-ov.open { display:flex; }
@@ -2306,53 +2328,41 @@ function renderArchive(){
     return;
   }
 
-  // ── DESKTOP: elegant photo strips per city ──
-  if(!list.length){
-    el.innerHTML='<div class="colls-empty"><div class="colls-empty-title">Nothing here yet</div><div class="colls-empty-sub">Save your first place or try a different filter.</div></div>';
-    return;
+  // ── DESKTOP: photo grid ──
+  const arcWrap=document.createElement('div'); arcWrap.className='arc-page-wrap'; el.appendChild(arcWrap);
+  const grid=document.createElement('div'); grid.className='arc-new-grid'; arcWrap.appendChild(grid);
+  if(list.length){
+    const cityGroups={};
+    list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
+    const sortedCities=Object.keys(cityGroups).sort((a,b)=>{
+      const latest=g=>Math.max(...g.map(p=>new Date(p.dateAdded||0).getTime()));
+      return latest(cityGroups[b])-latest(cityGroups[a]);
+    });
+    sortedCities.forEach((city,ci)=>{
+      const ps=cityGroups[city];
+      const cover=getCityCover(city,ps);
+      const cell=document.createElement('div'); cell.className='arc-grid-cell'; cell.onclick=()=>openCityView(city);
+      const numEl=document.createElement('div'); numEl.className='arc-cell-num'; numEl.textContent=String(ci+1).padStart(2,'0')+'.'; cell.appendChild(numEl);
+      const content=document.createElement('div'); content.className='arc-cell-content';
+      const imgWrap=document.createElement('div'); imgWrap.className='arc-cell-img-wrap';
+      if(cover){ const img=document.createElement('img'); img.className='arc-cell-img'; img.src=cover; img.alt=city; img.loading='lazy'; imgWrap.appendChild(img); }
+      const placesWithPhotos=ps.filter(p=>p.photo);
+      if(placesWithPhotos.length>0){ const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞'; cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(placesWithPhotos,(id)=>setCityCover(city,id)); }; imgWrap.appendChild(cb); }
+      content.appendChild(imgWrap);
+      const titleEl=document.createElement('div'); titleEl.className='arc-cell-title'; titleEl.textContent=city; content.appendChild(titleEl);
+      cell.appendChild(content); grid.appendChild(cell);
+    });
   }
-  // centered title above strips
-  const arcWrap=document.createElement('div'); arcWrap.className='arc-content-wrap'; el.appendChild(arcWrap);
-  const arcTitleRow=document.createElement('div'); arcTitleRow.className='arc-title-row'; arcWrap.appendChild(arcTitleRow);
-  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; titleEl.textContent='Archive'; arcTitleRow.appendChild(titleEl);
-  const arcAddBtn=document.createElement('button'); arcAddBtn.className='btn-new-coll'; arcAddBtn.title='Save place'; arcAddBtn.textContent='+'; arcAddBtn.onclick=(e)=>{e.stopPropagation();openModal();}; arcTitleRow.appendChild(arcAddBtn);
-  const stripsCol=document.createElement('div'); stripsCol.className='arc-strips-col';
-  arcWrap.appendChild(stripsCol);
-  const cityGroups={};
-  list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
-  const sortedCities=Object.keys(cityGroups).sort((a,b)=>{
-    const latest=g=>Math.max(...g.map(p=>new Date(p.dateAdded||0).getTime()));
-    return latest(cityGroups[b])-latest(cityGroups[a]);
-  });
-  sortedCities.forEach((city,ci)=>{
-    const ps=cityGroups[city];
-    const cover=getCityCover(city,ps);
-    const section=document.createElement('div');
-    section.className='arc-section';
-    section.onclick=()=>openCityView(city);
-    const tile=document.createElement('div'); tile.className='arc-tile';
-    if(cover){
-      const img=document.createElement('img'); img.className='arc-tile-img'; img.src=cover; img.alt=city; img.loading='lazy';
-      tile.appendChild(img);
-    } else {
-      const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
-      tile.appendChild(ph);
-    }
-    const placesWithPhotos=ps.filter(p=>p.photo);
-    if(placesWithPhotos.length>0){
-      const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
-      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(placesWithPhotos,(id)=>setCityCover(city,id)); };
-      tile.appendChild(cb);
-    }
-    const num=document.createElement('div'); num.className='arc-tile-num';
-    num.textContent='('+String(ci+1).padStart(2,'0')+'.)';
-    tile.appendChild(num);
-    const footer=document.createElement('div'); footer.className='arc-city-footer';
-    const cityLabel=document.createElement('span'); cityLabel.className='arc-city-label'; cityLabel.textContent=city;
-    footer.appendChild(cityLabel);
-    section.appendChild(tile); section.appendChild(footer);
-    stripsCol.appendChild(section);
-  });
+  // middle bar always shown — separates archive from collections and holds action buttons
+  arcWrap.appendChild(_buildMidBar());
+}
+function _buildMidBar(){
+  const bar=document.createElement('div'); bar.className='arc-mid-bar';
+  const addArc=document.createElement('button'); addArc.className='arc-mid-btn'; addArc.textContent='+ Archive'; addArc.onclick=(e)=>{e.stopPropagation();openModal();};
+  const lbl=document.createElement('div'); lbl.className='arc-mid-label'; lbl.textContent='Archive · Collections';
+  const addColl=document.createElement('button'); addColl.className='arc-mid-btn'; addColl.textContent='+ Collection'; addColl.onclick=(e)=>{e.stopPropagation();newCollection();};
+  bar.appendChild(addArc); bar.appendChild(lbl); bar.appendChild(addColl);
+  return bar;
 }
 
 // ── CITY DETAIL VIEW ─────────────────────────────────
@@ -3296,55 +3306,36 @@ function renderJournal(){
 function renderCollections(){
   const el=document.getElementById('colls-list'); if(!el)return;
   el.innerHTML='';
+  if(window.innerWidth<=768){ return; } // mobile: collections handled elsewhere
   const sorted=[...collections].sort((a,b)=>b.id-a.id);
-  // always render title + button
-  const collWrap=document.createElement('div'); collWrap.className='coll-content-wrap'; el.appendChild(collWrap);
-  const collHeader=document.createElement('div'); collHeader.className='coll-title-row'; collWrap.appendChild(collHeader);
-  const collTitleEl=document.createElement('h2'); collTitleEl.className='coll-title-text'; collTitleEl.textContent='Collections'; collHeader.appendChild(collTitleEl);
-  const collAddBtn=document.createElement('button'); collAddBtn.className='btn-new-coll'; collAddBtn.title='New collection'; collAddBtn.textContent='+'; collAddBtn.onclick=(e)=>{e.stopPropagation();newCollection();}; collHeader.appendChild(collAddBtn);
-  if(!collections.length && !_pendingNewColl){ return; }
-  // one tile per collection in a single horizontal row
-  const stripsRow=document.createElement('div'); stripsRow.className='arc-strips-col'; collWrap.appendChild(stripsRow);
-  // inline draft tile when + is clicked
+  if(!sorted.length && !_pendingNewColl){ return; }
+  const wrap=document.createElement('div'); wrap.className='arc-page-wrap'; wrap.style.paddingTop='0'; el.appendChild(wrap);
+  const grid=document.createElement('div'); grid.className='arc-new-grid'; wrap.appendChild(grid);
+  // inline draft tile
   if(_pendingNewColl){
-    const ds=document.createElement('div'); ds.className='arc-section';
-    const dt=document.createElement('div'); dt.className='arc-tile';
-    const dph=document.createElement('div'); dph.className='arc-tile-img coll-draft-ph';
-    dt.appendChild(dph);
-    const dn=document.createElement('div'); dn.className='arc-tile-num'; dn.textContent='(--)'; dt.appendChild(dn);
-    const df=document.createElement('div'); df.className='arc-city-footer';
-    const di=document.createElement('input'); di.id='coll-draft-input'; di.className='coll-draft-input';
-    di.placeholder='Name…'; di.maxLength=60; di.autocomplete='off';
-    di.onkeydown=(e)=>{ if(e.key==='Enter'){e.preventDefault();saveNameColl(di.value);} if(e.key==='Escape')closeNameColl(); };
-    di.onblur=()=>saveNameColl(di.value);
-    df.appendChild(di); ds.appendChild(dt); ds.appendChild(df);
-    stripsRow.appendChild(ds);
+    const cell=document.createElement('div'); cell.className='arc-grid-cell';
+    const numEl=document.createElement('div'); numEl.className='arc-cell-num'; numEl.textContent='--'; cell.appendChild(numEl);
+    const content=document.createElement('div'); content.className='arc-cell-content';
+    const imgWrap=document.createElement('div'); imgWrap.className='arc-cell-img-wrap coll-draft-ph'; content.appendChild(imgWrap);
+    const inp=document.createElement('input'); inp.id='coll-draft-input'; inp.className='arc-cell-draft-input';
+    inp.placeholder='Name…'; inp.maxLength=60; inp.autocomplete='off';
+    inp.onkeydown=(e)=>{ if(e.key==='Enter'){e.preventDefault();saveNameColl(inp.value);} if(e.key==='Escape')closeNameColl(); };
+    inp.onblur=()=>saveNameColl(inp.value);
+    content.appendChild(inp); cell.appendChild(content); grid.appendChild(cell);
   }
   sorted.forEach((c,ci)=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
     const coverPhoto=getCollCover(c,collPlaces);
-    const section=document.createElement('div'); section.className='arc-section'; section.onclick=()=>openCollectionView(c.id);
-    const tile=document.createElement('div'); tile.className='arc-tile';
-    if(coverPhoto){
-      const img=document.createElement('img'); img.className='arc-tile-img'; img.src=coverPhoto; img.alt=c.name; img.loading='lazy';
-      tile.appendChild(img);
-    } else {
-      const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
-      tile.appendChild(ph);
-    }
+    const cell=document.createElement('div'); cell.className='arc-grid-cell'; cell.onclick=()=>openCollectionView(c.id);
+    const numEl=document.createElement('div'); numEl.className='arc-cell-num'; numEl.textContent=String(ci+1).padStart(2,'0')+'.'; cell.appendChild(numEl);
+    const content=document.createElement('div'); content.className='arc-cell-content';
+    const imgWrap=document.createElement('div'); imgWrap.className='arc-cell-img-wrap';
+    if(coverPhoto){ const img=document.createElement('img'); img.className='arc-cell-img'; img.src=coverPhoto; img.alt=c.name; img.loading='lazy'; imgWrap.appendChild(img); }
     const collPlacesWithPhotos=collPlaces.filter(p=>p.photo);
-    if(collPlacesWithPhotos.length>0){
-      const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
-      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(collPlacesWithPhotos,(id)=>setCollCover(c,id)); };
-      tile.appendChild(cb);
-    }
-    const num=document.createElement('div'); num.className='arc-tile-num'; num.textContent='('+(String(ci+1).padStart(2,'0'))+'.)';
-    tile.appendChild(num);
-    const footer=document.createElement('div'); footer.className='arc-city-footer';
-    const nameLabel=document.createElement('span'); nameLabel.className='arc-city-label'; nameLabel.textContent=c.name;
-    footer.appendChild(nameLabel);
-    section.appendChild(tile); section.appendChild(footer);
-    stripsRow.appendChild(section);
+    if(collPlacesWithPhotos.length>0){ const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞'; cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(collPlacesWithPhotos,(id)=>setCollCover(c,id)); }; imgWrap.appendChild(cb); }
+    content.appendChild(imgWrap);
+    const titleEl=document.createElement('div'); titleEl.className='arc-cell-title'; titleEl.textContent=c.name; content.appendChild(titleEl);
+    cell.appendChild(content); grid.appendChild(cell);
   });
 }
 
