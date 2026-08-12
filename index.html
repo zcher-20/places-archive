@@ -2517,7 +2517,12 @@ function buildCityViewMap(ps){
   cityViewMap=L.map(container,{zoomControl:false,scrollWheelZoom:true,dragging:true});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityViewMap);
   const markers=geo.map(p=>{
-    const icon=L.divIcon({className:'',html:`<div class="sq-pin-wrap"><img class="sq-pin" src="${p.photo}" onclick="openPlace(places.find(x=>x.id===${p.id}))"></div>`,iconSize:[54,54],iconAnchor:[27,27]});
+    const short=p.name.length>14?p.name.slice(0,13)+'…':p.name;
+    const icon=L.divIcon({
+      className:'',
+      html:`<div class="sq-pin-wrap" onclick="openPlace(places.find(x=>x.id===${p.id}));event.stopPropagation()"><div class="sq-pin${p.visited?'':' want'}" id="sqpin-${p.id}" style="background-image:url('${p.photo||''}')"></div><div class="sq-pin-label">${short}</div></div>`,
+      iconSize:[90,76],iconAnchor:[45,27]
+    });
     return L.marker([p.lat,p.lng],{icon}).addTo(cityViewMap);
   });
   const group=L.featureGroup(markers);
@@ -2603,10 +2608,11 @@ function buildCityPanelMap(ps){
   cityPanelMap=L.map(container,{zoomControl:false,scrollWheelZoom:true,dragging:true,touchZoom:true});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'',maxZoom:19}).addTo(cityPanelMap);
   const markers=geo.map(p=>{
+    const short=p.name.length>14?p.name.slice(0,13)+'…':p.name;
     const icon=L.divIcon({
       className:'',
-      html:`<div class="sq-pin-wrap"><div class="sq-pin${p.visited?'':' want'}" style="background-image:url('${p.photo||''}')"></div><div class="sq-pin-label">${p.name.length>14?p.name.slice(0,13)+'…':p.name}</div></div>`,
-      iconSize:[64,58],iconAnchor:[32,20]
+      html:`<div class="sq-pin-wrap"><div class="sq-pin${p.visited?'':' want'}" style="background-image:url('${p.photo||''}')"></div><div class="sq-pin-label">${short}</div></div>`,
+      iconSize:[90,76],iconAnchor:[45,27]
     });
     return L.marker([p.lat,p.lng],{icon}).addTo(cityPanelMap);
   });
