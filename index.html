@@ -4101,22 +4101,19 @@ function savePlace(){
 // ── BOOT ─────────────────────────────────────────────
 (async ()=>{
   const hasLanding = new URLSearchParams(location.search).has('landing');
-  if(!hasLanding){
-    // only show map skeleton while loading if the saved view is map
-    if(currentView==='map'){
-      document.getElementById('view-map').classList.add('active');
-      document.getElementById('nav-map')?.classList.add('active');
-      initMap();
-    }
-  }
-  try{
-    [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
-  }catch(e){ console.warn('Boot load error:',e); }
   if(hasLanding){
     document.getElementById('landing').classList.remove('hidden');
-  } else {
-    enterApp();
+    return;
   }
+  // show correct view instantly with cached data, no blank screen
+  enterApp();
+  // then fetch fresh data from Supabase and silently re-render
+  try{
+    [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
+    if(currentView==='map'){ syncMapMarkers(); }
+    else if(currentView==='archive'){ renderArchive(); renderCollections(); }
+    else if(currentView==='journal'){ renderJournal(); }
+  }catch(e){ console.warn('Boot load error:',e); }
 })();
 
 // ── KEYBOARD ─────────────────────────────────────────
