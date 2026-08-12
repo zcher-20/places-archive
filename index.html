@@ -2272,7 +2272,7 @@ function renderArchive(){
     return;
   }
   // centered title above strips
-  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; el.appendChild(titleEl);
+  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; titleEl.textContent='Archive'; el.appendChild(titleEl);
   const stripsCol=document.createElement('div'); stripsCol.className='arc-strips-col';
   el.appendChild(stripsCol);
   const cityGroups={};
