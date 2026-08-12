@@ -1324,10 +1324,10 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .je-name { font-size:18px; }
   .je-day { font-size:28px; }
 
-  /* ── ARCHIVE VIEW: archive-scroll is the one scroll container ── */
-  #view-archive.active { display:flex; flex-direction:column; }
-  .mob-archive-head { flex-shrink:0; }
-  .archive-scroll { flex:1; overflow-y:auto; overflow-x:hidden; }
+  /* ── ARCHIVE VIEW: view itself scrolls like a normal page on mobile ── */
+  #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; padding-top:0; }
+  .mob-archive-head { position:sticky; top:0; z-index:10; background:#fff; }
+  .archive-scroll { overflow:visible; display:block; height:auto; }
   /* colls-section is rendered inside archive-list on mobile; hide the desktop placeholder */
   .archive-colls-section { display:none; }
 
