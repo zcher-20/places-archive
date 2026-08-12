@@ -2145,7 +2145,7 @@ function enterApp(){
   document.querySelectorAll('.ptn-link').forEach(x=>x.classList.remove('active'));
   document.getElementById('ptn-'+currentView)?.classList.add('active');
   document.getElementById('landing').classList.add('hidden');
-  document.getElementById('archive-count')?.textContent = places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
+  (function(el,v){if(el)el.textContent=v;})(document.getElementById('archive-count'),places.length); const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   // redirect stale views to archive
   if(currentView==='collections'||currentView==='city') currentView='archive';
   showView(currentView);
@@ -2159,7 +2159,7 @@ function buildSidebar(){
     div.innerHTML=`<div class="sb-coll-dot"></div><span class="sb-coll-name">${c.name}</span><span class="sb-coll-count">${c.places.length}</span>`;
     el.appendChild(div);
   });
-  document.getElementById('archive-count')?.textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
+  (function(el,v){if(el)el.textContent=v;})(document.getElementById('archive-count'),places.length); const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
 }
 
 // ── ROUTING ──────────────────────────────────────────
@@ -2438,7 +2438,7 @@ function deleteCityViewPlace(id){
   if(selectedPlace?.id===id) closePanel();
   if(mapMarkers[id]){ leafletMap?.removeLayer(mapMarkers[id]); delete mapMarkers[id]; }
   deleteFromDB(id);
-  document.getElementById('archive-count')?.textContent=places.length;
+  (function(el,v){if(el)el.textContent=v;})(document.getElementById('archive-count'),places.length);
   if(activeCityView) openCityView(activeCityView);
 }
 
@@ -2661,7 +2661,7 @@ function ctxDelete(){
   if(selectedPlace?.id===id) closePanel();
   if(mapMarkers[id]){ leafletMap?.removeLayer(mapMarkers[id]); delete mapMarkers[id]; }
   if(mapCardPlaceId===id) closeMapCard();
-  deleteFromDB(id); document.getElementById('archive-count')?.textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
+  deleteFromDB(id); (function(el,v){if(el)el.textContent=v;})(document.getElementById('archive-count'),places.length); const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   renderArchive(); closeCtxMenu();
 }
 
@@ -3858,7 +3858,7 @@ async function importAllBulk(){
     if(p.lat||p.lng) addMarkerToMap(p);
   }
   const n=bulkItems.length;
-  document.getElementById('archive-count')?.textContent=places.length;
+  (function(el,v){if(el)el.textContent=v;})(document.getElementById('archive-count'),places.length);
   const mc=document.getElementById('mah-count'); if(mc) mc.textContent=places.length;
   renderArchive();
   closeBulkImport();
@@ -4023,7 +4023,7 @@ function savePlace(){
     dateAdded:new Date().toISOString().split('T')[0],
     visited:!!document.getElementById('f-date').value, favorite:false
   };
-  places.unshift(p); upsertPlace(p); closeModal(); document.getElementById('archive-count')?.textContent=places.length; const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
+  places.unshift(p); upsertPlace(p); closeModal(); (function(el,v){if(el)el.textContent=v;})(document.getElementById('archive-count'),places.length); const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   if(p.lat||p.lng) syncMapMarkers();
   if(currentView==='map'){
     setTimeout(()=>{ leafletMap?.invalidateSize(); leafletMap?.flyTo([p.lat,p.lng],15,{duration:1.2}); showMapCard(p); }, 80);
