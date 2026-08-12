@@ -2232,11 +2232,11 @@ let activeCityPanel = null;
 let cityPanelMap = null;
 
 
-function getCityCover(city,ps){ return localStorage.getItem('arc-city-cover-'+city)||ps.find(p=>p.photo)?.photo||''; }
-function setCityCover(city,photo){ localStorage.setItem('arc-city-cover-'+city,photo); renderArchive(); }
-function getCollCover(c,collPlaces){ return c.coverPhoto||collPlaces.find(p=>p.photo)?.photo||''; }
-function setCollCover(c,photo){ c.coverPhoto=photo; upsertCollection(c); renderCollections(); }
-function openCoverPicker(photos,onPick){
+function getCityCover(city,ps){ const id=localStorage.getItem('arc-city-cover-id-'+city); const p=id&&ps.find(x=>String(x.id)===id); return (p&&p.photo)||ps.find(x=>x.photo)?.photo||''; }
+function setCityCover(city,placeId){ localStorage.setItem('arc-city-cover-id-'+city,String(placeId)); renderArchive(); }
+function getCollCover(c,collPlaces){ const id=localStorage.getItem('arc-coll-cover-id-'+c.id); const p=id&&collPlaces.find(x=>String(x.id)===id); return (p&&p.photo)||collPlaces.find(x=>x.photo)?.photo||''; }
+function setCollCover(c,placeId){ localStorage.setItem('arc-coll-cover-id-'+c.id,String(placeId)); renderCollections(); }
+function openCoverPicker(placesWithPhotos,onPick){
   let ov=document.getElementById('cover-picker-ov');
   if(!ov){ ov=document.createElement('div'); ov.id='cover-picker-ov'; document.body.appendChild(ov); }
   ov.innerHTML='';
@@ -2244,9 +2244,9 @@ function openCoverPicker(photos,onPick){
   const box=document.createElement('div'); box.className='cover-picker-box';
   const title=document.createElement('div'); title.className='cover-picker-title'; title.textContent='Choose cover photo';
   const grid=document.createElement('div'); grid.className='cover-picker-grid';
-  photos.forEach(src=>{
-    const img=document.createElement('img'); img.src=src; img.className='cover-picker-img';
-    img.onclick=(e)=>{ e.stopPropagation(); const o=document.getElementById('cover-picker-ov'); if(o)o.remove(); onPick(src); };
+  placesWithPhotos.forEach(p=>{
+    const img=document.createElement('img'); img.src=p.photo; img.className='cover-picker-img';
+    img.onclick=(e)=>{ e.stopPropagation(); const o=document.getElementById('cover-picker-ov'); if(o)o.remove(); onPick(p.id); };
     grid.appendChild(img);
   });
   box.appendChild(title); box.appendChild(grid); ov.appendChild(box);
@@ -2331,10 +2331,10 @@ function renderArchive(){
       const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
       tile.appendChild(ph);
     }
-    const photos=ps.map(p=>p.photo).filter(Boolean);
-    if(photos.length>0){
+    const placesWithPhotos=ps.filter(p=>p.photo);
+    if(placesWithPhotos.length>0){
       const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
-      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(photos,(src)=>setCityCover(city,src)); };
+      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(placesWithPhotos,(id)=>setCityCover(city,id)); };
       tile.appendChild(cb);
     }
     const num=document.createElement('div'); num.className='arc-tile-num';
@@ -3325,10 +3325,10 @@ function renderCollections(){
       const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
       tile.appendChild(ph);
     }
-    const collPhotos=collPlaces.map(p=>p.photo).filter(Boolean);
-    if(collPhotos.length>0){
+    const collPlacesWithPhotos=collPlaces.filter(p=>p.photo);
+    if(collPlacesWithPhotos.length>0){
       const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
-      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(collPhotos,(src)=>setCollCover(c,src)); };
+      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(collPlacesWithPhotos,(id)=>setCollCover(c,id)); };
       tile.appendChild(cb);
     }
     const num=document.createElement('div'); num.className='arc-tile-num'; num.textContent='('+(String(ci+1).padStart(2,'0'))+'.)';
