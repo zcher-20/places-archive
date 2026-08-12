@@ -1365,7 +1365,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-strips-col .arc-section { width:fit-content; }
 
 .coll-content-wrap { width:fit-content; margin:0 auto; padding-top:80px; }
-.coll-title-row { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; margin-top:16px; }
+.coll-title-row { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; margin-bottom:48px; }
 .coll-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; }
 </style>
 </head>
@@ -3253,10 +3253,10 @@ function renderCollections(){
   const sorted=[...collections].sort((a,b)=>b.id-a.id);
   // centered wrapper with right-aligned title
   const collWrap=document.createElement('div'); collWrap.className='coll-content-wrap'; el.appendChild(collWrap);
-  const stripsRow=document.createElement('div'); stripsRow.className='arc-strips-col'; collWrap.appendChild(stripsRow);
   const collHeader=document.createElement('div'); collHeader.className='coll-title-row'; collWrap.appendChild(collHeader);
   const collTitleEl=document.createElement('h2'); collTitleEl.className='coll-title-text'; collTitleEl.textContent='Collections'; collHeader.appendChild(collTitleEl);
   const collAddBtn=document.createElement('button'); collAddBtn.className='btn-new-coll'; collAddBtn.title='New collection'; collAddBtn.textContent='+'; collAddBtn.onclick=(e)=>{e.stopPropagation();newCollection();}; collHeader.appendChild(collAddBtn);
+  const stripsRow=document.createElement('div'); stripsRow.className='arc-strips-col'; collWrap.appendChild(stripsRow);
   let collGlobalIdx=0;
   sorted.forEach((c,ci)=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
