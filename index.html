@@ -1324,11 +1324,12 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .je-name { font-size:18px; }
   .je-day { font-size:28px; }
 
-  /* ── ARCHIVE VIEW: full scroll so cities + collections are both reachable ── */
-  #view-archive.active { overflow-y:auto; display:flex; flex-direction:column; }
-  .mob-archive-head { position:sticky; top:0; z-index:10; background:#fff; flex-shrink:0; }
-  .archive-scroll { flex:none; overflow:visible; }
-  .archive-colls-section { flex-shrink:0; }
+  /* ── ARCHIVE VIEW: archive-scroll is the one scroll container ── */
+  #view-archive.active { display:flex; flex-direction:column; }
+  .mob-archive-head { flex-shrink:0; }
+  .archive-scroll { flex:1; overflow-y:auto; overflow-x:hidden; }
+  /* colls-section is rendered inside archive-list on mobile; hide the desktop placeholder */
+  .archive-colls-section { display:none; }
 
   /* ── ARCHIVE + COLLECTIONS PHOTO GRID (mobile) ── */
   .arc-page-wrap { padding:16px 16px 0; max-width:100%; }
@@ -2380,8 +2381,10 @@ function renderArchive(){
       cell.appendChild(content); grid.appendChild(cell);
     });
   }
-  // middle bar always shown — separates archive from collections and holds action buttons
+  // middle bar (desktop only — hidden via CSS on mobile)
   arcWrap.appendChild(_buildMidBar());
+  // on mobile, collections render inside archive-list so everything scrolls together
+  if(window.innerWidth<=768) renderCollections();
 }
 function _buildMidBar(){
   const cityCount=Object.keys((()=>{ const g={}; filteredPlaces().forEach(p=>(g[p.city]=g[p.city]||[]).push(p)); return g; })()).length;
@@ -3343,13 +3346,19 @@ function renderJournal(){
 
 // ── COLLECTIONS (by city) ─────────────────────────────
 function renderCollections(){
-  const el=document.getElementById('colls-list'); if(!el)return;
-  el.innerHTML='';
+  const isMob=window.innerWidth<=768;
+  // on mobile, append collections inside archive-list so archive-scroll contains everything
+  const el=document.getElementById(isMob?'archive-list':'colls-list'); if(!el)return;
+  // remove any previous mobile collections block
+  document.getElementById('mob-colls-block')?.remove();
+  if(!isMob){ el.innerHTML=''; }
   const sorted=[...collections].sort((a,b)=>b.id-a.id);
   if(!sorted.length && !_pendingNewColl){ return; }
-  const wrap=document.createElement('div'); wrap.className='arc-page-wrap arc-coll-wrap'; el.appendChild(wrap);
+  const wrap=document.createElement('div'); wrap.className='arc-page-wrap arc-coll-wrap';
+  if(isMob) wrap.id='mob-colls-block';
+  el.appendChild(wrap);
   // mobile: show "Collections" label + add button above grid
-  if(window.innerWidth<=768){
+  if(isMob){
     const mhdr=document.createElement('div'); mhdr.className='arc-mob-coll-hdr';
     const mlbl=document.createElement('span'); mlbl.className='arc-mob-coll-title'; mlbl.textContent='Collections';
     const madd=document.createElement('button'); madd.className='arc-mob-coll-add'; madd.textContent='+ Collection'; madd.onclick=(e)=>{e.stopPropagation();newCollection();};
