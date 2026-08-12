@@ -1358,10 +1358,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-hero-add:hover { color:#111; }
 
 
-.arc-two-col { display:flex; flex-direction:row; align-items:flex-start; padding-top:200px; }
-.arc-title-col { width:160px; flex-shrink:0; position:sticky; top:calc(54px + 20px); align-self:flex-start; }
-.arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; }
-.arc-strips-col { flex:1; min-width:0; display:flex; flex-direction:row; align-items:flex-start; gap:24px; overflow-x:auto; scrollbar-width:none; }
+.arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0 0 48px; display:block; text-align:center; padding-top:160px; }
+.arc-strips-col { display:flex; flex-direction:row; justify-content:center; align-items:flex-start; gap:24px; overflow-x:auto; scrollbar-width:none; }
 .arc-strips-col::-webkit-scrollbar { display:none; }
 .arc-strips-col .arc-section { width:fit-content; }
 
@@ -2273,13 +2271,10 @@ function renderArchive(){
     el.innerHTML='<div class="colls-empty"><div class="colls-empty-title">Nothing here yet</div><div class="colls-empty-sub">Save your first place or try a different filter.</div></div>';
     return;
   }
-  // two-col layout: title left, strips right
-  const wrapper=document.createElement('div'); wrapper.className='arc-two-col';
-  const titleCol=document.createElement('div'); titleCol.className='arc-title-col';
-  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; titleEl.textContent='Archive';
-  titleCol.appendChild(titleEl); wrapper.appendChild(titleCol);
+  // centered title above strips
+  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; el.appendChild(titleEl);
   const stripsCol=document.createElement('div'); stripsCol.className='arc-strips-col';
-  wrapper.appendChild(stripsCol); el.appendChild(wrapper);
+  el.appendChild(stripsCol);
   const cityGroups={};
   list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
   const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
