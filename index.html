@@ -2313,7 +2313,10 @@ function renderArchive(){
   arcWrap.appendChild(stripsCol);
   const cityGroups={};
   list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
-  const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
+  const sortedCities=Object.keys(cityGroups).sort((a,b)=>{
+    const latest=g=>Math.max(...g.map(p=>new Date(p.dateAdded||0).getTime()));
+    return latest(cityGroups[b])-latest(cityGroups[a]);
+  });
   sortedCities.forEach((city,ci)=>{
     const ps=cityGroups[city];
     const cover=getCityCover(city,ps);
@@ -4099,12 +4102,16 @@ function savePlace(){
 (async ()=>{
   const hasLanding = new URLSearchParams(location.search).has('landing');
   if(!hasLanding){
-    // show map skeleton while data loads without touching localStorage or currentView
-    document.getElementById('view-map').classList.add('active');
-    document.getElementById('nav-map')?.classList.add('active');
-    initMap();
+    // only show map skeleton while loading if the saved view is map
+    if(currentView==='map'){
+      document.getElementById('view-map').classList.add('active');
+      document.getElementById('nav-map')?.classList.add('active');
+      initMap();
+    }
   }
-  [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
+  try{
+    [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
+  }catch(e){ console.warn('Boot load error:',e); }
   if(hasLanding){
     document.getElementById('landing').classList.remove('hidden');
   } else {
