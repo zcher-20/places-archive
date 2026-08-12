@@ -1350,19 +1350,19 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
   /* ── CITY DETAIL VIEW (mobile) ── */
   #view-city.active { display:flex; flex-direction:column; overflow:hidden; padding-top:0; }
+  #view-city { position:static; }
   .cityv-mob-back {
     display:none; align-items:center; gap:6px;
-    position:absolute; top:calc(env(safe-area-inset-top)+12px); left:16px; z-index:10;
-    background:rgba(255,255,255,.88); backdrop-filter:blur(8px);
-    border:1px solid rgba(0,0,0,.1); border-radius:20px;
-    padding:6px 14px; font-family:var(--sans); font-size:13px;
-    color:#555; cursor:pointer;
+    position:sticky; top:0; z-index:10; flex-shrink:0;
+    width:100%; box-sizing:border-box;
+    padding:calc(env(safe-area-inset-top)+10px) 16px 10px;
+    background:#fff; border-bottom:1px solid rgba(0,0,0,.06);
+    font-family:var(--sans); font-size:13px; color:#aaa; cursor:pointer; border:none;
   }
-  #view-city { position:relative; }
-  .cityv-header { padding:calc(env(safe-area-inset-top)+20px) 20px 0; }
+  .cityv-header { padding:16px 20px 0; }
   .cityv-name { font-size:48px; }
-  .cityv-body { flex-direction:column; margin-top:24px; }
-  .cityv-list { width:100%; border-right:none; max-height:45vh; overflow-y:auto; }
+  .cityv-body { flex-direction:column; margin-top:16px; }
+  .cityv-list { width:100%; border-right:none; max-height:42vh; overflow-y:auto; }
   #cityv-map { flex:none; height:40vh; }
 }
 
