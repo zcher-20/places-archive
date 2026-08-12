@@ -2246,7 +2246,7 @@ function openCoverPicker(photos,onPick){
   const grid=document.createElement('div'); grid.className='cover-picker-grid';
   photos.forEach(src=>{
     const img=document.createElement('img'); img.src=src; img.className='cover-picker-img';
-    img.onclick=()=>{ onPick(src); ov.remove(); };
+    img.onclick=(e)=>{ e.stopPropagation(); const o=document.getElementById('cover-picker-ov'); if(o)o.remove(); onPick(src); };
     grid.appendChild(img);
   });
   box.appendChild(title); box.appendChild(grid); ov.appendChild(box);
@@ -2332,7 +2332,7 @@ function renderArchive(){
       tile.appendChild(ph);
     }
     const photos=ps.map(p=>p.photo).filter(Boolean);
-    if(photos.length>1){
+    if(photos.length>0){
       const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
       cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(photos,(src)=>setCityCover(city,src)); };
       tile.appendChild(cb);
@@ -3326,7 +3326,7 @@ function renderCollections(){
       tile.appendChild(ph);
     }
     const collPhotos=collPlaces.map(p=>p.photo).filter(Boolean);
-    if(collPhotos.length>1){
+    if(collPhotos.length>0){
       const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
       cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(collPhotos,(src)=>setCollCover(c,src)); };
       tile.appendChild(cb);
