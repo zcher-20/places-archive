@@ -1372,6 +1372,17 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .coll-draft-ph { background:var(--stone,#f0ede8); }
 .coll-draft-input { background:none; border:none; border-bottom:1px solid rgba(0,0,0,.25); font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:11.5px; color:#111; outline:none; width:100%; text-align:right; padding:2px 0; cursor:text; }
 .coll-draft-input::placeholder { color:rgba(0,0,0,.3); }
+
+.arc-tile { position:relative; }
+.cover-change-btn { position:absolute; top:6px; right:6px; background:rgba(255,255,255,.85); border:none; border-radius:4px; font-size:13px; line-height:1; padding:3px 5px; cursor:pointer; opacity:0; transition:opacity .15s; color:#333; }
+.arc-section:hover .cover-change-btn { opacity:1; }
+#cover-picker-ov { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:2000; display:none; align-items:center; justify-content:center; }
+#cover-picker-ov.open { display:flex; }
+.cover-picker-box { background:#fff; border-radius:14px; padding:24px; max-width:480px; width:90vw; }
+.cover-picker-title { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:15px; font-weight:500; color:#111; margin-bottom:16px; }
+.cover-picker-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; max-height:360px; overflow-y:auto; }
+.cover-picker-img { width:100%; aspect-ratio:3/2; object-fit:cover; border-radius:8px; cursor:pointer; transition:opacity .15s; }
+.cover-picker-img:hover { opacity:.8; }
 </style>
 </head>
 <body>
@@ -2220,6 +2231,27 @@ let archiveHeaderPhoto = localStorage.getItem('archive-header-photo') || null;
 let activeCityPanel = null;
 let cityPanelMap = null;
 
+
+function getCityCover(city,ps){ return localStorage.getItem('arc-city-cover-'+city)||ps.find(p=>p.photo)?.photo||''; }
+function setCityCover(city,photo){ localStorage.setItem('arc-city-cover-'+city,photo); renderArchive(); }
+function getCollCover(c,collPlaces){ return c.coverPhoto||collPlaces.find(p=>p.photo)?.photo||''; }
+function setCollCover(c,photo){ c.coverPhoto=photo; upsertCollection(c); renderCollections(); }
+function openCoverPicker(photos,onPick){
+  let ov=document.getElementById('cover-picker-ov');
+  if(!ov){ ov=document.createElement('div'); ov.id='cover-picker-ov'; document.body.appendChild(ov); }
+  ov.innerHTML='';
+  ov.onclick=(e)=>{ if(e.target===ov) ov.remove(); };
+  const box=document.createElement('div'); box.className='cover-picker-box';
+  const title=document.createElement('div'); title.className='cover-picker-title'; title.textContent='Choose cover photo';
+  const grid=document.createElement('div'); grid.className='cover-picker-grid';
+  photos.forEach(src=>{
+    const img=document.createElement('img'); img.src=src; img.className='cover-picker-img';
+    img.onclick=()=>{ onPick(src); ov.remove(); };
+    grid.appendChild(img);
+  });
+  box.appendChild(title); box.appendChild(grid); ov.appendChild(box);
+  ov.classList.add('open');
+}
 function renderArchive(){
   const list=filteredPlaces();
   const el=document.getElementById('archive-list');
@@ -2284,7 +2316,7 @@ function renderArchive(){
   const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
   sortedCities.forEach((city,ci)=>{
     const ps=cityGroups[city];
-    const cover=ps.find(p=>p.photo)?.photo||'';
+    const cover=getCityCover(city,ps);
     const section=document.createElement('div');
     section.className='arc-section';
     section.onclick=()=>openCityView(city);
@@ -2295,6 +2327,12 @@ function renderArchive(){
     } else {
       const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
       tile.appendChild(ph);
+    }
+    const photos=ps.map(p=>p.photo).filter(Boolean);
+    if(photos.length>1){
+      const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
+      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(photos,(src)=>setCityCover(city,src)); };
+      tile.appendChild(cb);
     }
     const num=document.createElement('div'); num.className='arc-tile-num';
     num.textContent='('+String(ci+1).padStart(2,'0')+'.)';
@@ -3274,7 +3312,7 @@ function renderCollections(){
   }
   sorted.forEach((c,ci)=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
-    const coverPhoto=collPlaces.find(p=>p.photo)?.photo||'';
+    const coverPhoto=getCollCover(c,collPlaces);
     const section=document.createElement('div'); section.className='arc-section'; section.onclick=()=>openCollectionView(c.id);
     const tile=document.createElement('div'); tile.className='arc-tile';
     if(coverPhoto){
@@ -3283,6 +3321,12 @@ function renderCollections(){
     } else {
       const ph=document.createElement('div'); ph.className='arc-tile-img'; ph.style.cssText='background:var(--stone);';
       tile.appendChild(ph);
+    }
+    const collPhotos=collPlaces.map(p=>p.photo).filter(Boolean);
+    if(collPhotos.length>1){
+      const cb=document.createElement('button'); cb.className='cover-change-btn'; cb.title='Change cover'; cb.innerHTML='⊞';
+      cb.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(collPhotos,(src)=>setCollCover(c,src)); };
+      tile.appendChild(cb);
     }
     const num=document.createElement('div'); num.className='arc-tile-num'; num.textContent='('+(String(ci+1).padStart(2,'0'))+'.)';
     tile.appendChild(num);
@@ -3566,6 +3610,7 @@ function savePlacePicker(){
   const savedCollId=pickerCollId;
   closePlacePicker();
   renderCollections();
+  if(activeCollectionView===savedCollId){ openCollectionView(activeCollectionView); return; }
   if(activeCollId===savedCollId){
     const collPlaces=c.placeIds.map(pid=>places.find(p=>p.id===pid||String(p.id)===String(pid))).filter(Boolean);
     if(window.innerWidth>768){
