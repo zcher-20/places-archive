@@ -1358,8 +1358,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-hero-add:hover { color:#111; }
 
 
-.arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0 0 48px; display:block; text-align:center; padding-top:160px; }
-.arc-strips-col { display:flex; flex-direction:row; justify-content:center; align-items:flex-start; gap:24px; overflow-x:auto; scrollbar-width:none; }
+.arc-content-wrap { width:fit-content; margin:0 auto; padding-top:160px; }
+.arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0 0 48px; display:block; text-align:left; }
+.arc-strips-col { display:flex; flex-direction:row; align-items:flex-start; gap:24px; overflow-x:auto; scrollbar-width:none; }
 .arc-strips-col::-webkit-scrollbar { display:none; }
 .arc-strips-col .arc-section { width:fit-content; }
 
@@ -2272,9 +2273,10 @@ function renderArchive(){
     return;
   }
   // centered title above strips
-  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; titleEl.textContent='Archive'; el.appendChild(titleEl);
+  const arcWrap=document.createElement('div'); arcWrap.className='arc-content-wrap'; el.appendChild(arcWrap);
+  const titleEl=document.createElement('h1'); titleEl.className='arc-title-text'; titleEl.textContent='Archive'; arcWrap.appendChild(titleEl);
   const stripsCol=document.createElement('div'); stripsCol.className='arc-strips-col';
-  el.appendChild(stripsCol);
+  arcWrap.appendChild(stripsCol);
   const cityGroups={};
   list.forEach(p=>{ (cityGroups[p.city]=cityGroups[p.city]||[]).push(p); });
   const sortedCities=Object.keys(cityGroups).sort((a,b)=>a.localeCompare(b));
