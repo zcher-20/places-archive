@@ -631,14 +631,15 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 /* ── CITY DETAIL VIEW ─────────────────────────────── */
 #view-city { overflow:hidden; background:var(--bg); }
 #view-city.active { display:flex; flex-direction:column; }
-.cityv-header { display:flex; flex-direction:column; gap:4px; padding:28px 48px 20px; flex-shrink:0; }
+.cityv-header { display:flex; flex-direction:column; gap:8px; padding:48px 48px 0; flex-shrink:0; }
 .cityv-back { display:flex; align-items:center; gap:7px; background:none; border:none; font-family:var(--sans); font-size:13px; color:var(--text-3); cursor:pointer; padding:0; transition:color .15s; align-self:flex-start; }
 .cityv-back:hover { color:var(--charcoal); }
 .cityv-title-row { display:flex; align-items:flex-end; gap:16px; }
-.cityv-name { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:32px; font-weight:300; color:#111; letter-spacing:-.02em; margin:0; }
-.cityv-add-btn { padding-bottom:2px; }
-.cityv-body { display:flex; flex:1; overflow:hidden; min-height:0; }
-.cityv-list { width:340px; flex-shrink:0; overflow-y:auto; border-right:1px solid rgba(0,0,0,.06); padding:8px 0; }
+.cityv-name { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:52px; font-weight:300; color:#111; letter-spacing:-.03em; margin:0; }
+.cityv-add-btn { padding-bottom:4px; }
+.cityv-body { display:flex; flex:1; overflow:hidden; min-height:0; margin-top:60px; }
+.cityv-list { width:360px; flex-shrink:0; overflow-y:auto; border-right:1px solid rgba(0,0,0,.06); padding:0 0 24px; }
+.cityv-list-inner { padding-top:32px; }
 .cityv-map-wrap { flex:1; position:relative; }
 #cityv-map { width:100%; height:100%; }
 
@@ -737,7 +738,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .pp-close { width:28px; height:28px; border:none; background:transparent; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--text-3); }
 .pp-close:hover { background:var(--stone); }
 .pp-list { overflow-y:auto; flex:1; padding:8px 0; }
-.pp-item { display:flex; align-items:center; gap:12px; padding:9px 16px 9px 22px; cursor:pointer; }
+.pp-item { display:flex; align-items:center; gap:12px; padding:9px 16px 9px 48px; cursor:pointer; }
 .pp-item:hover { background:rgba(0,0,0,.03); }
 .pp-item:hover .pp-actions { opacity:1; }
 .pp-actions { display:flex; gap:4px; margin-left:auto; flex-shrink:0; opacity:0; transition:opacity .15s; }
