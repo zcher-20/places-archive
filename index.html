@@ -1324,6 +1324,12 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .je-name { font-size:18px; }
   .je-day { font-size:28px; }
 
+  /* ── ARCHIVE VIEW: full scroll so cities + collections are both reachable ── */
+  #view-archive.active { overflow-y:auto; display:flex; flex-direction:column; }
+  .mob-archive-head { position:sticky; top:0; z-index:10; background:#fff; flex-shrink:0; }
+  .archive-scroll { flex:none; overflow:visible; }
+  .archive-colls-section { flex-shrink:0; }
+
   /* ── ARCHIVE + COLLECTIONS PHOTO GRID (mobile) ── */
   .arc-page-wrap { padding:16px 16px 0; max-width:100%; }
   .arc-coll-wrap { padding-bottom:calc(80px + env(safe-area-inset-bottom)); }
