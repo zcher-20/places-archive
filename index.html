@@ -631,8 +631,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 /* ── CITY DETAIL VIEW ─────────────────────────────── */
 #view-city { overflow:hidden; background:var(--bg); }
 #view-city.active { display:flex; flex-direction:column; }
-.cityv-header { display:flex; flex-direction:column; gap:8px; padding:48px 48px 0; flex-shrink:0; }
-.cityv-back { display:flex; align-items:center; gap:7px; background:none; border:none; font-family:var(--sans); font-size:13px; color:var(--text-3); cursor:pointer; padding:0; transition:color .15s; align-self:flex-start; }
+.cityv-header { display:flex; flex-direction:column; gap:8px; padding:calc(54px + 32px) 48px 0; flex-shrink:0; }
+.cityv-back { display:none; }
 .cityv-back:hover { color:var(--charcoal); }
 .cityv-title-row { display:flex; align-items:flex-end; gap:16px; }
 .cityv-name { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:32px; font-weight:300; color:#111; letter-spacing:-.02em; margin:0; }
@@ -2138,7 +2138,7 @@ function cityPhoto(city){
 function enterApp(){
   // apply correct nav on initial load
   const isDesktop=window.innerWidth>768;
-  const useTopNav=isDesktop && (currentView==='archive'||currentView==='journal');
+  const useTopNav=isDesktop && (currentView==='archive'||currentView==='journal'||currentView==='city');
   document.getElementById('topbar').style.display=useTopNav?'none':'';
   const topnav=document.getElementById('page-topnav');
   topnav.classList.toggle('visible',useTopNav);
@@ -2171,9 +2171,9 @@ function showView(v){
   document.querySelectorAll('.tm-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.getElementById('nav-'+v)?.classList.add('active');
-  // toggle nav style: top bar on archive/journal, pill on map
+  // toggle nav style: top bar on archive/journal/city, pill on map
   const isDesktop=window.innerWidth>768;
-  const useTopNav=isDesktop && (v==='archive'||v==='journal');
+  const useTopNav=isDesktop && (v==='archive'||v==='journal'||v==='city');
   document.getElementById('topbar').style.display=useTopNav?'none':'';
   const topnav=document.getElementById('page-topnav');
   topnav.classList.toggle('visible',useTopNav);
