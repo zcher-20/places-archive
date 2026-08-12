@@ -1332,7 +1332,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 
   /* ── ARCHIVE + COLLECTIONS PHOTO GRID (mobile) ── */
   .arc-page-wrap { padding:16px 16px 0; max-width:100%; }
-  .arc-coll-wrap { padding-bottom:calc(80px + env(safe-area-inset-bottom)); }
+  .arc-coll-wrap { padding-top:0; padding-bottom:calc(80px + env(safe-area-inset-bottom)); }
   .arc-new-grid { grid-template-columns:repeat(2,1fr); column-gap:16px; row-gap:28px; }
   .arc-grid-cell { flex-direction:column; align-items:flex-start; gap:0; }
   .arc-cell-num { margin-bottom:6px; align-self:flex-start; }
@@ -1418,6 +1418,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-cell-img { width:100%; height:100%; object-fit:cover; display:block; }
 .arc-cell-title { font-family:"BastligaOne",cursive; font-size:22px; color:#111; text-align:center; margin-top:20px; line-height:1.1; }
 .arc-cell-img-wrap .cover-change-btn { top:5px; right:5px; }
+/* collections wrap: mid-bar margin already creates the top gap */
+.arc-coll-wrap { padding-top:0; }
 /* middle bar — matches arena-vis filter tabs */
 .arc-mid-bar { display:flex; align-items:center; justify-content:center; gap:32px; margin:80px auto; max-width:64rem; padding:0 48px; }
 .arc-mid-label-active { font-size:11px; color:#111; text-decoration:underline; text-underline-offset:3px; }
