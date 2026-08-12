@@ -992,8 +992,8 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .btn-cancel:hover { background:var(--stone); }
 
 /* photo change modal (reusable) */
-/* name collection modal */
-#name-coll-backdrop { position:fixed; inset:0; z-index:2200; background:rgba(0,0,0,.4); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:all .18s ease; }
+/* name collection modal — replaced by inline draft tile */
+#name-coll-backdrop { display:none !important; } #name-coll-backdrop-DISABLED { position:fixed; inset:0; z-index:2200; background:rgba(0,0,0,.4); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:all .18s ease; }
 #name-coll-backdrop.open { opacity:1; visibility:visible; }
 #name-coll-modal { background:#fff; border-radius:14px; padding:28px 28px 22px; width:360px; max-width:92vw; box-shadow:0 24px 64px rgba(0,0,0,.18); }
 #name-coll-modal h3 { font-size:17px; font-weight:600; color:var(--charcoal); margin-bottom:16px; }
@@ -1367,6 +1367,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .coll-content-wrap { width:fit-content; margin:0 auto; padding-top:40px; }
 .coll-title-row { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; margin-bottom:48px; }
 .coll-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; }
+.coll-draft-ph { background:var(--stone,#f0ede8); }
+.coll-draft-input { background:none; border:none; border-bottom:1px solid rgba(0,0,0,.25); font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:11.5px; color:#111; outline:none; width:100%; text-align:right; padding:2px 0; cursor:text; }
+.coll-draft-input::placeholder { color:rgba(0,0,0,.3); }
 </style>
 </head>
 <body>
@@ -3266,6 +3269,21 @@ function renderCollections(){
   const collAddBtn=document.createElement('button'); collAddBtn.className='btn-new-coll'; collAddBtn.title='New collection'; collAddBtn.textContent='+'; collAddBtn.onclick=(e)=>{e.stopPropagation();newCollection();}; collHeader.appendChild(collAddBtn);
   // one tile per collection in a single horizontal row
   const stripsRow=document.createElement('div'); stripsRow.className='arc-strips-col'; collWrap.appendChild(stripsRow);
+  // inline draft tile when + is clicked
+  if(_pendingNewColl){
+    const ds=document.createElement('div'); ds.className='arc-section';
+    const dt=document.createElement('div'); dt.className='arc-tile';
+    const dph=document.createElement('div'); dph.className='arc-tile-img coll-draft-ph';
+    dt.appendChild(dph);
+    const dn=document.createElement('div'); dn.className='arc-tile-num'; dn.textContent='(--)'; dt.appendChild(dn);
+    const df=document.createElement('div'); df.className='arc-city-footer';
+    const di=document.createElement('input'); di.id='coll-draft-input'; di.className='coll-draft-input';
+    di.placeholder='Name…'; di.maxLength=60; di.autocomplete='off';
+    di.onkeydown=(e)=>{ if(e.key==='Enter'){e.preventDefault();saveNameColl(di.value);} if(e.key==='Escape')closeNameColl(); };
+    di.onblur=()=>saveNameColl(di.value);
+    df.appendChild(di); ds.appendChild(dt); ds.appendChild(df);
+    stripsRow.appendChild(ds);
+  }
   sorted.forEach((c,ci)=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
     const coverPhoto=collPlaces.find(p=>p.photo)?.photo||'';
@@ -3467,22 +3485,19 @@ function initCollPanelSwipe(){
   },{passive:true});
 }
 function toggleCollection(id){ activeCollection=activeCollection===id?null:id; renderCollections(); }
+let _pendingNewColl=false;
+let _draftSaved=false;
 function newCollection(){
-  document.getElementById('name-coll-input').value='';
-  document.getElementById('name-coll-backdrop').classList.add('open');
-  setTimeout(()=>document.getElementById('name-coll-input').focus(),80);
+  _pendingNewColl=true; _draftSaved=false;
+  renderCollections();
+  setTimeout(()=>document.getElementById('coll-draft-input')?.focus(),40);
 }
-function closeNameColl(){
-  document.getElementById('name-coll-backdrop').classList.remove('open');
-}
-function saveNameColl(){
-  const name=document.getElementById('name-coll-input').value.trim();
-  if(!name)return;
+function closeNameColl(){ _pendingNewColl=false; renderCollections(); }
+function saveNameColl(name){
+  name=(name||'').trim(); if(!name){ closeNameColl(); return; }
+  if(_draftSaved)return; _draftSaved=true; _pendingNewColl=false;
   const c={id:Date.now(),name,placeIds:[],_new:true};
-  collections.push(c);
-  upsertCollection(c);
-  activeCollection=c.id;
-  closeNameColl();
+  collections.push(c); upsertCollection(c);
   renderCollections();
 }
 function confirmDeleteCollection(id){
