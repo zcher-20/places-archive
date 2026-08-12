@@ -302,7 +302,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   #archive-afb { display:none !important; }
   .desktop-archive-title { display:block !important; padding:0; }
   #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; padding-top:54px; }
-  .archive-scroll { padding:0 48px 40px; overflow:visible; }
+  .archive-scroll { padding:0 48px 40px; overflow:visible; display:flex; flex-direction:column; align-items:center; }
   #city-inline { display:none !important; }
   #archive-list { overflow:visible; }
   .desktop-archive-title { display:block !important; padding:0; }
@@ -1357,7 +1357,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
 .arc-hero-add:hover { color:#111; }
 
 
-.arc-content-wrap { width:min(fit-content, calc(100vw - 96px)); margin:0 auto; padding-top:120px; overflow:hidden; }
+.arc-content-wrap { max-width:calc(100vw - 96px); padding-top:120px; }
 .arc-title-row { display:flex; align-items:flex-end; gap:16px; margin-bottom:48px; }
 .arc-title-text { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; font-size:42px; font-weight:300; color:#111; letter-spacing:-.03em; line-height:1; margin:0; display:block; text-align:left; }
 .arc-strips-col { display:flex; flex-direction:row; align-items:flex-start; gap:24px; overflow-x:auto; scrollbar-width:thin; scrollbar-color:rgba(0,0,0,.12) transparent; }
