@@ -593,17 +593,17 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .mcs-close-btn svg { width:10px; height:10px; }
 .mcs-icon-btn {
   position:absolute; z-index:3;
-  width:26px; height:26px; border-radius:50%;
-  background:rgba(0,0,0,.28); backdrop-filter:blur(6px);
-  border:none; color:white; top:8px;
+  width:24px; height:24px; border-radius:4px;
+  background:none; border:none; color:white; top:10px;
   display:flex; align-items:center; justify-content:center;
-  cursor:pointer; opacity:.8; transition:opacity .15s;
+  cursor:pointer; opacity:.85; transition:opacity .15s;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));
 }
 .mcs-icon-btn:hover { opacity:1; }
 .mcs-icon-btn.on { opacity:1; color:#f5c842; }
-.mcs-icon-btn svg { width:13px; height:13px; }
-#mcs-bookmark-btn { right:40px; }
-#mcs-visited-btn { right:72px; }
+.mcs-icon-btn svg { width:14px; height:14px; }
+#mcs-bookmark-btn { right:10px; }
+#mcs-visited-btn { right:34px; }
 /* text overlay at bottom */
 .mcs-inner {
   position:absolute; bottom:0; left:0; right:0;
