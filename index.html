@@ -607,7 +607,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 /* text overlay at bottom */
 .mcs-inner {
   position:absolute; bottom:0; left:0; right:0;
-  padding:12px 12px 40px; z-index:2;
+  padding:12px 12px 30px; z-index:2;
 }
 .mcs-name {
   font-family:var(--sans); font-size:15px;
@@ -630,6 +630,91 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   font-family:var(--sans); margin-top:4px;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
+/* ── MAP DETAIL CARD ─────────────────────────── */
+#map-detail-card {
+  position:fixed; z-index:1001; pointer-events:none;
+  opacity:0; transform:translateY(6px) scale(.97);
+  transition:opacity .18s ease, transform .18s ease;
+}
+#map-detail-card.open { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+.mdc-bg {
+  position:absolute; inset:0;
+  background-size:cover; background-position:center;
+  background-color:var(--stone); border-radius:16px;
+}
+#map-detail-card {
+  width:260px; height:320px;
+  border-radius:16px; overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.10);
+  background:var(--stone);
+}
+/* same frosted blur treatment */
+#map-detail-card::before {
+  content:''; position:absolute; inset:0; z-index:1;
+  backdrop-filter:blur(12px) saturate(1.2);
+  -webkit-backdrop-filter:blur(12px) saturate(1.2);
+  background:linear-gradient(to top, rgba(0,0,0,.5) 0%, rgba(0,0,0,.18) 45%, transparent 70%);
+  mask-image:linear-gradient(to top, black 0%, black 45%, transparent 72%);
+  -webkit-mask-image:linear-gradient(to top, black 0%, black 45%, transparent 72%);
+}
+.mdc-icon-btn {
+  position:absolute; top:10px; z-index:3; width:24px; height:24px;
+  background:none; border:none; color:white; cursor:pointer; opacity:.85;
+  display:flex; align-items:center; justify-content:center;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.5)); transition:opacity .15s;
+}
+.mdc-icon-btn:hover { opacity:1; }
+.mdc-icon-btn.on { opacity:1; color:#f5c842; }
+#mdc-bookmark-btn { right:10px; }
+#mdc-visited-btn { right:34px; }
+.mdc-close {
+  position:absolute; top:10px; left:10px; z-index:3; width:24px; height:24px;
+  background:none; border:none; color:white; cursor:pointer; opacity:.7;
+  display:flex; align-items:center; justify-content:center;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.5)); transition:opacity .15s;
+}
+.mdc-close:hover { opacity:1; }
+.mdc-inner {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:12px 14px 22px; z-index:2;
+}
+.mdc-name {
+  font-family:var(--sans); font-size:15px; font-weight:700;
+  color:#fff; line-height:1.2; margin-bottom:3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mdc-address {
+  font-size:12px; color:rgba(255,255,255,.75); font-family:var(--sans);
+  line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mdc-date {
+  font-size:11px; color:rgba(255,255,255,.55); font-family:var(--sans);
+  margin-top:6px; line-height:1.4;
+}
+.mdc-note {
+  font-size:12px; color:rgba(255,255,255,.75); font-family:var(--sans);
+  margin-top:6px; line-height:1.5;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+}
+/* light image variant */
+#map-detail-card.mdc-light::before {
+  background:linear-gradient(to top, rgba(255,255,255,.6) 0%, rgba(255,255,255,.18) 45%, transparent 70%);
+}
+#map-detail-card.mdc-light .mdc-name { color:#111; }
+#map-detail-card.mdc-light .mdc-address { color:rgba(0,0,0,.6); }
+#map-detail-card.mdc-light .mdc-date { color:rgba(0,0,0,.45); }
+#map-detail-card.mdc-light .mdc-note { color:rgba(0,0,0,.65); }
+#map-detail-card.mdc-light .mdc-icon-btn,
+#map-detail-card.mdc-light .mdc-close { color:#111; }
+
+/* mobile — same anchor as mcs-card */
+@media (max-width:768px) {
+  #map-detail-card {
+    position:fixed !important; top:auto !important; left:auto !important;
+    bottom:calc(90px + env(safe-area-inset-bottom)) !important; right:12px !important;
+  }
+}
+
 .mcs-archive-arrow {
   position:absolute; bottom:20px; right:12px; z-index:3;
   display:flex; align-items:center;
@@ -684,7 +769,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .arc-section-add:hover { color:var(--charcoal); }
 
 /* ── CITY DETAIL VIEW ─────────────────────────────── */
-#view-city { overflow:hidden; background:var(--bg); }
+#view-city { overflow:hidden; background:rgba(255,255,255,.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
 #view-city.active { display:flex; flex-direction:column; }
 .cityv-header { display:flex; flex-direction:column; gap:8px; padding:calc(54px + 32px) 48px 0; flex-shrink:0; }
 .cityv-back { display:inline-flex; align-items:center; gap:6px; background:none; border:none; font-family:var(--sans); font-size:13px; font-weight:400; color:#aaa; cursor:pointer; padding:0; letter-spacing:.01em; transition:color .15s; }
@@ -747,7 +832,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 #city-panel-map { width:100%; height:100%; min-height:400px; }
 
 /* ── COLLECTION DETAIL PANEL (mobile) ─────── */
-#coll-panel { position:fixed; right:0; top:0; bottom:0; width:480px; z-index:500; overflow-y:auto; background:var(--surface); transform:translateX(100%); transition:transform .38s cubic-bezier(.4,0,.2,1); box-shadow:-4px 0 40px rgba(0,0,0,.12); display:flex; flex-direction:column; }
+#coll-panel { position:fixed; right:0; top:0; bottom:0; width:480px; z-index:500; overflow-y:auto; background:rgba(255,255,255,.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); transform:translateX(100%); transition:transform .38s cubic-bezier(.4,0,.2,1); box-shadow:-4px 0 40px rgba(0,0,0,.12); display:flex; flex-direction:column; }
 #coll-panel.open { transform:translateX(0); }
 .cdp-hero { position:relative; height:300px; flex-shrink:0; overflow:hidden; background:var(--stone); }
 .cdp-bg { position:absolute; inset:0; background-size:cover; background-position:center; transition:transform .6s ease; }
@@ -1109,9 +1194,9 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   position:fixed; top:0; left:0; right:0; height:54px;
   padding:0 48px;
   align-items:center; justify-content:space-between;
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(20px) saturate(1.3);
-  -webkit-backdrop-filter:blur(20px) saturate(1.3);
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(16px) saturate(1.3);
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);
   border-bottom:none;
   z-index:500;
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
@@ -1449,7 +1534,6 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   <div class="ptn-links">
     <button class="ptn-link" id="ptn-map" onclick="showView('map')">Map</button>
     <button class="ptn-link" id="ptn-archive" onclick="showView('archive')">Archive</button>
-    <button class="ptn-link" id="ptn-collections" onclick="showCollections()">Collections</button>
     <!-- <button class="ptn-link" id="ptn-journal" onclick="showView('journal')">Journal</button> -->
     <button class="ptn-link ptn-link-save" onclick="openModal()" title="Save place">+</button>
   </div>
@@ -1689,6 +1773,26 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     <button class="mcs-archive-arrow" onclick="openFromMapCard()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </button>
+  </div>
+</div>
+
+<!-- MAP DETAIL CARD — expanded view opened from popup arrow -->
+<div id="map-detail-card">
+  <div class="mdc-bg" id="mdc-bg"></div>
+  <button class="mdc-icon-btn" id="mdc-visited-btn" onclick="mdcToggleVisited()" title="Toggle visited">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+  </button>
+  <button class="mdc-icon-btn" id="mdc-bookmark-btn" onclick="mdcToggleFav()" title="Favorite">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  </button>
+  <button class="mdc-close" onclick="closeMapDetailCard()">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="mdc-inner">
+    <div class="mdc-name" id="mdc-name"></div>
+    <div class="mdc-address" id="mdc-address"></div>
+    <div class="mdc-date" id="mdc-date"></div>
+    <div class="mdc-note" id="mdc-note"></div>
   </div>
 </div>
 
@@ -3091,6 +3195,7 @@ function showMapCard(p){
 
 function closeMapCard(){
   document.getElementById('map-card-sheet').classList.remove('open');
+  closeMapDetailCard();
   if(activeMarkerEl){ activeMarkerEl.classList.remove('active'); activeMarkerEl=null; }
   mapCardPlaceId=null;
 }
@@ -3248,12 +3353,73 @@ function toggleMapCardVisited(){
 function openFromMapCard(){
   if(!mapCardPlaceId)return;
   const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
-  closeMapCard();
-  if(window.innerWidth>768){
-    openPlace(p);
-  } else {
-    showView('archive'); setTimeout(()=>openPlace(p),120);
+  openMapDetailCard(p);
+}
+function openMapDetailCard(p){
+  const card=document.getElementById('map-detail-card');
+  const sheet=document.getElementById('map-card-sheet');
+
+  document.getElementById('mdc-bg').style.backgroundImage=p.photo?`url('${p.photo}')`:'none';
+  document.getElementById('mdc-name').textContent=p.name||'';
+  document.getElementById('mdc-address').textContent=p.address||p.city||'';
+  const dateEl=document.getElementById('mdc-date');
+  const parts=[];
+  if(p.dateAdded) parts.push('Added '+new Date(p.dateAdded).toLocaleDateString('en-US',{month:'short',year:'numeric'}));
+  dateEl.textContent=parts.join(' · '); dateEl.style.display=parts.length?'block':'none';
+  const noteEl=document.getElementById('mdc-note');
+  noteEl.textContent=p.note||''; noteEl.style.display=p.note?'block':'none';
+  document.getElementById('mdc-bookmark-btn').classList.toggle('on',!!p.favorite);
+  document.getElementById('mdc-visited-btn').classList.toggle('on',!!p.visited);
+
+  card.classList.remove('mdc-light');
+  if(p.photo){
+    const img=new Image(); img.crossOrigin='anonymous';
+    img.onload=()=>{
+      try{
+        const cv=document.createElement('canvas'); cv.width=img.width; cv.height=img.height;
+        const ctx=cv.getContext('2d'); ctx.drawImage(img,0,0);
+        const d=ctx.getImageData(0,Math.floor(img.height*.6),img.width,Math.ceil(img.height*.4));
+        let sum=0;
+        for(let i=0;i<d.data.length;i+=4) sum+=0.299*d.data[i]+0.587*d.data[i+1]+0.114*d.data[i+2];
+        card.classList.toggle('mdc-light',(sum/(d.data.length/4))>145);
+      }catch(e){}
+    };
+    img.src=p.photo;
   }
+
+  // position near the pin like mcs-card, or use same fixed spot on mobile
+  if(window.innerWidth>768 && p.lat && p.lng && leafletMap){
+    const pt=leafletMap.latLngToContainerPoint([p.lat,p.lng]);
+    const mapRect=document.getElementById('map-container').getBoundingClientRect();
+    const cardW=260, cardH=320, margin=12;
+    let left=mapRect.left+pt.x-cardW/2;
+    let top=mapRect.top+pt.y-cardH-margin;
+    const sidebarOpen=document.getElementById('map-list-sidebar')?.classList.contains('open');
+    const leftMin=sidebarOpen?mapRect.left+window.innerWidth*0.62+20:mapRect.left+8;
+    left=Math.max(leftMin,Math.min(left,mapRect.right-cardW-8));
+    if(top<mapRect.top+8) top=mapRect.top+pt.y+margin+20;
+    card.style.left=left+'px'; card.style.top=top+'px';
+  }
+
+  sheet.classList.remove('open');
+  requestAnimationFrame(()=>card.classList.add('open'));
+}
+function closeMapDetailCard(){
+  document.getElementById('map-detail-card').classList.remove('open');
+}
+function mdcToggleVisited(){
+  if(!mapCardPlaceId)return;
+  const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
+  p.visited=!p.visited; upsertPlace(p);
+  document.getElementById('mdc-visited-btn').classList.toggle('on',p.visited);
+  document.getElementById('mcs-visited-btn').classList.toggle('on',p.visited);
+}
+function mdcToggleFav(){
+  if(!mapCardPlaceId)return;
+  const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
+  p.favorite=!p.favorite; upsertPlace(p);
+  document.getElementById('mdc-bookmark-btn').classList.toggle('on',p.favorite);
+  document.getElementById('mcs-bookmark-btn').classList.toggle('on',p.favorite);
 }
 
 function jumpToPlace(id){
