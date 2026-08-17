@@ -1672,9 +1672,6 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 <div id="map-card-sheet">
   <div class="mcs-card">
     <div class="mcs-bg" id="mcs-bg"></div>
-    <button class="mcs-close-btn" onclick="closeMapCard()">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
     <button class="mcs-icon-btn" id="mcs-visited-btn" onclick="toggleMapCardVisited()" title="Toggle visited">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
     </button>
@@ -1691,7 +1688,6 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
       <div class="mcs-note" id="mcs-note"></div>
       <div class="mcs-footer">
         <button class="mcs-archive-arrow" onclick="openFromMapCard()">
-          View details
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
