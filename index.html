@@ -3068,17 +3068,20 @@ let mlsVisited = 'want';   // 'all' | 'visited' | 'want'
 let mlsCategory = 'All';
 let mlsSearch = '';
 let mlsFiltersOpen = false;
+let mlsCity = 'All';
 
 function mlsFilteredPlaces(){
   let list = places.filter(p=>p.category!=='Homebase');
   if(mlsVisited==='visited') list=list.filter(p=>p.visited);
   if(mlsVisited==='want')    list=list.filter(p=>!p.visited);
   if(mlsCategory!=='All')    list=list.filter(p=>p.category===mlsCategory);
+  if(mlsCity!=='All')        list=list.filter(p=>p.city===mlsCity);
   if(mlsSearch){ const q=mlsSearch.toLowerCase(); list=list.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.city||'').toLowerCase().includes(q)||(p.address||'').toLowerCase().includes(q)); }
   return list;
 }
 function setMlsSearch(q){ mlsSearch=q; renderMapSidebar(); syncMapMarkerVisibility(); }
 function toggleMlsFilters(){ mlsFiltersOpen=!mlsFiltersOpen; renderMapSidebar(); }
+function setMlsCity(c){ mlsCity=c; mlsFiltersOpen=true; renderMapSidebar(); syncMapMarkerVisibility(); }
 
 function initSidebarDrag(){
   if(window.innerWidth>768)return;
@@ -3114,7 +3117,7 @@ function toggleMapSidebar(){
   sidebar.classList.toggle('open', mapSidebarOpen);
   toggle.classList.toggle('sidebar-open', mapSidebarOpen);
   if(mapSidebarOpen){ initSidebarDrag(); renderMapSidebar(); syncMapMarkerVisibility(); }
-  else { mlsVisited='want'; mlsCategory='All'; syncMapMarkerVisibility(); }
+  else { mlsVisited='want'; mlsCategory='All'; mlsCity='All'; syncMapMarkerVisibility(); }
   setTimeout(()=>leafletMap?.invalidateSize(), 340);
 }
 function renderMapSidebar(){
@@ -3126,7 +3129,8 @@ function renderMapSidebar(){
     {v:'visited', label:'Visited'},
     {v:'want', label:'Want to go'},
   ];
-  const filterActive = mlsVisited !== 'want';
+  const allCities = [...new Set(places.filter(p=>p.category!=='Homebase'&&p.city).map(p=>p.city))].sort();
+  const filterActive = mlsVisited !== 'want' || mlsCity !== 'All';
 
   const header = `
     <div style="padding:16px 14px 0">
@@ -3137,9 +3141,18 @@ function renderMapSidebar(){
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
         </button>
       </div>
-      ${mlsFiltersOpen ? `<div class="mls-filters" style="padding:6px 0 10px">
-        ${visitedPills.map(({v,label})=>`<button class="mls-pill${mlsVisited===v?' active':''}" onclick="setMlsVisited('${v}')">${label}</button>`).join('')}
-      </div>` : ''}
+      ${mlsFiltersOpen ? `
+        <div style="padding:8px 0 2px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;padding:0 2px 6px">Status</div>
+          <div class="mls-filters" style="padding:0 0 10px">
+            ${visitedPills.map(({v,label})=>`<button class="mls-pill${mlsVisited===v?' active':''}" onclick="setMlsVisited('${v}')">${label}</button>`).join('')}
+          </div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;padding:0 2px 6px">City</div>
+          <div class="mls-filters" style="padding:0 0 12px;flex-wrap:wrap;justify-content:flex-start">
+            <button class="mls-pill${mlsCity==='All'?' active':''}" onclick="setMlsCity('All')">All</button>
+            ${allCities.map(c=>`<button class="mls-pill${mlsCity===c?' active':''}" onclick="setMlsCity('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('')}
+          </div>
+        </div>` : ''}
     </div>`;
 
   const list = mlsFilteredPlaces();
