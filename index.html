@@ -1152,8 +1152,9 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   .arc-hero-row { display: none !important; }
   .arc-mob-coll-hdr { display: none !important; }
 
-  /* page wrap */
-  .arc-page-wrap { padding: 40px 0 100px; max-width: 100%; margin: 0; }
+  /* page wrap — bottom padding on scroll container, not wrap, so it doesn't add space between mid-bar and collections */
+  .arc-page-wrap { padding: 40px 0 0; max-width: 100%; margin: 0; }
+  #archive-scroll { padding-bottom: 100px !important; }
 
   /* unified 2-col portrait grid — same for archive and collections */
   .arc-new-grid {
@@ -1177,7 +1178,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--char
   /* mid-bar — equal spacing above and below */
   .arc-mid-bar {
     display: flex; align-items: center; justify-content: center;
-    gap: 0; margin: 56px 0; padding: 0 24px; flex-wrap: nowrap;
+    gap: 0; margin: 56px 0 22px; padding: 0 24px; flex-wrap: nowrap;
   }
   .arc-mid-label-active { font-size: 11px; }
   .arc-mid-label-muted { font-size: 11px; }
