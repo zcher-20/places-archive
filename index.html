@@ -569,17 +569,17 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   background-size:cover; background-position:center;
   background-color:var(--stone);
 }
-/* frosted blur panel on bottom half */
+/* frosted blur — full card size, mask fades in from top so no hard edge */
 .mcs-card::before {
-  content:''; position:absolute; bottom:0; left:0; right:0; height:58%; z-index:1;
-  backdrop-filter:blur(14px) saturate(1.2);
-  -webkit-backdrop-filter:blur(14px) saturate(1.2);
-  background:rgba(0,0,0,.22);
-  mask-image:linear-gradient(to bottom, transparent 0%, black 30%);
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 30%);
+  content:''; position:absolute; inset:0; z-index:1;
+  backdrop-filter:blur(12px) saturate(1.2);
+  -webkit-backdrop-filter:blur(12px) saturate(1.2);
+  background:linear-gradient(to top, rgba(0,0,0,.38) 0%, rgba(0,0,0,.12) 45%, transparent 70%);
+  mask-image:linear-gradient(to top, black 0%, black 35%, transparent 70%);
+  -webkit-mask-image:linear-gradient(to top, black 0%, black 35%, transparent 70%);
 }
 .mcs-card.mcs-light::before {
-  background:rgba(255,255,255,.3);
+  background:linear-gradient(to top, rgba(255,255,255,.55) 0%, rgba(255,255,255,.15) 45%, transparent 70%);
 }
 .mcs-close-btn {
   position:absolute; top:8px; right:8px; z-index:3;
