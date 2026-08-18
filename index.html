@@ -780,13 +780,15 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .cityv-name { font-family:"BastligaOne",cursive; font-size:72px; font-weight:400; color:#111; letter-spacing:0; margin:0; line-height:1; }
 .cityv-add-btn { padding-bottom:4px; }
 .cityv-body { display:flex; flex-direction:column; flex:1; overflow-y:auto; min-height:0; margin-top:0; -webkit-overflow-scrolling:touch; }
-.cityv-list { width:100%; overflow:visible; border-right:none; padding:32px 0 80px; position:relative; }
-.cityv-list::before { content:''; position:absolute; top:-140px; left:0; right:0; height:180px; background:linear-gradient(to bottom, transparent, #fff 65%); pointer-events:none; z-index:3; }
+.cityv-list { width:100%; overflow:visible; border-right:none; padding:80px 0 80px; margin-top:-60px; background:linear-gradient(to bottom, transparent 0, #fff 60px); position:relative; }
 .cityv-list-inner { padding-top:0; }
 .cityv-map-wrap { width:100%; height:50vh; flex-shrink:0; position:relative; }
 #cityv-map { width:100%; height:100%; }
 .cityv-map-back { display:none; }
-/* desktop buttons overlaid on map top-right */
+/* desktop back button top-left of map */
+.cityv-map-ovr-back { position:absolute; top:14px; left:14px; z-index:500; width:34px; height:34px; border:none; background:rgba(255,255,255,.92); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.12),0 1px 3px rgba(0,0,0,.07); cursor:pointer; color:var(--charcoal); display:flex; align-items:center; justify-content:center; transition:background .15s; }
+.cityv-map-ovr-back:hover { background:#fff; }
+/* desktop view controls top-right of map */
 .cityv-map-overlay-btns { position:absolute; top:14px; right:14px; z-index:500; display:flex; align-items:center; gap:0; background:rgba(255,255,255,.92); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.12),0 1px 3px rgba(0,0,0,.07); overflow:hidden; }
 .cityv-map-ovr-btn { width:34px; height:34px; border:none; background:none; cursor:pointer; color:var(--charcoal); display:flex; align-items:center; justify-content:center; transition:background .15s,color .15s; }
 .cityv-map-ovr-btn:hover { background:rgba(0,0,0,.06); }
@@ -1368,6 +1370,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   #cityv-gallery { display: none !important; }
   .cityv-controls { display: none !important; }
   .cityv-map-overlay-btns { display: none !important; }
+  .cityv-map-ovr-back { display: none !important; }
   .cityv-map-back { display: flex !important; align-items: center; justify-content: center; }
   .cityv-body {
     flex-direction: column !important;
@@ -1412,11 +1415,11 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     border-right: none !important;
     overflow: visible !important;
     padding: 0 0 120px !important;
+    margin-top: 0 !important;
+    background: white !important;
     position: relative;
     z-index: 2;
-    background: white;
   }
-  .cityv-list::before { display: none !important; }
   .cityv-list-inner { padding-top: 0 !important; }
 
   /* city name row at top of list */
@@ -1888,12 +1891,12 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
           <button class="cityv-map-back" onclick="closeCityView()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           </button>
-          <!-- desktop controls overlaid on map top-right -->
+          <!-- desktop back button top-left -->
+          <button class="cityv-map-ovr-back" onclick="closeCityView()" title="Back to archive">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </button>
+          <!-- desktop view controls top-right -->
           <div class="cityv-map-overlay-btns">
-            <button class="cityv-map-ovr-btn" onclick="closeCityView()" title="Back to archive">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            </button>
-            <div class="cityv-map-ovr-sep"></div>
             <button class="cityv-map-ovr-btn" id="cityv-btn-list" onclick="cvlSetView('list')" title="List view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
             <button class="cityv-map-ovr-btn active" id="cityv-btn-gallery" onclick="cvlSetView('gallery')" title="Gallery view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
             <button class="cityv-map-ovr-btn" onclick="openModalForCityView()" title="Add place" style="font-size:18px;line-height:1;padding-bottom:1px">+</button>
