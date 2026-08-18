@@ -1482,6 +1482,11 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   /* hide clutter */
   #detail-panel { display: none !important; }
   .arc-edit-mode .cover-change-btn { opacity: 1 !important; }
+  .arc-cell-del-btn { position:absolute; top:5px; left:5px; z-index:3; width:22px; height:22px; border-radius:50%; background:rgba(210,40,40,.88); border:none; color:#fff; font-size:16px; line-height:1; display:none; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .arc-edit-mode .arc-cell-del-btn { display:flex !important; }
+  .arc-cell-rename-input { display:none; font-family:"BastligaOne",cursive; font-size:17px; color:#111; text-align:center; background:none; border:none; border-bottom:1.5px solid rgba(0,0,0,.25); outline:none; width:100%; padding:2px 4px; margin-top:16px; line-height:1.2; }
+  .arc-edit-mode .arc-cell-rename-input { display:block; }
+  .arc-edit-mode .arc-cell-title { display:none; }
   .arc-hero-row { display: none !important; }
   .arc-mob-coll-hdr { display: none !important; }
 
@@ -2455,6 +2460,32 @@ function toggleArchiveEdit(){
   if(label) label.textContent=isEdit?'Done':'Edit';
   document.getElementById('nav-edit')?.classList.toggle('active',isEdit);
 }
+async function renameCity(oldCity, newName){
+  newName=(newName||'').trim(); if(!newName||newName===oldCity) return;
+  const toUpdate=places.filter(p=>p.city===oldCity);
+  toUpdate.forEach(p=>p.city=newName);
+  savePlaces();
+  const obj=_loadCoverIds(); if(obj['city-'+oldCity]){ obj['city-'+newName]=obj['city-'+oldCity]; delete obj['city-'+oldCity]; _saveCoverIds(obj); }
+  await Promise.all(toUpdate.map(p=>db.from('places').upsert(placeToRow(p))));
+  renderArchive();
+}
+async function deleteCity(city){
+  if(!confirm(`Delete "${city}" and all its places?`)) return;
+  const toDelete=places.filter(p=>p.city===city);
+  places=places.filter(p=>p.city!==city);
+  savePlaces(); renderArchive();
+  await Promise.all(toDelete.map(p=>deleteFromDB(p.id)));
+}
+async function renameCollection(c, newName){
+  newName=(newName||'').trim(); if(!newName||newName===c.name) return;
+  c.name=newName; saveCollections(); await upsertCollection(c); renderCollections();
+}
+async function deleteCollection(id){
+  if(!confirm('Delete this collection?')) return;
+  collections=collections.filter(c=>c.id!==id);
+  saveCollections(); renderCollections();
+  await db.from('collections').delete().eq('id',id);
+}
 function renderArchive(){
   const list=filteredPlaces();
   const el=document.getElementById('archive-list');
@@ -2473,7 +2504,8 @@ function renderArchive(){
     sortedCities.forEach((city,ci)=>{
       const ps=cityGroups[city];
       const cover=getCityCover(city,ps);
-      const cell=document.createElement('div'); cell.className='arc-grid-cell'; cell.onclick=()=>openCityView(city);
+      const cell=document.createElement('div'); cell.className='arc-grid-cell';
+      cell.onclick=()=>{ if(document.getElementById('archive-list').classList.contains('arc-edit-mode')) return; openCityView(city); };
       const content=document.createElement('div'); content.className='arc-cell-content';
       const imgWrap=document.createElement('div'); imgWrap.className='arc-cell-img-wrap';
       const inner=document.createElement('div'); inner.className='arc-cell-img-inner';
@@ -2482,8 +2514,16 @@ function renderArchive(){
       const covBtn=document.createElement('button'); covBtn.className='cover-change-btn'; covBtn.textContent='✎';
       covBtn.title='Change cover'; covBtn.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(ps.filter(p=>p.photo),(id)=>setCityCover(city,id)); };
       imgWrap.appendChild(covBtn);
+      const delBtn=document.createElement('button'); delBtn.className='arc-cell-del-btn'; delBtn.innerHTML='&times;';
+      delBtn.onclick=(e)=>{ e.stopPropagation(); deleteCity(city); };
+      imgWrap.appendChild(delBtn);
       content.appendChild(imgWrap);
       const titleEl=document.createElement('div'); titleEl.className='arc-cell-title'; titleEl.textContent=city; content.appendChild(titleEl);
+      const renameInput=document.createElement('input'); renameInput.className='arc-cell-rename-input'; renameInput.value=city; renameInput.maxLength=60;
+      renameInput.onclick=(e)=>e.stopPropagation();
+      renameInput.onblur=()=>renameCity(city, renameInput.value);
+      renameInput.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); renameInput.blur(); } };
+      content.appendChild(renameInput);
       cell.appendChild(content); grid.appendChild(cell);
     });
   }
@@ -3749,14 +3789,26 @@ function renderCollections(){
   sorted.forEach((c,ci)=>{
     const collPlaces=c.placeIds.map(id=>places.find(p=>p.id===id||String(p.id)===String(id))).filter(Boolean);
     const coverPhoto=getCollCover(c,collPlaces);
-    const cell=document.createElement('div'); cell.className='arc-grid-cell'; cell.onclick=()=>openCollectionView(c.id);
+    const cell=document.createElement('div'); cell.className='arc-grid-cell';
+    cell.onclick=()=>{ if(document.getElementById('archive-list').classList.contains('arc-edit-mode')) return; openCollectionView(c.id); };
     const content=document.createElement('div'); content.className='arc-cell-content';
     const imgWrap=document.createElement('div'); imgWrap.className='arc-cell-img-wrap';
     const inner=document.createElement('div'); inner.className='arc-cell-img-inner';
     if(coverPhoto){ const img=document.createElement('img'); img.className='arc-cell-img'; img.src=coverPhoto; img.alt=c.name; img.loading='lazy'; inner.appendChild(img); }
     imgWrap.appendChild(inner);
+    const covBtnC=document.createElement('button'); covBtnC.className='cover-change-btn'; covBtnC.textContent='✎';
+    covBtnC.title='Change cover'; covBtnC.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(collPlaces.filter(p=>p.photo),(id)=>setCollCover(c,id)); };
+    imgWrap.appendChild(covBtnC);
+    const delBtnC=document.createElement('button'); delBtnC.className='arc-cell-del-btn'; delBtnC.innerHTML='&times;';
+    delBtnC.onclick=(e)=>{ e.stopPropagation(); deleteCollection(c.id); };
+    imgWrap.appendChild(delBtnC);
     content.appendChild(imgWrap);
     const titleEl=document.createElement('div'); titleEl.className='arc-cell-title'; titleEl.textContent=c.name; content.appendChild(titleEl);
+    const renameInput=document.createElement('input'); renameInput.className='arc-cell-rename-input'; renameInput.value=c.name; renameInput.maxLength=60;
+    renameInput.onclick=(e)=>e.stopPropagation();
+    renameInput.onblur=()=>renameCollection(c, renameInput.value);
+    renameInput.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); renameInput.blur(); } };
+    content.appendChild(renameInput);
     cell.appendChild(content); grid.appendChild(cell);
   });
 }
