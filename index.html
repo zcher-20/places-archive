@@ -1499,7 +1499,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 
   /* hide clutter */
   #detail-panel { display: none !important; }
-  .cover-change-btn { display: none !important; }
+  .arc-edit-mode .cover-change-btn { opacity: 1 !important; }
   .arc-hero-row { display: none !important; }
   .arc-mob-coll-hdr { display: none !important; }
 
@@ -1621,6 +1621,10 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
         <span class="tm-label">Journal</span>
       </div>
       -->
+      <div class="tm-item" id="nav-edit" onclick="toggleArchiveEdit()" style="display:none">
+        <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <span class="tm-label" id="nav-edit-label">Edit</span>
+      </div>
       <div class="tm-item" id="nav-save" onclick="openModal()">
         <div class="tm-icon-wrap"><svg class="tm-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
         <span class="tm-label">Save</span>
@@ -2355,6 +2359,11 @@ function showView(v){
     document.getElementById('topbar').style.display='';
     const mobileBack=document.getElementById('cityv-mobile-back');
     if(mobileBack) mobileBack.style.display=(v==='city')?'flex':'none';
+    // show Edit tab only on archive
+    const editTab=document.getElementById('nav-edit');
+    if(editTab) editTab.style.display=(v==='archive')?'flex':'none';
+    // exit edit mode on tab switch away from archive
+    if(v!=='archive') document.getElementById('archive-list')?.classList.remove('arc-edit-mode');
   }
   // close all panels on tab switch
   closePanel();
@@ -2427,6 +2436,13 @@ function openCoverPicker(placesWithPhotos,onPick){
   box.appendChild(title); box.appendChild(grid); ov.appendChild(box);
   ov.classList.add('open');
 }
+function toggleArchiveEdit(){
+  const list=document.getElementById('archive-list');
+  const isEdit=list.classList.toggle('arc-edit-mode');
+  const label=document.getElementById('nav-edit-label');
+  if(label) label.textContent=isEdit?'Done':'Edit';
+  document.getElementById('nav-edit')?.classList.toggle('active',isEdit);
+}
 function renderArchive(){
   const list=filteredPlaces();
   const el=document.getElementById('archive-list');
@@ -2451,6 +2467,9 @@ function renderArchive(){
       const inner=document.createElement('div'); inner.className='arc-cell-img-inner';
       if(cover){ const img=document.createElement('img'); img.className='arc-cell-img'; img.src=cover; img.alt=city; img.loading='lazy'; inner.appendChild(img); }
       imgWrap.appendChild(inner);
+      const covBtn=document.createElement('button'); covBtn.className='cover-change-btn'; covBtn.textContent='✎';
+      covBtn.title='Change cover'; covBtn.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(ps.filter(p=>p.photo),(p)=>setCityCover(city,p.id)); };
+      imgWrap.appendChild(covBtn);
       content.appendChild(imgWrap);
       const titleEl=document.createElement('div'); titleEl.className='arc-cell-title'; titleEl.textContent=city; content.appendChild(titleEl);
       cell.appendChild(content); grid.appendChild(cell);
