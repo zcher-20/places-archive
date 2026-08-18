@@ -171,6 +171,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 @media (min-width:769px) {
   .view { padding-bottom:90px; }
   .view#view-map { padding-bottom:0; }
+  .view#view-city { padding-bottom:0; }
 }
 
 /* ── ARCHIVE HERO ────────────────────────── */
@@ -781,9 +782,13 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .cityv-body { display:flex; flex-direction:column; flex:1; overflow-y:auto; min-height:0; margin-top:0; -webkit-overflow-scrolling:touch; }
 .cityv-list { width:100%; overflow:visible; border-right:none; padding:0 0 80px; }
 .cityv-list-inner { padding-top:0; }
-.cityv-map-wrap { width:100%; height:50vh; flex-shrink:0; order:-1; position:relative; }
+.cityv-map-wrap { width:100%; height:50vh; flex-shrink:0; position:relative; }
 #cityv-map { width:100%; height:100%; }
 .cityv-map-back { display:none; }
+.cityv-controls { display:flex; align-items:center; justify-content:space-between; padding:12px 48px; flex-shrink:0; border-bottom:1px solid rgba(0,0,0,.06); background:#fff; }
+.cityv-back-ctrl { display:inline-flex; align-items:center; gap:6px; background:none; border:none; font-family:var(--sans); font-size:13px; font-weight:400; color:#aaa; cursor:pointer; padding:0; letter-spacing:.01em; transition:color .15s; }
+.cityv-back-ctrl:hover { color:var(--charcoal); }
+.cityv-ctrl-btns { display:flex; align-items:center; gap:10px; }
 
 .archive-colls-section { padding:0 0 100px; }
 .archive-colls-header { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; margin-bottom:36px; padding-top:80px; }
@@ -1240,6 +1245,9 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .arc-grid-cell:hover .arc-cell-img-inner { transform:rotate(-1deg) scale(1.02); }
 .arc-cell-img { width:100%; height:100%; object-fit:cover; display:block; }
 .arc-cell-title { font-family:"BastligaOne",cursive; font-size:22px; color:#111; text-align:center; margin-top:20px; line-height:1.1; }
+.arc-cell-rename-input { display:none; }
+.arc-edit-mode .arc-cell-rename-input { display:block; }
+.arc-edit-mode .arc-cell-title { display:none; }
 .arc-cell-img-wrap .cover-change-btn { top:5px; right:5px; }
 /* collections wrap: mid-bar margin already creates the top gap */
 /* middle bar — matches arena-vis filter tabs */
@@ -1354,6 +1362,8 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   }
   #cityv-header-desktop { display: none !important; }
   #cityv-gallery { display: none !important; }
+  .cityv-controls { display: none !important; }
+  .cityv-map-back { display: flex !important; align-items: center; justify-content: center; }
   .cityv-body {
     flex-direction: column !important;
     flex: 1 !important;
@@ -1364,7 +1374,6 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   }
   /* map on top, scrolls away with the page */
   .cityv-map-wrap {
-    order: -1;
     width: 100% !important;
     height: 44vh !important;
     flex-shrink: 0 !important;
@@ -1863,25 +1872,11 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 
     <!-- CITY DETAIL VIEW -->
     <div class="view" id="view-city">
-      <!-- desktop header (hidden on mobile) -->
-      <div class="cityv-header" id="cityv-header-desktop">
-        <button class="cityv-back" onclick="closeCityView()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          Archive
-        </button>
-        <div class="cityv-title-row">
-          <h1 class="cityv-name" id="cityv-name"></h1>
-          <div style="display:flex;align-items:center;gap:10px;padding-bottom:4px">
-            <button class="cityv-view-btn" id="cityv-btn-list" onclick="cvlSetView('list')" title="List view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
-            <button class="cityv-view-btn active" id="cityv-btn-gallery" onclick="cvlSetView('gallery')" title="Gallery view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
-            <button class="btn-new-coll cityv-add-btn" onclick="openModalForCityView()" title="Add place">+</button>
-          </div>
-        </div>
-      </div>
+      <!-- hidden — keeps cityv-name in DOM for JS; not shown -->
+      <h1 class="cityv-name" id="cityv-name" style="display:none"></h1>
       <span id="cityv-count" style="display:none"></span>
       <div id="cityv-gallery" style="display:none"></div>
       <div class="cityv-body">
-        <div class="cityv-list" id="cityv-list"></div>
         <div class="cityv-map-wrap">
           <!-- mobile back button overlaid on map -->
           <button class="cityv-map-back" onclick="closeCityView()">
@@ -1893,6 +1888,19 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
             <button onclick="cityViewMap?.zoomOut()">−</button>
           </div>
         </div>
+        <!-- desktop control bar below map -->
+        <div class="cityv-controls">
+          <button class="cityv-back-ctrl" onclick="closeCityView()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Archive
+          </button>
+          <div class="cityv-ctrl-btns">
+            <button class="cityv-view-btn" id="cityv-btn-list" onclick="cvlSetView('list')" title="List view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+            <button class="cityv-view-btn active" id="cityv-btn-gallery" onclick="cvlSetView('gallery')" title="Gallery view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+            <button class="btn-new-coll cityv-add-btn" onclick="openModalForCityView()" title="Add place">+</button>
+          </div>
+        </div>
+        <div class="cityv-list" id="cityv-list"></div>
       </div>
     </div>
 
@@ -2394,7 +2402,7 @@ function cityPhoto(city){
 function enterApp(){
   // apply correct nav on initial load
   const isDesktop=window.innerWidth>768;
-  const useTopNav=isDesktop && (currentView==='archive'||currentView==='journal'||currentView==='city');
+  const useTopNav=isDesktop && (currentView==='archive'||currentView==='journal');
   document.getElementById('topbar').style.display=useTopNav?'none':'';
   const topnav=document.getElementById('page-topnav');
   topnav.classList.toggle('visible',useTopNav);
@@ -2429,7 +2437,7 @@ function showView(v){
   document.getElementById('nav-'+v)?.classList.add('active');
   // toggle nav style: top bar on archive/journal/city, pill on map
   const isDesktop=window.innerWidth>768;
-  const useTopNav=isDesktop && (v==='archive'||v==='journal'||v==='city');
+  const useTopNav=isDesktop && (v==='archive'||v==='journal');
   document.getElementById('topbar').style.display=useTopNav?'none':'';
   const topnav=document.getElementById('page-topnav');
   topnav.classList.toggle('visible',useTopNav);
