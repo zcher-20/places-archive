@@ -13,8 +13,8 @@
   font-display: block;
 }
 </style>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <style>
 @font-face {
   font-family: 'Ivar Display';
@@ -2258,10 +2258,8 @@ const P = {
 };
 
 // ── SUPABASE ──────────────────────────────────────────
-const db = window.supabase.createClient(
-  'https://udyvemlikfhclsrfmfxz.supabase.co',
-  'sb_publishable_sqNTfWybrfKGdC8Co6ceOA_b88a0Qmu'
-);
+// db is initialized in DOMContentLoaded (after defer scripts load)
+let db;
 
 function placeToRow(p){
   return { id:p.id, name:p.name, city:p.city, country:p.country||null,
@@ -4677,7 +4675,11 @@ function savePlace(){
 }
 
 // ── BOOT ─────────────────────────────────────────────
-(async ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
+  db = window.supabase.createClient(
+    'https://udyvemlikfhclsrfmfxz.supabase.co',
+    'sb_publishable_sqNTfWybrfKGdC8Co6ceOA_b88a0Qmu'
+  );
   const hasLanding = new URLSearchParams(location.search).has('landing');
   if(hasLanding){
     document.getElementById('landing').classList.remove('hidden');
@@ -4705,7 +4707,7 @@ function savePlace(){
     else if(currentView==='journal'){ renderJournal(); }
   }catch(e){ console.warn('Boot load error:',e); }
   finally{ document.getElementById('app-loading').classList.add('hidden'); }
-})();
+});
 
 // ── KEYBOARD ─────────────────────────────────────────
 document.addEventListener('keydown',e=>{
