@@ -2391,8 +2391,9 @@ function compressImage(dataUrl, maxDim=700, quality=0.65){
     img.src=dataUrl;
   });
 }
-let places = localCachePlaces(); // will be replaced async on boot
-let collections = localCacheCollections(); // will be replaced async on boot
+let places = localCachePlaces();
+let collections = localCacheCollections();
+const _hasCachedPlaces = !!localStorage.getItem('places-data');
 
 // city cover photos (overrideable)
 let cityCoverPhotos = {};
@@ -4675,27 +4676,39 @@ function savePlace(){
 }
 
 // ── BOOT ─────────────────────────────────────────────
+// ── PHASE 1: render cached data immediately (no Leaflet/Supabase needed) ──
+// This runs at inline-script parse time, before deferred CDN scripts finish.
+// Archive/journal views render fully from localStorage. Map defers to Phase 2.
+(()=>{
+  if(new URLSearchParams(location.search).has('landing')){
+    document.getElementById('landing').classList.remove('hidden');
+    return;
+  }
+  _cleanOldCoverKeys();
+  if(!_hasCachedPlaces){
+    document.getElementById('app-loading').classList.remove('hidden');
+    return; // nothing useful to show without cache; wait for Phase 2
+  }
+  // Redirect stale views
+  if(currentView==='collections'||currentView==='city') currentView='archive';
+  // Render without map (archive/journal work without Leaflet)
+  if(currentView!=='map'){
+    enterApp();
+  }
+})();
+
+// ── PHASE 2: after deferred scripts (Leaflet + Supabase) are ready ──
 document.addEventListener('DOMContentLoaded', async ()=>{
   db = window.supabase.createClient(
     'https://udyvemlikfhclsrfmfxz.supabase.co',
     'sb_publishable_sqNTfWybrfKGdC8Co6ceOA_b88a0Qmu'
   );
-  const hasLanding = new URLSearchParams(location.search).has('landing');
-  if(hasLanding){
-    document.getElementById('landing').classList.remove('hidden');
-    return;
-  }
-  // remove old cover keys that stored full base64 data (could fill localStorage)
-  _cleanOldCoverKeys();
-  const hasCachedPlaces = !!localStorage.getItem('places-data');
-  // show loading overlay only when there's no cache (first load / cleared storage)
-  if(!hasCachedPlaces) document.getElementById('app-loading').classList.remove('hidden');
-  // render immediately with cached data (or empty on first load, hidden behind overlay)
-  enterApp();
-  // fetch fresh data from Supabase and re-render
+  if(new URLSearchParams(location.search).has('landing')) return;
+  // If map view (needs Leaflet) or no cache, do full enterApp now
+  if(currentView==='map' || !_hasCachedPlaces) enterApp();
+  // Fetch fresh data from Supabase in background
   try{
     [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
-    // migrate: normalise all "new york" variants → "New York City"
     const nyPlaces=places.filter(p=>p.city&&/^new york( city)?$/i.test(p.city.trim())&&p.city.trim()!=='New York City');
     if(nyPlaces.length){
       nyPlaces.forEach(p=>{ p.city='New York City'; });
