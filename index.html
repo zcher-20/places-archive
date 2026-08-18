@@ -165,7 +165,8 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 #app { display:flex; flex-direction:row; height:100%; }
 #main { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 .view { flex:1; overflow-y:auto; overflow-x:hidden; display:none; }
-.view.active { display:flex; flex-direction:column; }
+.view.active { display:flex; flex-direction:column; animation:viewIn .28s ease; }
+@keyframes viewIn { from { opacity:0; } to { opacity:1; } }
 /* pill clearance on desktop */
 @media (min-width:769px) {
   .view { padding-bottom:90px; }
