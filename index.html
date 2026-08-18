@@ -61,6 +61,17 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--stone-2); border-radius:3px; }
 
+/* ── LOADING SCREEN ──────────────────────── */
+#app-loading { position:fixed; inset:0; z-index:9999; background:#fff; display:flex; align-items:center; justify-content:center; transition:opacity .4s ease, visibility .4s ease; }
+#app-loading.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+.apl-inner { display:flex; flex-direction:column; align-items:center; gap:28px; }
+.apl-griffin { width:36px; height:30px; opacity:.55; }
+.apl-dots { display:flex; gap:6px; align-items:center; }
+.apl-dots span { width:5px; height:5px; border-radius:50%; background:var(--charcoal); opacity:.2; animation:aplPulse 1.2s ease-in-out infinite; }
+.apl-dots span:nth-child(2) { animation-delay:.2s; }
+.apl-dots span:nth-child(3) { animation-delay:.4s; }
+@keyframes aplPulse { 0%,80%,100% { opacity:.2; transform:scale(.85); } 40% { opacity:.7; transform:scale(1); } }
+
 /* ── LANDING ─────────────────────────────── */
 #landing {
   position:fixed; inset:0; z-index:100;
@@ -780,7 +791,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .cityv-name { font-family:"BastligaOne",cursive; font-size:72px; font-weight:400; color:#111; letter-spacing:0; margin:0; line-height:1; }
 .cityv-add-btn { padding-bottom:4px; }
 .cityv-body { display:flex; flex-direction:column; flex:1; overflow-y:auto; min-height:0; margin-top:0; -webkit-overflow-scrolling:touch; }
-.cityv-list { width:100%; overflow:visible; border-right:none; padding:80px 0 80px; margin-top:-60px; background:linear-gradient(to bottom, transparent 0, #fff 60px); position:relative; }
+.cityv-list { width:100%; overflow:visible; border-right:none; padding:100px 0 80px; margin-top:-100px; background:linear-gradient(to bottom, transparent 0, #fff 100px); position:relative; z-index:3; }
 .cityv-list-inner { padding-top:0; }
 .cityv-map-wrap { width:100%; height:50vh; flex-shrink:0; position:relative; }
 #cityv-map { width:100%; height:100%; }
@@ -1669,6 +1680,22 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 </style>
 </head>
 <body>
+
+<!-- LOADING SCREEN -->
+<div id="app-loading">
+  <div class="apl-inner">
+    <svg class="apl-griffin" viewBox="0 0 48 40" fill="var(--charcoal)">
+      <rect x="0" y="18" width="8" height="22" rx=".8"/>
+      <rect x="2" y="14" width="4" height="4" rx=".8"/>
+      <rect x="11" y="6" width="10" height="34" rx=".8"/>
+      <rect x="15" y="2" width="2" height="4" rx=".8"/>
+      <rect x="24" y="12" width="8" height="28" rx=".8"/>
+      <rect x="35" y="8" width="9" height="32" rx=".8"/>
+      <rect x="37" y="4" width="5" height="4" rx=".8"/>
+    </svg>
+    <div class="apl-dots"><span></span><span></span><span></span></div>
+  </div>
+</div>
 
 <!-- LANDING (restore with ?landing in URL) -->
 <div id="landing" class="hidden">
@@ -4658,9 +4685,12 @@ function savePlace(){
   }
   // remove old cover keys that stored full base64 data (could fill localStorage)
   _cleanOldCoverKeys();
-  // show correct view instantly with cached data, no blank screen
+  const hasCachedPlaces = !!localStorage.getItem('places-data');
+  // show correct view instantly with cached data
   enterApp();
-  // then fetch fresh data from Supabase and silently re-render
+  // if cached data exists, hide loading immediately; otherwise keep overlay until Supabase loads
+  if(hasCachedPlaces) document.getElementById('app-loading').classList.add('hidden');
+  // fetch fresh data from Supabase and re-render
   try{
     [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
     // migrate: normalise all "new york" variants → "New York City"
@@ -4674,6 +4704,7 @@ function savePlace(){
     else if(currentView==='archive'){ renderArchive(); renderCollections(); }
     else if(currentView==='journal'){ renderJournal(); }
   }catch(e){ console.warn('Boot load error:',e); }
+  finally{ document.getElementById('app-loading').classList.add('hidden'); }
 })();
 
 // ── KEYBOARD ─────────────────────────────────────────
