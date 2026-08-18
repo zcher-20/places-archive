@@ -780,10 +780,10 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .cityv-name { font-family:"BastligaOne",cursive; font-size:72px; font-weight:400; color:#111; letter-spacing:0; margin:0; line-height:1; }
 .cityv-add-btn { padding-bottom:4px; }
 .cityv-body { display:flex; flex-direction:column; flex:1; overflow-y:auto; min-height:0; margin-top:0; -webkit-overflow-scrolling:touch; }
-.cityv-list { width:100%; overflow:visible; border-right:none; padding:32px 0 80px; }
+.cityv-list { width:100%; overflow:visible; border-right:none; padding:32px 0 80px; position:relative; }
+.cityv-list::before { content:''; position:absolute; top:-140px; left:0; right:0; height:180px; background:linear-gradient(to bottom, transparent, #fff 65%); pointer-events:none; z-index:3; }
 .cityv-list-inner { padding-top:0; }
 .cityv-map-wrap { width:100%; height:50vh; flex-shrink:0; position:relative; }
-.cityv-map-wrap::after { content:''; position:absolute; bottom:0; left:0; right:0; height:100px; background:linear-gradient(to bottom, transparent, #fff); pointer-events:none; z-index:2; }
 #cityv-map { width:100%; height:100%; }
 .cityv-map-back { display:none; }
 /* desktop buttons overlaid on map top-right */
@@ -1416,6 +1416,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     z-index: 2;
     background: white;
   }
+  .cityv-list::before { display: none !important; }
   .cityv-list-inner { padding-top: 0 !important; }
 
   /* city name row at top of list */
