@@ -1304,15 +1304,6 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     z-index: 1;
     margin-bottom: -50px;
   }
-  .cityv-map-wrap::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 70px;
-    background: linear-gradient(to top, rgba(255,255,255,.95) 0%, rgba(255,255,255,.4) 60%, transparent 100%);
-    pointer-events: none;
-    z-index: 400;
-  }
   #cityv-map {
     width: 100% !important;
     height: 100% !important;
@@ -1343,16 +1334,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     padding: 50px 0 120px !important;
     position: relative;
     z-index: 3;
-  }
-  .cityv-body::before {
-    content: '';
-    position: absolute;
-    left: 0; right: 0;
-    top: calc(44vh - 50px);
-    height: 60px;
-    background: linear-gradient(to bottom, rgba(255,255,255,.85) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 2;
+    background: linear-gradient(to bottom, transparent 0px, rgba(255,255,255,.7) 30px, white 60px);
   }
   .cityv-body { position: relative; }
   .cityv-list-inner { padding-top: 0 !important; }
