@@ -1682,7 +1682,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 <body>
 
 <!-- LOADING SCREEN -->
-<div id="app-loading">
+<div id="app-loading" class="hidden">
   <div class="apl-inner">
     <svg class="apl-griffin" viewBox="0 0 48 40" fill="var(--charcoal)">
       <rect x="0" y="18" width="8" height="22" rx=".8"/>
@@ -4686,10 +4686,10 @@ function savePlace(){
   // remove old cover keys that stored full base64 data (could fill localStorage)
   _cleanOldCoverKeys();
   const hasCachedPlaces = !!localStorage.getItem('places-data');
-  // show correct view instantly with cached data
+  // show loading overlay only when there's no cache (first load / cleared storage)
+  if(!hasCachedPlaces) document.getElementById('app-loading').classList.remove('hidden');
+  // render immediately with cached data (or empty on first load, hidden behind overlay)
   enterApp();
-  // if cached data exists, hide loading immediately; otherwise keep overlay until Supabase loads
-  if(hasCachedPlaces) document.getElementById('app-loading').classList.add('hidden');
   // fetch fresh data from Supabase and re-render
   try{
     [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
