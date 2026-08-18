@@ -1291,10 +1291,12 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   .cityv-body {
     flex-direction: column !important;
     flex: 1 !important;
-    overflow: hidden;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     margin-top: 0 !important;
+    -webkit-overflow-scrolling: touch;
   }
-  /* map on top */
+  /* map on top, scrolls away with the page */
   .cityv-map-wrap {
     order: -1;
     width: 100% !important;
@@ -1302,7 +1304,6 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     flex-shrink: 0 !important;
     position: relative;
     z-index: 1;
-    margin-bottom: -50px;
   }
   #cityv-map {
     width: 100% !important;
@@ -1325,18 +1326,16 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     align-items: center; justify-content: center;
     cursor: pointer;
   }
-  /* list below map */
+  /* list below map, not a separate scroll container */
   .cityv-list {
     width: 100% !important;
     border-right: none !important;
-    flex: 1 !important;
-    overflow-y: auto;
-    padding: 50px 0 120px !important;
+    overflow: visible !important;
+    padding: 0 0 120px !important;
     position: relative;
-    z-index: 3;
-    background: linear-gradient(to bottom, transparent 0px, rgba(255,255,255,.7) 30px, white 60px);
+    z-index: 2;
+    background: white;
   }
-  .cityv-body { position: relative; }
   .cityv-list-inner { padding-top: 0 !important; }
 
   /* city name row at top of list */
