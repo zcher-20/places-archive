@@ -1348,17 +1348,17 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     position: relative;
     z-index: 2;
   }
-  .cityv-list::before {
+  .cityv-body::before {
     content: '';
-    position: sticky;
-    top: 0;
-    display: block;
-    height: 60px;
-    margin-bottom: -60px;
-    background: linear-gradient(to bottom, rgba(255,255,255,.9) 0%, transparent 100%);
+    position: absolute;
+    left: 0; right: 0;
+    top: calc(44vh - 50px);
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255,255,255,.88) 0%, transparent 100%);
     pointer-events: none;
-    z-index: 10;
+    z-index: 5;
   }
+  .cityv-body { position: relative; }
   .cityv-list-inner { padding-top: 0 !important; }
 
   /* city name row at top of list */
@@ -1564,6 +1564,47 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   #map-list-sidebar.open { display: flex; }
   #map-list-toggle { top: 14px; left: 14px; transition: left .0s; }
   #map-list-toggle.sidebar-open { left: calc(62vw + 20px); }
+
+  /* ── save modal — mobile bottom sheet ── */
+  #modal-backdrop { align-items: flex-end; }
+  #modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column;
+  }
+  #modal-backdrop.open #modal { transform: translateY(0); }
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+  }
+  .modal-photo-col {
+    height: 180px;
+    flex-shrink: 0;
+    border-radius: 0;
+  }
+  .modal-photo-col.has-photo { height: 220px; }
+  .modal-fields-col { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .modal-fields-top { padding: 20px 20px 0; }
+  .modal-title-input { font-size: 22px; margin-bottom: 14px; }
+  .modal-fields-body { padding: 0 20px; }
+  .modal-foot { padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); }
+  .modal-close { top: 12px; right: 12px; }
+  /* drag handle indicator */
+  #modal::before {
+    content: '';
+    display: block;
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: rgba(0,0,0,.15);
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
 }
 </style>
 </head>
@@ -2468,7 +2509,7 @@ function renderArchive(){
       if(cover){ const img=document.createElement('img'); img.className='arc-cell-img'; img.src=cover; img.alt=city; img.loading='lazy'; inner.appendChild(img); }
       imgWrap.appendChild(inner);
       const covBtn=document.createElement('button'); covBtn.className='cover-change-btn'; covBtn.textContent='✎';
-      covBtn.title='Change cover'; covBtn.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(ps.filter(p=>p.photo),(p)=>setCityCover(city,p.id)); };
+      covBtn.title='Change cover'; covBtn.onclick=(e)=>{ e.stopPropagation(); openCoverPicker(ps.filter(p=>p.photo),(id)=>setCityCover(city,id)); };
       imgWrap.appendChild(covBtn);
       content.appendChild(imgWrap);
       const titleEl=document.createElement('div'); titleEl.className='arc-cell-title'; titleEl.textContent=city; content.appendChild(titleEl);
