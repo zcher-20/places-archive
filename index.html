@@ -473,7 +473,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 
 /* ── MAP ARCHIVE SIDEBAR ─────────────────── */
 #map-list-sidebar {
-  position:absolute; top:14px; left:14px; bottom:14px; width:300px; z-index:900;
+  position:absolute; top:14px; left:14px; bottom:auto; height:65vh; width:300px; z-index:900;
   background:rgba(255,255,255,.32); border-radius:16px;
   backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6);
   box-shadow:0 4px 32px rgba(0,0,0,.13);
@@ -1305,11 +1305,22 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     height: 44vh !important;
     flex-shrink: 0 !important;
     position: relative;
+    z-index: 1;
+    margin-bottom: -50px;
+  }
+  .cityv-map-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 100px;
+    background: linear-gradient(to top, rgba(255,255,255,.95) 0%, rgba(255,255,255,.5) 50%, transparent 100%);
+    pointer-events: none;
+    z-index: 400;
   }
   #cityv-map {
     width: 100% !important;
     height: 100% !important;
-    filter: grayscale(1) contrast(1.05);
+    filter: none;
   }
   /* back arrow overlay on map */
   .cityv-map-back {
@@ -1318,11 +1329,12 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     top: calc(14px + env(safe-area-inset-top));
     left: 14px;
     z-index: 500;
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: rgba(0,0,0,.42);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    border: none; color: #fff;
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 10px rgba(0,0,0,.10), 0 1px 3px rgba(0,0,0,.07);
+    border: none; color: var(--charcoal);
     align-items: center; justify-content: center;
     cursor: pointer;
   }
@@ -1332,7 +1344,20 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     border-right: none !important;
     flex: 1 !important;
     overflow-y: auto;
-    padding: 0 0 120px !important;
+    padding: 50px 0 120px !important;
+    position: relative;
+    z-index: 2;
+  }
+  .cityv-list::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 60px;
+    margin-bottom: -60px;
+    background: linear-gradient(to bottom, rgba(255,255,255,.9) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 10;
   }
   .cityv-list-inner { padding-top: 0 !important; }
 
@@ -1341,8 +1366,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 28px 20px 24px;
-    border-bottom: 1px solid rgba(0,0,0,.06);
+    padding: 28px 20px 28px;
   }
   .cvl-title {
     font-family: var(--sans);
@@ -1352,14 +1376,6 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     color: #111;
     line-height: 1;
     margin: 0;
-  }
-  .cvl-add-btn {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background: #111; color: #fff;
-    border: none; font-size: 18px; line-height: 1;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; flex-shrink: 0;
   }
 
   /* accordion list items */
@@ -1393,11 +1409,12 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   /* expanded body */
   .cvl-body { display: none; padding: 0 20px 20px; }
   .cvl-item.open .cvl-body { display: block; }
+  .cvl-body-inner { display: flex; gap: 16px; align-items: flex-start; }
   .cvl-full-photo {
-    width: 100%; height: 190px;
-    object-fit: cover; border-radius: 0;
-    margin-bottom: 16px; display: block;
+    width: 90px; height: 90px; flex-shrink: 0;
+    object-fit: cover; border-radius: 10px; display: block;
   }
+  .cvl-body-details { flex: 1; min-width: 0; }
   /* 2-column detail rows */
   .cvl-detail-row {
     display: flex; gap: 16px;
@@ -1412,15 +1429,15 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   /* action buttons — icon only, no borders */
   .cvl-action-row {
     display: flex;
-    gap: 24px;
-    padding-top: 16px;
+    gap: 14px;
+    padding-top: 10px;
     align-items: center;
     justify-content: flex-end;
   }
   .cvl-action-btn {
     background: none;
     border: none;
-    padding: 4px;
+    padding: 2px;
     cursor: pointer;
     color: #aaa;
     display: flex;
@@ -1428,9 +1445,54 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
     justify-content: center;
     transition: color .15s;
   }
+  .cvl-action-btn svg { width: 13px !important; height: 13px !important; }
+  .cvl-action-btn {
+  }
   .cvl-action-btn.active { color: #111; }
   .cvl-action-btn.del { color: #ddd; }
   .cvl-action-btn.del:hover { color: #c0392b; }
+
+  /* view toggle buttons */
+  .cityv-view-btn, .cvl-view-btn { width:28px; height:28px; border-radius:6px; border:none; background:none; color:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:color .15s,background .15s; padding:0; }
+  .cityv-view-btn:hover, .cvl-view-btn:hover { color:#111; background:rgba(0,0,0,.07); }
+  .cityv-view-btn.active, .cvl-view-btn.active { color:#111; background:rgba(0,0,0,.09); }
+
+  /* + add button — match toggle button style */
+  .cvl-add-btn { width:28px; height:28px; border-radius:6px; background:none; border:none; font-size:20px; color:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:color .15s,background .15s; line-height:1; padding:0; }
+  .cvl-add-btn:hover { color:#111; background:rgba(0,0,0,.07); }
+
+  /* gallery grid — mcs-card style */
+  .cvl-gal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; padding:16px 16px 120px; }
+  .cvl-gal-card { border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.15); cursor:pointer; }
+  .cvl-gal-card-img-wrap { position:relative; height:200px; }
+  .cvl-gal-card.open .cvl-gal-card-img-wrap { height:340px; }
+  .cvl-gal-card-bg { position:absolute; inset:0; background-size:cover; background-position:center; background-color:var(--stone); }
+  .cvl-gal-card-img-wrap::before { content:''; position:absolute; inset:0; z-index:1; backdrop-filter:blur(12px) saturate(1.2); -webkit-backdrop-filter:blur(12px) saturate(1.2); background:linear-gradient(to top,rgba(0,0,0,.48) 0%,rgba(0,0,0,.08) 35%,transparent 55%); mask-image:linear-gradient(to top,black 0%,black 22%,transparent 50%); -webkit-mask-image:linear-gradient(to top,black 0%,black 22%,transparent 50%); }
+  .cvl-gal-card.mcs-light .cvl-gal-card-img-wrap::before { background:linear-gradient(to top,rgba(255,255,255,.65) 0%,rgba(255,255,255,.15) 35%,transparent 55%); }
+  .cvl-gal-card-inner { position:absolute; bottom:0; left:0; right:0; padding:12px 12px 22px; z-index:2; display:flex; flex-direction:column; }
+  .cvl-gal-card-detail { display:none; margin-top:8px; flex-direction:column; }
+  .cvl-gal-card.open .cvl-gal-card-detail { display:flex; }
+  .cvl-gal-card-name { font-size:13px; font-weight:600; color:white; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cvl-gal-card.mcs-light .cvl-gal-card-name { color:#111; filter:none; }
+  .cvl-gal-card-addr { font-size:11px; color:rgba(255,255,255,.75); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cvl-gal-card.mcs-light .cvl-gal-card-addr { color:rgba(0,0,0,.6); }
+  .cvl-gal-card-arrow { position:absolute; bottom:10px; right:12px; z-index:3; display:flex; align-items:center; background:none; border:none; color:rgba(255,255,255,.8); cursor:pointer; padding:4px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); transition:transform .18s,color .15s; }
+  .cvl-gal-card.open .cvl-gal-card-arrow { transform:rotate(90deg); }
+  .cvl-gal-card.mcs-light .cvl-gal-card-arrow { color:rgba(0,0,0,.55); filter:none; }
+  .cvl-gal-card-icon { position:absolute; z-index:3; width:24px; height:24px; background:none; border:none; color:white; top:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:.85; filter:drop-shadow(0 1px 3px rgba(0,0,0,.5)); transition:opacity .15s; padding:0; }
+  .cvl-gal-card.mcs-light .cvl-gal-card-icon { color:#111; filter:none; }
+  .cvl-gal-card-detail .cvl-detail-row { border-bottom-color:rgba(255,255,255,.13); }
+  .cvl-gal-card-detail .cvl-detail-label { color:rgba(255,255,255,.5); }
+  .cvl-gal-card-detail .cvl-detail-value { color:rgba(255,255,255,.9); }
+  .cvl-gal-card.mcs-light .cvl-gal-card-detail .cvl-detail-label { color:rgba(0,0,0,.45); }
+  .cvl-gal-card.mcs-light .cvl-gal-card-detail .cvl-detail-value { color:rgba(0,0,0,.8); }
+  .cvl-gal-card-detail .cvl-action-btn { color:rgba(255,255,255,.7); border-radius:6px; }
+  .cvl-gal-card-detail .cvl-action-btn:hover { color:#fff; background:rgba(255,255,255,.12); }
+  .cvl-gal-card-detail .cvl-action-btn.active { color:#fff; }
+  .cvl-gal-card-detail .cvl-action-btn.del:hover { color:#ff6b6b; background:rgba(255,107,107,.1); }
+  .cvl-gal-card.mcs-light .cvl-gal-card-detail .cvl-action-btn { color:rgba(0,0,0,.5); }
+  .cvl-gal-card.mcs-light .cvl-gal-card-detail .cvl-action-btn:hover { color:#111; background:rgba(0,0,0,.08); }
+  .cvl-gal-card.mcs-light .cvl-gal-card-detail .cvl-action-btn.active { color:#111; }
 
   /* archive background — frosted white over body */
   #view-archive { background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
@@ -1722,7 +1784,11 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
         </button>
         <div class="cityv-title-row">
           <h1 class="cityv-name" id="cityv-name"></h1>
-          <button class="btn-new-coll cityv-add-btn" onclick="openModalForCityView()" title="Add place">+</button>
+          <div style="display:flex;align-items:center;gap:10px;padding-bottom:4px">
+            <button class="cityv-view-btn" id="cityv-btn-list" onclick="cvlSetView('list')" title="List view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+            <button class="cityv-view-btn active" id="cityv-btn-gallery" onclick="cvlSetView('gallery')" title="Gallery view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+            <button class="btn-new-coll cityv-add-btn" onclick="openModalForCityView()" title="Add place">+</button>
+          </div>
         </div>
       </div>
       <span id="cityv-count" style="display:none"></span>
@@ -2080,7 +2146,7 @@ function placeToRow(p){
 function rowToPlace(r){
   return { id:Number(r.id), name:r.name, city:r.city, country:r.country||'',
     neighborhood:r.neighborhood||'', address:r.address||'', category:r.category||'Other',
-    lat:r.lat||0, lng:r.lng||0, photo:r.photo||P.nyc, note:r.note||'',
+    lat:r.lat||0, lng:r.lng||0, photo:r.photo||'', note:r.note||'',
     dateVisited:r.date_visited||null, dateAdded:r.date_added,
     visited:!!r.visited, favorite:!!r.favorite, googleMapsUrl:r.google_maps_url||null,
     rating:r.rating||null };
@@ -2128,6 +2194,21 @@ async function upsertCollection(c){
     else saveCollections();
   }
 }
+function syncFavoritesCollection(p){
+  let fav=collections.find(c=>c.name.toLowerCase()==='favorites');
+  if(!fav){
+    if(!p.favorite) return; // no collection and not favoriting — nothing to do
+    fav={name:'Favorites',placeIds:[],_new:true};
+    collections.unshift(fav);
+  }
+  if(p.favorite){
+    if(!fav.placeIds.includes(p.id)) fav.placeIds.push(p.id);
+  } else {
+    fav.placeIds=fav.placeIds.filter(id=>id!==p.id);
+  }
+  upsertCollection(fav);
+  renderCollections();
+}
 async function deleteCollectionFromDB(id){
   saveCollections();
   const {error}=await db.from('collections').delete().eq('id',id);
@@ -2135,7 +2216,7 @@ async function deleteCollectionFromDB(id){
 }
 
 const DEFAULT_PLACES = [
-  { id:1, name:'The Smile', city:'New York', country:'USA', category:'Café', lat:40.726, lng:-73.993, photo:P.nyc, note:'Want to go. Recommended by everyone I know who\'s been to New York. Apparently the coffee alone is worth the trip.', dateVisited:null, dateAdded:'2024-07-01', visited:false, favorite:false },
+  { id:1, name:'The Smile', city:'New York', country:'USA', category:'Café', lat:40.726, lng:-73.993, photo:'', note:'Want to go. Recommended by everyone I know who\'s been to New York. Apparently the coffee alone is worth the trip.', dateVisited:null, dateAdded:'2024-07-01', visited:false, favorite:false },
 ];
 function savePlaces(){
   try{ localStorage.setItem('places-data',JSON.stringify(places)); }
@@ -2477,6 +2558,79 @@ function openCollectionView(id){
   setTimeout(()=>buildCityViewMap(collPlaces), 60);
 }
 
+function toggleGalCard(card, p){
+  const isOpen=card.classList.contains('open');
+  document.querySelectorAll('.cvl-gal-card.open').forEach(c=>{
+    c.classList.remove('open');
+    const d=c.querySelector('.cvl-gal-card-detail'); if(d) d.innerHTML='';
+  });
+  if(isOpen) return;
+  const collId=window._cvlLastCollId;
+  const delFn=collId?`removePlaceFromCollection(${collId},${p.id})`:`deleteCityViewPlace(${p.id})`;
+  let rows='';
+  if(p.address) rows+=`<div class="cvl-detail-row"><div class="cvl-detail-label">Address</div><div class="cvl-detail-value">${p.address}</div></div>`;
+  if(p.category) rows+=`<div class="cvl-detail-row"><div class="cvl-detail-label">Category</div><div class="cvl-detail-value">${p.category}</div></div>`;
+  if(p.note) rows+=`<div class="cvl-detail-row"><div class="cvl-detail-label">Note</div><div class="cvl-detail-value">${p.note}</div></div>`;
+  const detail=card.querySelector('.cvl-gal-card-detail');
+  detail.innerHTML=`${rows}<div class="cvl-action-row" style="margin-top:auto;padding-top:8px;justify-content:flex-end">
+    <button class="cvl-action-btn cvl-visited-btn${p.visited?' active':''}" onclick="cvlGalAction('visited',${p.id})" title="${p.visited?'Unmark':'Mark visited'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+    <button class="cvl-action-btn cvl-fav-btn${p.favorite?' active':''}" onclick="cvlGalAction('fav',${p.id})" title="${p.favorite?'Unfavorite':'Favorite'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="${p.favorite?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+    <button class="cvl-action-btn" onclick="openModal(${p.id})" title="Edit"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+    <button class="cvl-action-btn del" onclick="${delFn}" title="Remove"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+  </div>`;
+  card.classList.add('open');
+}
+function cvlGalAction(action, id){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  if(action==='visited') p.visited=!p.visited;
+  if(action==='fav'){ p.favorite=!p.favorite; syncFavoritesCollection(p); }
+  upsertPlace(p); renderArchive();
+  const listEl=document.getElementById('cityv-list');
+  if(listEl) buildCityList(window._cvlLastPs,listEl,window._cvlLastCity,window._cvlLastCollId);
+}
+function buildGalleryCards(ps, listEl){
+  const grid=document.createElement('div'); grid.className='cvl-gal-grid';
+  ps.forEach(p=>{
+    const card=document.createElement('div'); card.className='cvl-gal-card'; card.dataset.id=p.id;
+
+    const imgWrap=document.createElement('div'); imgWrap.className='cvl-gal-card-img-wrap';
+
+    const bg=document.createElement('div'); bg.className='cvl-gal-card-bg';
+    if(p.photo) bg.style.backgroundImage=`url('${p.photo}')`;
+
+    const inner=document.createElement('div'); inner.className='cvl-gal-card-inner';
+    inner.innerHTML=`<div class="cvl-gal-card-name">${p.name}</div>${(p.address||p.city)?`<div class="cvl-gal-card-addr">${p.address||p.city}</div>`:''}`;
+
+    const fav=document.createElement('button'); fav.className='cvl-gal-card-icon'; fav.style.right='10px';
+    fav.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="${p.favorite?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+    fav.onclick=(e)=>{ e.stopPropagation(); cvlGalAction('fav', p.id); };
+
+    const vis=document.createElement('button'); vis.className='cvl-gal-card-icon'; vis.style.right='34px';
+    vis.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    vis.style.opacity=p.visited?'1':'.45';
+    vis.onclick=(e)=>{ e.stopPropagation(); cvlGalAction('visited', p.id); };
+
+    const detail=document.createElement('div'); detail.className='cvl-gal-card-detail';
+    inner.appendChild(detail);
+    imgWrap.appendChild(bg); imgWrap.appendChild(inner); imgWrap.appendChild(fav); imgWrap.appendChild(vis);
+    card.appendChild(imgWrap);
+    card.onclick=()=>toggleGalCard(card, p);
+
+    if(p.photo){
+      const img=new Image(); img.crossOrigin='anonymous';
+      img.onload=()=>{ try{
+        const cv=document.createElement('canvas'); cv.width=img.width; cv.height=img.height;
+        const ctx=cv.getContext('2d'); ctx.drawImage(img,0,0);
+        const d=ctx.getImageData(0,Math.floor(img.height*.6),img.width,Math.ceil(img.height*.4));
+        let sum=0; for(let i=0;i<d.data.length;i+=4) sum+=0.299*d.data[i]+0.587*d.data[i+1]+0.114*d.data[i+2];
+        card.classList.toggle('mcs-light',(sum/(d.data.length/4))>145);
+      }catch(e){} };
+      img.src=p.photo;
+    }
+    grid.appendChild(card);
+  });
+  return grid;
+}
 function cvlTogglePlace(id){
   const item=document.querySelector(`.cvl-item[data-id="${id}"]`);
   if(!item) return;
@@ -2492,19 +2646,43 @@ function cvlToggleVisited(id){
 }
 function cvlToggleFav(id){
   const p=places.find(x=>x.id===id); if(!p) return;
-  p.favorite=!p.favorite; upsertPlace(p); renderArchive();
+  p.favorite=!p.favorite; upsertPlace(p); syncFavoritesCollection(p); renderArchive();
   const btn=document.querySelector(`.cvl-item[data-id="${id}"] .cvl-fav-btn`);
   if(btn){ btn.classList.toggle('active',p.favorite); const svg=btn.querySelector('svg'); if(svg) svg.setAttribute('fill',p.favorite?'currentColor':'none'); }
 }
+let cvlViewMode = 'gallery'; // 'list' | 'gallery'
+function cvlSetView(mode){
+  cvlViewMode=mode;
+  // toggle desktop + mobile button states
+  document.getElementById('cityv-btn-list')?.classList.toggle('active', mode==='list');
+  document.getElementById('cityv-btn-gallery')?.classList.toggle('active', mode==='gallery');
+  document.querySelectorAll('.cvl-view-btn').forEach(b=>b.classList.toggle('active', b.title.includes(mode==='list'?'List':'Gallery')));
+  // on desktop, stack map above gallery
+  const listEl=document.getElementById('cityv-list');
+  if(listEl){ listEl.style.width=mode==='gallery'?'100%':''; }
+  const mapWrap=document.querySelector('.cityv-map-wrap');
+  if(mapWrap && window.innerWidth>768){ mapWrap.style.display=mode==='gallery'?'none':''; setTimeout(()=>cityViewMap?.invalidateSize(),50); }
+  if(listEl) buildCityList(window._cvlLastPs, listEl, window._cvlLastCity, window._cvlLastCollId);
+}
+
 function buildCityList(ps, listEl, cityName, collId){
+  window._cvlLastPs=ps; window._cvlLastCity=cityName; window._cvlLastCollId=collId;
   listEl.innerHTML='';
   const isMob=window.innerWidth<=768;
   if(isMob){
     // title row
     const titleRow=document.createElement('div'); titleRow.className='cvl-title-row';
     const title=document.createElement('div'); title.className='cvl-title'; title.textContent=cityName||document.getElementById('cityv-name').textContent;
+    const controls=document.createElement('div'); controls.style.cssText='display:flex;align-items:center;gap:8px;';
+    const listBtn=document.createElement('button'); listBtn.className='cvl-view-btn'+(cvlViewMode==='list'?' active':''); listBtn.title='List view';
+    listBtn.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`;
+    listBtn.onclick=()=>cvlSetView('list');
+    const gallBtn=document.createElement('button'); gallBtn.className='cvl-view-btn'+(cvlViewMode==='gallery'?' active':''); gallBtn.title='Gallery view';
+    gallBtn.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`;
+    gallBtn.onclick=()=>cvlSetView('gallery');
     const addBtn=document.createElement('button'); addBtn.className='cvl-add-btn'; addBtn.textContent='+'; addBtn.onclick=openModalForCityView;
-    titleRow.appendChild(title); titleRow.appendChild(addBtn); listEl.appendChild(titleRow);
+    controls.appendChild(listBtn); controls.appendChild(gallBtn); controls.appendChild(addBtn);
+    titleRow.appendChild(title); titleRow.appendChild(controls); listEl.appendChild(titleRow);
     // accordion items
     ps.forEach(p=>{
       const item=document.createElement('div'); item.className='cvl-item'; item.dataset.id=p.id;
@@ -2518,30 +2696,41 @@ function buildCityList(ps, listEl, cityName, collId){
       if(p.category) detailRows+=`<div class="cvl-detail-row"><div class="cvl-detail-label">Category</div><div class="cvl-detail-value">${p.category}</div></div>`;
       if(p.visited!==undefined) detailRows+=`<div class="cvl-detail-row"><div class="cvl-detail-label">Status</div><div class="cvl-detail-value">${p.visited?'Visited':'Want to go'}</div></div>`;
       if(p.note) detailRows+=`<div class="cvl-detail-row"><div class="cvl-detail-label">Note</div><div class="cvl-detail-value">${p.note}</div></div>`;
-      body.innerHTML=`${p.photo?`<img class="cvl-full-photo" src="${p.photo}" alt="${p.name}" loading="lazy">`:''}
-        ${detailRows}
+      body.innerHTML=`<div class="cvl-body-inner">
+        <div class="cvl-body-details">${detailRows}
         <div class="cvl-action-row">
           <button class="cvl-action-btn cvl-visited-btn${p.visited?' active':''}" onclick="cvlToggleVisited(${p.id})" title="${p.visited?'Mark unvisited':'Mark visited'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></button>
           <button class="cvl-action-btn cvl-fav-btn${p.favorite?' active':''}" onclick="cvlToggleFav(${p.id})" title="${p.favorite?'Unfavorite':'Favorite'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="${p.favorite?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
           <button class="cvl-action-btn" onclick="openModal(${p.id})" title="Edit"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
           <button class="cvl-action-btn del" onclick="${delFn}" title="Remove"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-        </div>`;
+        </div></div></div>`;
       item.appendChild(hdr); item.appendChild(body); listEl.appendChild(item);
     });
+
+    // ── GALLERY VIEW ─────────────────────────────────
+    if(cvlViewMode==='gallery'){
+      listEl.innerHTML='';
+      listEl.appendChild(titleRow);
+      listEl.appendChild(buildGalleryCards(ps, listEl));
+    }
   } else {
-    // desktop: original pp-item rows
-    ps.forEach(p=>{
-      const row=document.createElement('div'); row.className='pp-item';
-      row.onclick=(e)=>{ e.stopPropagation(); if(!e.target.closest('.pp-action-btn')) openPlace(p); };
-      const delFn=collId?`removePlaceFromCollection(${collId},${p.id})`:`deleteCityViewPlace(${p.id})`;
-      row.innerHTML=`<img class="pp-thumb" src="${p.photo||''}" alt="${p.name}" loading="lazy">
-        <div style="flex:1;min-width:0;"><div class="pp-name">${p.name}${p.favorite?' ★':''}</div><div class="pp-sub">${p.address||p.neighborhood||p.city||''}</div></div>
-        <div class="pp-actions">
-          <button class="pp-action-btn" onclick="event.stopPropagation();openModal(${p.id})" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="pp-action-btn del" onclick="event.stopPropagation();${delFn}" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-        </div>`;
-      listEl.appendChild(row);
-    });
+    if(cvlViewMode==='gallery'){
+      listEl.appendChild(buildGalleryCards(ps, listEl));
+    } else {
+      // desktop list rows
+      ps.forEach(p=>{
+        const row=document.createElement('div'); row.className='pp-item';
+        row.onclick=(e)=>{ e.stopPropagation(); if(!e.target.closest('.pp-action-btn')) openPlace(p); };
+        const delFn=collId?`removePlaceFromCollection(${collId},${p.id})`:`deleteCityViewPlace(${p.id})`;
+        row.innerHTML=`<img class="pp-thumb" src="${p.photo||''}" alt="${p.name}" loading="lazy">
+          <div style="flex:1;min-width:0;"><div class="pp-name">${p.name}${p.favorite?' ★':''}</div><div class="pp-sub">${p.address||p.neighborhood||p.city||''}</div></div>
+          <div class="pp-actions">
+            <button class="pp-action-btn" onclick="event.stopPropagation();openModal(${p.id})" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="pp-action-btn del" onclick="event.stopPropagation();${delFn}" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>`;
+        listEl.appendChild(row);
+      });
+    }
   }
 }
 
@@ -2787,7 +2976,7 @@ function ctxToggleVisited(){
 function ctxToggleFav(){
   const p=places.find(x=>x.id===ctxPlaceId); if(!p)return;
   p.favorite=!p.favorite; if(selectedPlace?.id===p.id){selectedPlace=p;refreshPanelBtns();}
-  upsertPlace(p); renderArchive(); closeCtxMenu();
+  upsertPlace(p); syncFavoritesCollection(p); renderArchive(); closeCtxMenu();
 }
 function ctxDelete(){
   if(!ctxPlaceId)return;
@@ -2946,7 +3135,7 @@ function toggleVisited(){
 function toggleFavorite(){
   if(!selectedPlace)return;
   const p=places.find(x=>x.id===selectedPlace.id); p.favorite=!p.favorite; selectedPlace=p;
-  upsertPlace(p); refreshPanelBtns(); renderArchive();
+  upsertPlace(p); syncFavoritesCollection(p); refreshPanelBtns(); renderArchive();
 }
 function initNoteEditing(){
   const noteEl=document.getElementById('dp-note');
@@ -3355,7 +3544,7 @@ function selectMapSidebarPlace(id){
 function toggleMapCardFav(){
   if(!mapCardPlaceId)return;
   const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
-  p.favorite=!p.favorite; upsertPlace(p);
+  p.favorite=!p.favorite; upsertPlace(p); syncFavoritesCollection(p);
   document.getElementById('mcs-bookmark-btn').classList.toggle('on', p.favorite);
 }
 function toggleMapCardVisited(){
@@ -3437,7 +3626,7 @@ function mdcToggleVisited(){
 function mdcToggleFav(){
   if(!mapCardPlaceId)return;
   const p=places.find(x=>x.id===mapCardPlaceId); if(!p)return;
-  p.favorite=!p.favorite; upsertPlace(p);
+  p.favorite=!p.favorite; upsertPlace(p); syncFavoritesCollection(p);
   document.getElementById('mdc-bookmark-btn').classList.toggle('on',p.favorite);
   document.getElementById('mcs-bookmark-btn').classList.toggle('on',p.favorite);
 }
@@ -4306,6 +4495,13 @@ function savePlace(){
   // then fetch fresh data from Supabase and silently re-render
   try{
     [places, collections] = await Promise.all([loadPlaces(), loadCollections()]);
+    // migrate: normalise all "new york" variants → "New York City"
+    const nyPlaces=places.filter(p=>p.city&&/^new york( city)?$/i.test(p.city.trim())&&p.city.trim()!=='New York City');
+    if(nyPlaces.length){
+      nyPlaces.forEach(p=>{ p.city='New York City'; });
+      savePlaces();
+      await db.from('places').upsert(nyPlaces.map(placeToRow));
+    }
     if(currentView==='map'){ syncMapMarkers(); }
     else if(currentView==='archive'){ renderArchive(); renderCollections(); }
     else if(currentView==='journal'){ renderJournal(); }
