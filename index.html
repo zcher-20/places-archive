@@ -2539,8 +2539,12 @@ function openCityView(city){
   showView('city');
   document.getElementById('nav-archive')?.classList.add('active');
 
+  // always show map-wrap (may have been hidden by gallery mode on a previous visit)
+  const mapWrap=document.querySelector('.cityv-map-wrap');
+  if(mapWrap) mapWrap.style.display='';
+
   // delay map init so the view is rendered and the container has dimensions
-  setTimeout(()=>buildCityViewMap(ps), 60);
+  setTimeout(()=>{ buildCityViewMap(ps); setTimeout(()=>cityViewMap?.invalidateSize(),150); }, 80);
 }
 
 function showCollections(){
@@ -2586,7 +2590,9 @@ function openCollectionView(id){
 
   showView('city');
   document.getElementById('nav-archive')?.classList.add('active');
-  setTimeout(()=>buildCityViewMap(collPlaces), 60);
+  const mapWrap2=document.querySelector('.cityv-map-wrap');
+  if(mapWrap2) mapWrap2.style.display='';
+  setTimeout(()=>{ buildCityViewMap(collPlaces); setTimeout(()=>cityViewMap?.invalidateSize(),150); }, 80);
 }
 
 function toggleGalCard(card, p){
