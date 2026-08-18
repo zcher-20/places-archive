@@ -307,7 +307,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   .archive-hero { display:none !important; }
   #archive-afb { display:none !important; }
   .desktop-archive-title { display:block !important; padding:0; }
-  #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; padding-top:54px; background:rgba(255,255,255,.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+  #view-archive.active { overflow-y:auto; overflow-x:hidden; display:block; padding-top:20px; background:rgba(255,255,255,.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
   .archive-scroll { padding:0; overflow:visible; display:block; }
   #city-inline { display:none !important; }
   #archive-list { overflow:visible; }
@@ -783,12 +783,16 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
 .cityv-list { width:100%; overflow:visible; border-right:none; padding:0 0 80px; }
 .cityv-list-inner { padding-top:0; }
 .cityv-map-wrap { width:100%; height:50vh; flex-shrink:0; position:relative; }
+.cityv-map-wrap::after { content:''; position:absolute; bottom:0; left:0; right:0; height:72px; background:linear-gradient(to bottom, transparent, #fff); pointer-events:none; z-index:2; }
 #cityv-map { width:100%; height:100%; }
 .cityv-map-back { display:none; }
-.cityv-controls { display:flex; align-items:center; justify-content:space-between; padding:12px 48px; flex-shrink:0; border-bottom:1px solid rgba(0,0,0,.06); background:#fff; }
-.cityv-back-ctrl { display:inline-flex; align-items:center; gap:6px; background:none; border:none; font-family:var(--sans); font-size:13px; font-weight:400; color:#aaa; cursor:pointer; padding:0; letter-spacing:.01em; transition:color .15s; }
-.cityv-back-ctrl:hover { color:var(--charcoal); }
-.cityv-ctrl-btns { display:flex; align-items:center; gap:10px; }
+/* desktop buttons overlaid on map top-right */
+.cityv-map-overlay-btns { position:absolute; top:14px; right:14px; z-index:500; display:flex; align-items:center; gap:0; background:rgba(255,255,255,.92); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.12),0 1px 3px rgba(0,0,0,.07); overflow:hidden; }
+.cityv-map-ovr-btn { width:34px; height:34px; border:none; background:none; cursor:pointer; color:var(--charcoal); display:flex; align-items:center; justify-content:center; transition:background .15s,color .15s; }
+.cityv-map-ovr-btn:hover { background:rgba(0,0,0,.06); }
+.cityv-map-ovr-btn.active { color:#111; background:rgba(0,0,0,.07); }
+.cityv-map-ovr-sep { width:1px; height:18px; background:rgba(0,0,0,.1); flex-shrink:0; }
+.cityv-controls { display:none; }
 
 .archive-colls-section { padding:0 0 100px; }
 .archive-colls-header { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; margin-bottom:36px; padding-top:80px; }
@@ -1363,6 +1367,7 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
   #cityv-header-desktop { display: none !important; }
   #cityv-gallery { display: none !important; }
   .cityv-controls { display: none !important; }
+  .cityv-map-overlay-btns { display: none !important; }
   .cityv-map-back { display: flex !important; align-items: center; justify-content: center; }
   .cityv-body {
     flex-direction: column !important;
@@ -1882,22 +1887,20 @@ html,body { height:100%; overflow:hidden; background:#e8e8e8; color:var(--charco
           <button class="cityv-map-back" onclick="closeCityView()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           </button>
+          <!-- desktop controls overlaid on map top-right -->
+          <div class="cityv-map-overlay-btns">
+            <button class="cityv-map-ovr-btn" onclick="closeCityView()" title="Back to archive">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            </button>
+            <div class="cityv-map-ovr-sep"></div>
+            <button class="cityv-map-ovr-btn" id="cityv-btn-list" onclick="cvlSetView('list')" title="List view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+            <button class="cityv-map-ovr-btn active" id="cityv-btn-gallery" onclick="cvlSetView('gallery')" title="Gallery view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+            <button class="cityv-map-ovr-btn" onclick="openModalForCityView()" title="Add place" style="font-size:18px;line-height:1;padding-bottom:1px">+</button>
+          </div>
           <div id="cityv-map"></div>
           <div class="cip-zoom" style="position:absolute;bottom:12px;right:12px;">
             <button onclick="cityViewMap?.zoomIn()">+</button>
             <button onclick="cityViewMap?.zoomOut()">−</button>
-          </div>
-        </div>
-        <!-- desktop control bar below map -->
-        <div class="cityv-controls">
-          <button class="cityv-back-ctrl" onclick="closeCityView()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Archive
-          </button>
-          <div class="cityv-ctrl-btns">
-            <button class="cityv-view-btn" id="cityv-btn-list" onclick="cvlSetView('list')" title="List view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
-            <button class="cityv-view-btn active" id="cityv-btn-gallery" onclick="cvlSetView('gallery')" title="Gallery view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
-            <button class="btn-new-coll cityv-add-btn" onclick="openModalForCityView()" title="Add place">+</button>
           </div>
         </div>
         <div class="cityv-list" id="cityv-list"></div>
@@ -2400,14 +2403,10 @@ function cityPhoto(city){
 
 // ── BOOT ─────────────────────────────────────────────
 function enterApp(){
-  // apply correct nav on initial load
+  // apply correct nav on initial load — always use pill nav, no top nav
   const isDesktop=window.innerWidth>768;
-  const useTopNav=isDesktop && (currentView==='archive'||currentView==='journal');
-  document.getElementById('topbar').style.display=useTopNav?'none':'';
-  const topnav=document.getElementById('page-topnav');
-  topnav.classList.toggle('visible',useTopNav);
-  document.querySelectorAll('.ptn-link').forEach(x=>x.classList.remove('active'));
-  document.getElementById('ptn-'+currentView)?.classList.add('active');
+  document.getElementById('topbar').style.display='';
+  document.getElementById('page-topnav').classList.remove('visible');
   document.getElementById('landing').classList.add('hidden');
   (function(el,v){if(el)el.textContent=v;})(document.getElementById('archive-count'),places.length); const _mc=document.getElementById('mah-count'); if(_mc)_mc.textContent=places.length;
   // redirect stale views to archive
@@ -2435,15 +2434,10 @@ function showView(v){
   document.querySelectorAll('.tm-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.getElementById('nav-'+v)?.classList.add('active');
-  // toggle nav style: top bar on archive/journal/city, pill on map
+  // always use pill nav (#topbar) on all views/sizes — top nav removed
   const isDesktop=window.innerWidth>768;
-  const useTopNav=isDesktop && (v==='archive'||v==='journal');
-  document.getElementById('topbar').style.display=useTopNav?'none':'';
-  const topnav=document.getElementById('page-topnav');
-  topnav.classList.toggle('visible',useTopNav);
-  document.querySelectorAll('.ptn-link').forEach(x=>x.classList.remove('active'));
-  document.getElementById('ptn-'+v)?.classList.add('active');
-  document.getElementById('ptn-back').style.display=(v==='city'&&isDesktop)?'inline-flex':'none';
+  document.getElementById('topbar').style.display='';
+  document.getElementById('page-topnav').classList.remove('visible');
   // on mobile, show back button inside city header; hide topbar when in city view
   if(!isDesktop){
     document.getElementById('topbar').style.display='';
